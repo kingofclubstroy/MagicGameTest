@@ -10,13 +10,10 @@ public class WorldController : MonoBehaviour
 
     public static WorldController instance;
 
-    static List<TileScript> activeTiles;
-
     // Start is called before the first frame update
     void Start()
     {
         size = tilePrefab.GetComponent<Renderer>().bounds.size.x;
-        activeTiles = new List<TileScript>();
         instance = this;
         populateWorld(40, 40);
         
@@ -25,7 +22,7 @@ public class WorldController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        spreadHeat();
+        
     }
 
 
@@ -55,7 +52,7 @@ public class WorldController : MonoBehaviour
 
                 tileScript.flamability = Random.Range(0.1f, 10f);
 
-                if (i < 5 && j < 5)
+                if (i < 20 && j < 20)
                 {
                     //the top left corner is on fire
                     tileScript.onFire = true;
@@ -64,7 +61,7 @@ public class WorldController : MonoBehaviour
                 }
 
                 //if (random <= 1f)
-                if(i >= x - 5 && j >= y - 5)  
+                if(i >= x - 20 && j >= y - 20)  
                 {
                     //80% chance the tile has fuel to burn but isnt on fire
                     tileScript.fuel = Random.Range(10f, 30f);
@@ -137,101 +134,74 @@ public class WorldController : MonoBehaviour
 
     }
 
-
-    void spreadHeat()
+    //spreads fire or growth from an active tile to its neighbours
+    public bool updateNeighbouringTiles(TileScript tile)
     {
 
-        //this list is added as a workaround to errors generated when adding to a list that is currently being looped though, need to replace
-        List<TileScript> growthToSet = new List<TileScript>();
+        List<TileScript> adjacentTiles = findNeighbours(tile.position);
 
-        Debug.Log(activeTiles.Count);
+        bool effectedNeighbour = false;
 
-        foreach(TileScript mainTile in activeTiles)
-        //for (int i = 0; i < activeTiles.Count; i++)
-        {
-            //TileScript mainTile = activeTiles[i];
-            if (mainTile.onFire)
-            //if (true) 
+        if(tile.onFire) { 
+
+            float heat = tile.heat;
+
+            float totalHeatExchanged = 0;
+
+
+            foreach (TileScript neighbour in adjacentTiles)
             {
 
-                float heat = mainTile.heat;
-
-                List<TileScript> adjacentTiles = findNeighbours(mainTile.position);
-
-                float totalHeatExchanged = 0;
-
-                foreach (TileScript neighbour in adjacentTiles)
+                if (neighbour != null && !neighbour.onFire && neighbour.fuel > 0)
                 {
+                    effectedNeighbour = true;       
+                    float difference = (heat - neighbour.heat) / 8;
 
-                    if (neighbour != null && !neighbour.onFire && neighbour.fuel > 0)
+                    if (difference > 0)
                     {
-                           
-                        float difference = (heat - neighbour.heat) / 8;
 
-                        if (difference > 0)
-                        {
+                        neighbour.heat += difference;
+                        totalHeatExchanged += difference;
 
-                            neighbour.heat += difference;
-                            totalHeatExchanged += difference;
-
-                        }
+                    }
                             
 
 
-                    }
-
                 }
 
-                mainTile.heat -= totalHeatExchanged;
-            } else if (mainTile.growing)
-            {
+            }
+
+            tile.heat -= totalHeatExchanged;
+
+        } else if (tile.growing)
+        {
                
-                List<TileScript> adjacentTiles = findNeighbours(mainTile.position);
-                foreach (TileScript neighbour in adjacentTiles)
+            foreach (TileScript neighbour in adjacentTiles)
+            {
+
+                if (neighbour != null && !neighbour.onFire && !neighbour.growing)
                 {
+                    effectedNeighbour = true;
+                    float random = Random.Range(0f, 100f);
 
-                    if (neighbour != null && !neighbour.onFire && !neighbour.growing)
+                    if(random <= (neighbour.fuelGrowth * tile.fuel/10 * Mathf.Clamp(neighbour.neutrients/10, 1, 10) * Time.deltaTime))
                     {
-
-                        float random = Random.Range(0f, 100f);
-
-                        if(random <= (neighbour.fuelGrowth * mainTile.fuel/100 * Time.deltaTime))
-                        {
-                            growthToSet.Add(neighbour);
-                        }
+                        neighbour.growing = true;
+                    }
                         
 
-                    }
-
                 }
+
+            }
                 
-            }/* else
-            {
-                Debug.Log("tile set inactive due to not being on fire or growing, this shouldnt happen");
-                setInactive(mainTile);
-            }*/
+        }
 
+        //returns wheather the tile had an effect or not on its neighbours, will decide if the tile is still active or not
+        return effectedNeighbour;
             
-        }
-
-        foreach (TileScript tile in growthToSet)
-        {
-            tile.growing = true;
-        }
-
-        growthToSet = null;
-
     }
 
-    public void setActive(TileScript tile)
-    {
-        activeTiles.Add(tile);
-    }
-
-    public void setInactive(TileScript tile)
-    {
-        activeTiles.Remove(tile);
-    }
+    
 
 }
 

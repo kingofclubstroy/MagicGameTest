@@ -5,6 +5,8 @@ using UnityEngine;
 public class TileScript : MonoBehaviour
 {
 
+    static int activeTiles = 0;
+
     //Is fire the same as heat? like the same value, but only different visually and when spells require it?
 
     public float fire;
@@ -39,10 +41,10 @@ public class TileScript : MonoBehaviour
 
             if(_growing)
             {
-                WorldController.instance.setActive(this);
+                isActive = true;
             } else
             {
-                WorldController.instance.setInactive(this);
+                checkIfActive();
             }
         }
     }
@@ -68,6 +70,35 @@ public class TileScript : MonoBehaviour
 
     public Vector2 position;
 
+    bool _isActive = false;
+
+    bool isActive
+    {
+        get
+        {
+            return _isActive;
+        }
+        set
+        {
+            if(_isActive != value)
+            {
+                if(value == false)
+                {
+                    activeTiles -= 1;
+                } else
+                {
+                    activeTiles += 1;
+                }
+
+                Debug.Log(activeTiles);
+
+            }
+
+            _isActive = value;
+           
+        }
+    }
+
 
     private bool _onFire = false;
     public bool onFire
@@ -82,10 +113,14 @@ public class TileScript : MonoBehaviour
 
             if(value)
             {
-                WorldController.instance.setActive(this);
+                //WorldController.instance.setActive(this);
+                isActive = true;
+                growing = false;
             } else
             {
-                WorldController.instance.setInactive(this);
+                //WorldController.instance.setInactive(this);
+                checkIfActive();
+                
             } 
 
         }
@@ -103,7 +138,7 @@ public class TileScript : MonoBehaviour
 
         flamability = 6f;
         fuelDensity = 1.5f;
-        fuelGrowth = 20f;
+        fuelGrowth = 10f;
         growthThreshold = 40f;
 
 
@@ -115,6 +150,7 @@ public class TileScript : MonoBehaviour
     {
         fireUpdate();
         growthUpdate();
+        updateNeighbours();
         spriteUpdate();
         
     }
@@ -129,7 +165,7 @@ public class TileScript : MonoBehaviour
             {
               
                 // this is an arbituary number, going to change in the future
-                fire -= 20 * Time.deltaTime;
+                fire -= 50 * Time.deltaTime;
 
                 if (fire <= 0)
                 {
@@ -162,15 +198,10 @@ public class TileScript : MonoBehaviour
         }
         else 
         {
-            if (fuel > 0)
+            if (heat > 0)
             {
-                if (heat > 0)
+                if (fuel > 0)
                 {
-
-                    //onFire = true;
-                    heat -= Time.deltaTime;
-                    fuel += fuelGrowth * Time.deltaTime;
-
                     if (heat >= ignition)
                     {
                         onFire = true;
@@ -185,7 +216,10 @@ public class TileScript : MonoBehaviour
                         }
                     }
                 }
+
+                heat -= 20 * Time.deltaTime;
             }
+            
 
         }
 
@@ -196,8 +230,17 @@ public class TileScript : MonoBehaviour
         if(growing && !onFire)
         {
 
-            fuel += fuelGrowth + (neutrients / 100f) * Time.deltaTime;
+            fuel += (fuelGrowth + (fuelGrowth * (neutrients / 5f))) * Time.deltaTime;
 
+        }
+    }
+
+    void updateNeighbours()
+    {
+        if(isActive)
+        {
+            //need to spread the fire or growth to neighbouring tiles
+            isActive = WorldController.instance.updateNeighbouringTiles(this);
         }
     }
 
@@ -234,6 +277,17 @@ public class TileScript : MonoBehaviour
 
         sprite.color = mColor;
 
+    }
+
+    void checkIfActive()
+    {
+        if(onFire || growing)
+        {
+            isActive = true;
+        } else
+        {
+            isActive = false;
+        }
     }
 
 }
