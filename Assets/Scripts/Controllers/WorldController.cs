@@ -55,9 +55,9 @@ public class WorldController : MonoBehaviour
                 if (i < 20 && j < 20)
                 {
                     //the top left corner is on fire
-                    tileScript.onFire = true;
-                    tileScript.fire = Random.Range(0f, 20f);
-                    tileScript.fuel = Random.Range(0f, 20f);
+                    tileScript.onFire = false;
+                    tileScript.neutrients = Random.Range(0f, 100f);
+                    //tileScript.fuel = Random.Range(0f, 20f);
                 }
 
                 //if (random <= 1f)
