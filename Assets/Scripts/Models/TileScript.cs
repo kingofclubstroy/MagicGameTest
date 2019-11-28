@@ -9,6 +9,8 @@ public class TileScript : MonoBehaviour
 
     //Is fire the same as heat? like the same value, but only different visually and when spells require it?
 
+        //TODO: remove hidden set functions, make explicit getters and setters and use those when we want extra functionality besides just setting
+
     public float fire;
 
     private float _fuel;
@@ -70,36 +72,10 @@ public class TileScript : MonoBehaviour
 
     public Vector2 position;
 
-    bool _isActive = false;
-
-    bool isActive
-    {
-        get
-        {
-            return _isActive;
-        }
-        set
-        {
-            if(_isActive != value)
-            {
-                if(value == false)
-                {
-                    activeTiles -= 1;
-                } else
-                {
-                    activeTiles += 1;
-                }
-
-                Debug.Log(activeTiles);
-
-            }
-
-            _isActive = value;
-           
-        }
-    }
 
 
+    bool isActive;
+    
     private bool _onFire = false;
     public bool onFire
     {
@@ -240,7 +216,7 @@ public class TileScript : MonoBehaviour
         if(isActive)
         {
             //need to spread the fire or growth to neighbouring tiles
-            isActive = WorldController.instance.updateNeighbouringTiles(this);
+            isActive = updateNeighbouringTiles(this);
         }
     }
 
@@ -288,6 +264,74 @@ public class TileScript : MonoBehaviour
         {
             isActive = false;
         }
+    }
+
+    //spreads fire or growth from an active tile to its neighbours
+    public bool updateNeighbouringTiles(TileScript tile)
+    {
+
+        List<TileScript> adjacentTiles = WorldController.instance.findNeighbours(tile.position);
+
+        bool effectedNeighbour = false;
+
+        if (tile.onFire)
+        {
+
+            float heat = tile.heat;
+
+            float totalHeatExchanged = 0;
+
+
+            foreach (TileScript neighbour in adjacentTiles)
+            {
+
+                if (neighbour != null && !neighbour.onFire && neighbour.fuel > 0)
+                {
+                    effectedNeighbour = true;
+                    float difference = (heat - neighbour.heat) / 8;
+
+                    if (difference > 0)
+                    {
+
+                        neighbour.heat += difference;
+                        totalHeatExchanged += difference;
+
+                    }
+
+
+
+                }
+
+            }
+
+            tile.heat -= totalHeatExchanged;
+
+        }
+        else if (tile.growing)
+        {
+
+            foreach (TileScript neighbour in adjacentTiles)
+            {
+
+                if (neighbour != null && !neighbour.onFire && !neighbour.growing)
+                {
+                    effectedNeighbour = true;
+                    float random = Random.Range(0f, 100f);
+
+                    if (random <= (neighbour.fuelGrowth * tile.fuel / 10 * Mathf.Clamp(neighbour.neutrients / 10, 1, 10) * Time.deltaTime))
+                    {
+                        neighbour.growing = true;
+                    }
+
+                }
+
+            }
+
+        }
+
+        //returns wheather the tile had an effect or not on its neighbours, will decide if the tile is still active or not
+        return effectedNeighbour;
+
     }
 
 }
