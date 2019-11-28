@@ -52,22 +52,25 @@ public class WorldController : MonoBehaviour
 
                 tileScript.flamability = Random.Range(0.1f, 10f);
 
-                if (i < 20 && j < 20)
+                if (i < x/2 && j < y/2)
                 {
                     //the top left corner is on fire
-                    tileScript.onFire = false;
+                    tileScript.onFire = true;
                     tileScript.neutrients = Random.Range(0f, 100f);
-                    //tileScript.fuel = Random.Range(0f, 20f);
+                    tileScript.fuel = Random.Range(0f, 20f);
                 }
 
                 //if (random <= 1f)
-                if(i >= x - 20 && j >= y - 20)  
+                else if(i >= x/2 && j >= y/2)  
                 {
                     //80% chance the tile has fuel to burn but isnt on fire
                     tileScript.fuel = Random.Range(10f, 30f);
                     tileScript.growing = true;
                     
-                } 
+                } else
+                {
+                    tileScript.neutrients = Random.Range(0f, 20f);
+                }
               
                 //There is a 20% chance there is no fuel or fire to simulate bare ground
 
@@ -83,7 +86,7 @@ public class WorldController : MonoBehaviour
 
 
 
-    List<TileScript> findNeighbours(Vector2 position)
+    public List<TileScript> findNeighbours(Vector2 position)
     {
 
         //need to find the adjacent neighbours ie: north, east, south, west, northWest, northEast, southEast, southWest 
@@ -133,75 +136,6 @@ public class WorldController : MonoBehaviour
         }
 
     }
-
-    //spreads fire or growth from an active tile to its neighbours
-    public bool updateNeighbouringTiles(TileScript tile)
-    {
-
-        List<TileScript> adjacentTiles = findNeighbours(tile.position);
-
-        bool effectedNeighbour = false;
-
-        if(tile.onFire) { 
-
-            float heat = tile.heat;
-
-            float totalHeatExchanged = 0;
-
-
-            foreach (TileScript neighbour in adjacentTiles)
-            {
-
-                if (neighbour != null && !neighbour.onFire && neighbour.fuel > 0)
-                {
-                    effectedNeighbour = true;       
-                    float difference = (heat - neighbour.heat) / 8;
-
-                    if (difference > 0)
-                    {
-
-                        neighbour.heat += difference;
-                        totalHeatExchanged += difference;
-
-                    }
-                            
-
-
-                }
-
-            }
-
-            tile.heat -= totalHeatExchanged;
-
-        } else if (tile.growing)
-        {
-               
-            foreach (TileScript neighbour in adjacentTiles)
-            {
-
-                if (neighbour != null && !neighbour.onFire && !neighbour.growing)
-                {
-                    effectedNeighbour = true;
-                    float random = Random.Range(0f, 100f);
-
-                    if(random <= (neighbour.fuelGrowth * tile.fuel/10 * Mathf.Clamp(neighbour.neutrients/10, 1, 10) * Time.deltaTime))
-                    {
-                        neighbour.growing = true;
-                    }
-                        
-
-                }
-
-            }
-                
-        }
-
-        //returns wheather the tile had an effect or not on its neighbours, will decide if the tile is still active or not
-        return effectedNeighbour;
-            
-    }
-
-    
 
 }
 
