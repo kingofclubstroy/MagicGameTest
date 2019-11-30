@@ -147,6 +147,16 @@ public class TileScript : MonoBehaviour
                 {
                     fire = 0;
                     onFire = false;
+
+                    //now that the tile is not on fire, check neighbours to make active if they should be
+                    foreach(TileScript t in WorldController.instance.findNeighbours(this.position))
+                    {
+                        //TODO: test this
+                        if(t != null && t.isActive == false)
+                        {
+                            t.checkIfActive();
+                        }
+                    }
                 }
                 
             }
@@ -255,7 +265,7 @@ public class TileScript : MonoBehaviour
 
     }
 
-    void checkIfActive()
+    public void checkIfActive()
     {
         if(onFire || growing)
         {
@@ -321,6 +331,15 @@ public class TileScript : MonoBehaviour
                     if (random <= (neighbour.fuelGrowth * tile.fuel / 10 * Mathf.Clamp(neighbour.neutrients / 10, 1, 10) * Time.deltaTime))
                     {
                         neighbour.growing = true;
+
+                        //now that this tile is growing, tell neighbouring tiles to be active if they are on fire
+                        foreach(TileScript t in WorldController.instance.findNeighbours(neighbour.position))
+                        {
+                            if(t != null && t.isActive == false && t.onFire)
+                            {
+                                t.isActive = true;
+                            }
+                        }
                     }
 
                 }
