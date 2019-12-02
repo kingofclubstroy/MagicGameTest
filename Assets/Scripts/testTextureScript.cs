@@ -21,6 +21,11 @@ public class testTextureScript : MonoBehaviour
             for (int x = 0; x < texture.width; x++)
             {
                 Color color = ((x & y) != 0 ? Color.black : Color.blue);
+
+                Debug.Log(x & y);
+
+                //Color color = ((x <= 64 && y <= 64) ? Color.black : Color.blue);
+
                 texture.SetPixel(x, y, color);
             }
         }

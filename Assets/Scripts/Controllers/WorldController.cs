@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class WorldController : MonoBehaviour
+public class WorldController : MonoBehaviour, IWorldController
 {
     public GameObject tilePrefab;
     List<List<TileScript>> tileMap;
@@ -10,12 +10,13 @@ public class WorldController : MonoBehaviour
 
     public static WorldController instance;
 
+
     // Start is called before the first frame update
     void Start()
     {
         size = tilePrefab.GetComponent<Renderer>().bounds.size.x;
         instance = this;
-        populateWorld(40, 40);
+        tileMap = populateWorld(40, 40);
         
     }
 
@@ -26,10 +27,10 @@ public class WorldController : MonoBehaviour
     }
 
 
-    void populateWorld(int x, int y)
+    public List<List<TileScript>> populateWorld(int x, int y)
     {
 
-        tileMap = new List<List<TileScript>>();
+        List<List<TileScript>> tileMap = new List<List<TileScript>>();
 
         for (int i = 0; i < x; i++)
         {
@@ -81,6 +82,8 @@ public class WorldController : MonoBehaviour
 
         }
 
+        return tileMap;
+
     }
 
 
@@ -123,7 +126,7 @@ public class WorldController : MonoBehaviour
 
     }
 
-    TileScript getTile(int x, int y)
+    public TileScript getTile(int x, int y)
     {
 
         if(x < 0 || x >= tileMap.Count || y < 0 || y >= tileMap[x].Count)
