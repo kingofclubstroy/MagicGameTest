@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class WorldController : MonoBehaviour
+using EventCallbacks;
+
+public class WorldController : MonoBehaviour, IWorldController
 {
     public GameObject tilePrefab;
     List<List<TileScript>> tileMap;
@@ -10,12 +12,23 @@ public class WorldController : MonoBehaviour
 
     public static WorldController instance;
 
+    [SerializeField]
+    private int height;
+
+    [SerializeField]
+    private int width;
+
+
     // Start is called before the first frame update
     void Start()
     {
         size = tilePrefab.GetComponent<Renderer>().bounds.size.x;
         instance = this;
-        populateWorld(40, 40);
+        tileMap = populateWorld(width, height);
+
+        // We want to know whenever a unit dies
+        UnitDeathEvent.RegisterListener(UnitDied);
+
         
     }
 
@@ -26,15 +39,15 @@ public class WorldController : MonoBehaviour
     }
 
 
-    void populateWorld(int x, int y)
+    public List<List<TileScript>> populateWorld(int x, int y)
     {
 
-        tileMap = new List<List<TileScript>>();
+        List<List<TileScript>> tileMap = new List<List<TileScript>>();
 
-        for (int i = 0; i < x; i++)
+        for (int j = 0; j < x; j++)
         {
 
-            for (int j = 0; j < y; j++)
+            for (int i = 0; i < y; i++)
             {
 
                 if (j == 0)
@@ -81,6 +94,8 @@ public class WorldController : MonoBehaviour
 
         }
 
+        return tileMap;
+
     }
 
 
@@ -123,7 +138,7 @@ public class WorldController : MonoBehaviour
 
     }
 
-    TileScript getTile(int x, int y)
+    public TileScript getTile(int x, int y)
     {
 
         if(x < 0 || x >= tileMap.Count || y < 0 || y >= tileMap[x].Count)
@@ -135,6 +150,65 @@ public class WorldController : MonoBehaviour
             return tileMap[x][y];
         }
 
+    }
+
+    TileScript getTileFromPosition(float x, float y)
+    {
+        
+        //get the index value of the tile
+        int x_pos = Mathf.FloorToInt(x / size);
+
+        int y_pos = Mathf.FloorToInt(-y / size);
+
+        if( x_pos < 0 || x_pos >= width || y_pos < 0 || y_pos >= height)
+        {
+            //The position is out of index, so no tile there
+
+            Debug.Log($"out of position, x_pos = {x_pos}, y_pos = {y_pos}");
+
+            return null;
+        }
+
+        else
+        {
+            return getTile(x_pos, y_pos);
+        }
+
+        
+    }
+
+    /// <summary>
+    /// Allows a damagable object to get the tile it is under and potentially take damage from it //TODO: it wont only be a damagable object, there will be may ways to interact in the future
+    /// I.E. Maybe the tile or object on the tile heals you or maybe you can ask to use elemnts around the tile and we want to split this up
+    /// </summary>
+    /// <param name="damagableObject">Object interacting with the tiled world</param>
+    /// <param name="position">Position the object is in with respect to the world </param>
+    /// 
+    public void interactWithTile(ITakeDamage damagableObject, Vector3 position) 
+    {
+
+        TileScript currentTile = getTileFromPosition(position.x, position.y);
+
+        if(currentTile != null)
+        {
+
+            if(currentTile.onFire)
+            {
+                // Tile is on fire so lets do some fire damage
+                //TODO: figure out how much damage the user takes, maybe there is fire resistance or somehthing
+                damagableObject.TakeDamage(1);
+
+            }
+
+        }
+
+    }
+
+
+
+    void UnitDied(UnitDeathEvent unitDeathEvent)
+    {
+        Debug.Log("Unit died");
     }
 
 }

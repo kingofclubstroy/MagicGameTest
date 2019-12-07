@@ -72,9 +72,11 @@ public class TileScript : MonoBehaviour
 
     public Vector2 position;
 
+    private bool changed;
 
 
-    bool isActive;
+
+    [SerializeField] bool isActive;
     
     private bool _onFire = false;
     public bool onFire
@@ -116,6 +118,7 @@ public class TileScript : MonoBehaviour
         fuelDensity = 1.5f;
         fuelGrowth = 10f;
         growthThreshold = 40f;
+        spriteUpdate();
 
 
 
@@ -124,10 +127,21 @@ public class TileScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
+        
+        changed = false;
         fireUpdate();
         growthUpdate();
         updateNeighbours();
-        spriteUpdate();
+
+        if (changed)
+        {
+            spriteUpdate();
+        }
+        
+
+
+        
         
     }
 
@@ -142,6 +156,7 @@ public class TileScript : MonoBehaviour
               
                 // this is an arbituary number, going to change in the future
                 fire -= 50 * Time.deltaTime;
+                changed = true;
 
                 if (fire <= 0)
                 {
@@ -174,6 +189,8 @@ public class TileScript : MonoBehaviour
                 {
                     fire = 100;
                 }
+
+                changed = true;
                 
 
             }
@@ -191,6 +208,7 @@ public class TileScript : MonoBehaviour
                     if (heat >= ignition)
                     {
                         onFire = true;
+                        changed = true;
                     }
                     else
                     {
@@ -199,11 +217,13 @@ public class TileScript : MonoBehaviour
                         if (random <= (heat * flamability * Time.deltaTime))
                         {
                             onFire = true;
+                            changed = true;
                         }
                     }
                 }
 
                 heat -= 20 * Time.deltaTime;
+                
             }
             
 
@@ -217,6 +237,7 @@ public class TileScript : MonoBehaviour
         {
 
             fuel += (fuelGrowth + (fuelGrowth * (neutrients / 5f))) * Time.deltaTime;
+            changed = true;
 
         }
     }
@@ -234,12 +255,15 @@ public class TileScript : MonoBehaviour
     void spriteUpdate()
     {
 
-        Color mColor;
+        Color mColor = sprite.color;
+
 
         if (onFire)
         {
-
-            mColor = new Color(Mathf.Lerp(0.4f, 1, fire/70), 0, 0);
+            mColor.r = Mathf.Lerp(0.1f, 1, fire / 70);
+            mColor.g = 0;
+            mColor.b = 0;
+            //mColor = new Color(Mathf.Lerp(0.4f, 1, fire/70), 0, 0);
 
         } else if(fuel <= 0)
         {
