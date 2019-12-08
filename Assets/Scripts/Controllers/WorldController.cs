@@ -13,6 +13,9 @@ public class WorldController : MonoBehaviour, IWorldController
     public static WorldController instance;
 
     [SerializeField]
+    private SpriteController spriteController;
+
+    [SerializeField]
     private int height;
 
     [SerializeField]
@@ -71,6 +74,7 @@ public class WorldController : MonoBehaviour, IWorldController
                     tileScript.onFire = true;
                     tileScript.neutrients = Random.Range(0f, 100f);
                     tileScript.fuel = Random.Range(0f, 20f);
+                    tileScript.setSprite(spriteController.getRandomGrassSprite());
                 }
 
                 //if (random <= 1f)
@@ -79,10 +83,12 @@ public class WorldController : MonoBehaviour, IWorldController
                     //80% chance the tile has fuel to burn but isnt on fire
                     tileScript.fuel = Random.Range(10f, 30f);
                     tileScript.growing = true;
+                    tileScript.setSprite(spriteController.getRandomGrassSprite());
                     
                 } else
                 {
                     tileScript.neutrients = Random.Range(0f, 20f);
+                    tileScript.setSprite(spriteController.getRandomGroundSprite());
                 }
               
                 //There is a 20% chance there is no fuel or fire to simulate bare ground

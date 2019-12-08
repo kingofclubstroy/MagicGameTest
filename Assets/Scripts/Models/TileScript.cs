@@ -13,6 +13,11 @@ public class TileScript : MonoBehaviour
 
     public float fire;
 
+    private List<FireScript> fireScripts = new List<FireScript>();
+
+    [SerializeField]
+    private GameObject firePrefab;
+
     private float _fuel;
     public float fuel
     {
@@ -68,7 +73,7 @@ public class TileScript : MonoBehaviour
 
     public float fuelDensity = 3f;
 
-    private SpriteRenderer sprite;
+    private SpriteRenderer spriteRenderer;
 
     public Vector2 position;
 
@@ -112,7 +117,7 @@ public class TileScript : MonoBehaviour
         heat = 0;
 
 
-        sprite = GetComponent<SpriteRenderer>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
 
         flamability = 6f;
         fuelDensity = 1.5f;
@@ -255,7 +260,7 @@ public class TileScript : MonoBehaviour
     void spriteUpdate()
     {
 
-        Color mColor = sprite.color;
+        Color mColor = spriteRenderer.color;
 
 
         if (onFire)
@@ -285,7 +290,7 @@ public class TileScript : MonoBehaviour
             mColor = new Color(0, Mathf.Lerp(0.1f, 1f, fuel/100), 0); 
         } 
 
-        sprite.color = mColor;
+        spriteRenderer.color = mColor;
 
     }
 
@@ -375,6 +380,37 @@ public class TileScript : MonoBehaviour
         //returns wheather the tile had an effect or not on its neighbours, will decide if the tile is still active or not
         return effectedNeighbour;
 
+    }
+
+    public void setSprite(Sprite sprite)
+    {
+
+        if (sprite != null)
+        {
+
+            spriteRenderer.sprite = sprite;
+
+        }
+
+    }
+
+
+    public void setOnFire(Vector2 actingTile, FireSprite fireSprite)
+    {
+
+        //TODO: for now I will just spawn the fire in the center of the tile, but i will direct it later
+
+        makeFireAtPoint(fireSprite, new Vector2(transform.position.x, transform.position.y));
+
+    }
+
+    private void makeFireAtPoint(FireSprite fireSprite, Vector2 pos)
+    {
+        GameObject fire = Instantiate(firePrefab, pos, Quaternion.identity);
+
+        FireScript fireScript = fire.GetComponent<FireScript>();
+        fireScript.setFireSprite(fireSprite);
+        fireScripts.Add(fireScript);
     }
 
 }
