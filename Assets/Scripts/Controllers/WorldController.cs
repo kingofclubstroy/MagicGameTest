@@ -8,7 +8,7 @@ public class WorldController : MonoBehaviour, IWorldController
 {
     public GameObject tilePrefab;
     List<List<TileScript>> tileMap;
-    float size;
+    public static float size;
 
     public static WorldController instance;
 
@@ -64,6 +64,8 @@ public class WorldController : MonoBehaviour, IWorldController
 
                 tileScript.position = new Vector2(i, j);
 
+                tileScript.size = size;
+
                 float random = Random.Range(0f, 1f);
 
                 tileScript.flamability = Random.Range(0.1f, 10f);
@@ -73,7 +75,7 @@ public class WorldController : MonoBehaviour, IWorldController
                     //the top left corner is on fire
                     tileScript.onFire = true;
                     tileScript.neutrients = Random.Range(0f, 100f);
-                    tileScript.fuel = Random.Range(0f, 20f);
+                    tileScript.fuel = Random.Range(50f, 100f);
                     tileScript.setSprite(spriteController.getRandomGrassSprite());
                 }
 

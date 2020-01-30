@@ -8,7 +8,7 @@ public class SpriteController : MonoBehaviour
     #region Private Fields
 
     [SerializeField]
-    private FireSprite[] fireSprites;
+    private FireObject[] fireSprites;
 
     [SerializeField]
     private Sprite[] grassSprites;
@@ -20,7 +20,7 @@ public class SpriteController : MonoBehaviour
 
 
 
-    public FireSprite getRandomFireSprite()
+    public FireObject getRandomFireSprite()
     {
 
         if (fireSprites.Length == 0)

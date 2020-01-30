@@ -2,30 +2,60 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[System.Serializable]
-public class FireSprite
+public class FireSprite : MonoBehaviour
 {
 
-    private Sprite[] sprites;
+    [SerializeField]
+    private Animator animator;
 
-    private int CurrentIndex = 0;
+    private float sizeMultiplier;
 
-    public FireSprite(FireSprite fireSprite)
+    private float startFire = 0f;
+
+    public Vector3 position;
+
+    private FireObject fireObject;
+
+
+    public void SetupFire(float fireStart, float sizeMultiplier, FireObject fireObject)
     {
-        this.sprites = fireSprite.sprites;
+
+        startFire = fireStart;
+
+        this.sizeMultiplier = sizeMultiplier;
+
+        this.fireObject = fireObject;
+
     }
 
-    public Sprite getNextSprite()
+
+    public void fireChanged(float fire)
     {
-        if(CurrentIndex >= sprites.Length)
+
+        float adjustedFire = ((fire - startFire) * sizeMultiplier);
+
+        if (adjustedFire < 0)
         {
-            return null;
-        } else
-        {
-            Sprite sprite = sprites[CurrentIndex];
-            CurrentIndex++;
-            return sprite;
+            //PutOutFire();
         }
+        else
+        {
+
+            animator.SetFloat("Fire", (fire - startFire) * sizeMultiplier);
+
+        }
+
     }
+
+    public void PutOutFire()
+    {
+
+        fireObject.FireIsOut(this);
+
+        Destroy(gameObject);
+
+    }
+
+
 
 }
