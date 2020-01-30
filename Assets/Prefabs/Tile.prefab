@@ -93,14 +93,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 582cc166ac204794382ae842b7669b1a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fire: 0
+  fireBuffer: 0.1
+  size: 0
+  _fire: 0
   firePrefab: {fileID: 5311263018615170637, guid: 81f6b4d589966754aab085da117fabfd,
     type: 3}
   heat: 0
   growthThreshold: 0
   fuelGrowth: 0
   flamability: 2
-  ignition: 60
+  ignition: 30
   fireHeatTransfer: 0
   heatSpread: 0.25
   fuelToFireConversion: 0

@@ -25,7 +25,7 @@ public class CharacterController : MonoBehaviour
     {
 
         // Need to see if the character is on a tile that automatically interacts with the character
-        WorldController.instance.interactWithTile(character, transform.position);
+        //WorldController.instance.interactWithTile(character, transform.position);
 
     }
 }

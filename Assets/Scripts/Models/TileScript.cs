@@ -7,13 +7,35 @@ public class TileScript : MonoBehaviour
 
     static int activeTiles = 0;
 
+    [SerializeField]
+    private float fireBuffer = 0.1f;
+
+    public float size;
+
+    private FireObject fireObject;
+
     //Is fire the same as heat? like the same value, but only different visually and when spells require it?
 
-        //TODO: remove hidden set functions, make explicit getters and setters and use those when we want extra functionality besides just setting
+    //TODO: remove hidden set functions, make explicit getters and setters and use those when we want extra functionality besides just setting
 
-    public float fire;
+    [SerializeField]
+    private float _fire;
+    public float fire
+    {
+        get
+        {
+            return _fire;
+        } set
+        {
 
-    private List<FireScript> fireScripts = new List<FireScript>();
+            _fire = value;
+            
+            if(fireObject != null)
+            {
+                fireObject.FireChanged(_fire);
+            }
+        }
+    }
 
     [SerializeField]
     private GameObject firePrefab;
@@ -84,6 +106,8 @@ public class TileScript : MonoBehaviour
     [SerializeField] bool isActive;
     
     private bool _onFire = false;
+
+    [SerializeField]
     public bool onFire
     {
         get
@@ -99,9 +123,10 @@ public class TileScript : MonoBehaviour
                 //WorldController.instance.setActive(this);
                 isActive = true;
                 growing = false;
+                SetOnFire();
             } else
             {
-                //WorldController.instance.setInactive(this);
+               
                 checkIfActive();
                 
             } 
@@ -144,10 +169,6 @@ public class TileScript : MonoBehaviour
             spriteUpdate();
         }
         
-
-
-        
-        
     }
 
 
@@ -159,7 +180,7 @@ public class TileScript : MonoBehaviour
             if (fuel <= 0)
             {
               
-                // this is an arbituary number, going to change in the future
+                // LOOKAT: this is an arbituary number, going to change in the future
                 fire -= 50 * Time.deltaTime;
                 changed = true;
 
@@ -183,11 +204,20 @@ public class TileScript : MonoBehaviour
             else
             {
 
-                // is heat the same as fire when an object is on fire?
-                heat = fire;
+                float heatDifference = fire - heat;
 
+                if (heatDifference > 0)
+                {
+                    heat += heatDifference * Time.deltaTime;
+                }
+
+                //TODO: this is all abrituary and needs to be adjusted
                 fire += 1 * Time.deltaTime * fuelDensity;
+
+                //LOOKAT: Does fuel burn at a constant rate, or does it depend on the amount of fire on the tile
                 fuel -= 1 * Time.deltaTime;
+
+                //LOOKAT: Are neutrients tied to fuel consumption as a 1:1 relationship, or does that depend on something, do neutrients even get created? Do they spread around?
                 neutrients += 1 * Time.deltaTime;
 
                 if (fire >= 100)
@@ -215,19 +245,14 @@ public class TileScript : MonoBehaviour
                         onFire = true;
                         changed = true;
                     }
-                    else
-                    {
-
-                        float random = Random.Range(0f, 100f);
-                        if (random <= (heat * flamability * Time.deltaTime))
-                        {
-                            onFire = true;
-                            changed = true;
-                        }
-                    }
+                    
                 }
 
-                heat -= 20 * Time.deltaTime;
+                heat -= 1 * Time.deltaTime;
+                if(heat < 0)
+                {
+                    heat = 0;
+                }
                 
             }
             
@@ -265,10 +290,13 @@ public class TileScript : MonoBehaviour
 
         if (onFire)
         {
-            mColor.r = Mathf.Lerp(0.1f, 1, fire / 70);
+            
+           // mColor.r = Mathf.Lerp(0.1f, 1, fire / 70);
             mColor.g = 0;
             mColor.b = 0;
             //mColor = new Color(Mathf.Lerp(0.4f, 1, fire/70), 0, 0);
+
+            mColor = new Color(0, Mathf.Lerp(0.1f, 1f, fuel / 100), 0);
 
         } else if(fuel <= 0)
         {
@@ -327,7 +355,7 @@ public class TileScript : MonoBehaviour
                 if (neighbour != null && !neighbour.onFire && neighbour.fuel > 0)
                 {
                     effectedNeighbour = true;
-                    float difference = (heat - neighbour.heat) / 8;
+                    float difference = (heat - neighbour.heat) * Time.deltaTime;
 
                     if (difference > 0)
                     {
@@ -395,22 +423,28 @@ public class TileScript : MonoBehaviour
     }
 
 
-    public void setOnFire(Vector2 actingTile, FireSprite fireSprite)
+    public void SetOnFire()
     {
 
-        //TODO: for now I will just spawn the fire in the center of the tile, but i will direct it later
+        if (fireObject == null)
+        {
+            fireObject = new FireObject(transform.position, firePrefab);
+        }
 
-        makeFireAtPoint(fireSprite, new Vector2(transform.position.x, transform.position.y));
 
     }
 
-    private void makeFireAtPoint(FireSprite fireSprite, Vector2 pos)
-    {
-        GameObject fire = Instantiate(firePrefab, pos, Quaternion.identity);
+   
 
-        FireScript fireScript = fire.GetComponent<FireScript>();
-        fireScript.setFireSprite(fireSprite);
-        fireScripts.Add(fireScript);
+
+    /// <summary>
+    /// This will decide if fire will be spawned and what size the fire will be
+    /// </summary>
+    private void spawnFire(float fireValue)
+    {
+
+       
+
     }
 
 }

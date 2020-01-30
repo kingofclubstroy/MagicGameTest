@@ -6,7 +6,7 @@ public class CameraController : MonoBehaviour
     [SerializeField]
     private GameObject player;        //Public variable to store a reference to the player game object
 
-
+    [SerializeField]
     private Vector3 offset;            //Private variable to store the offset distance between the player and camera
 
     // Use this for initialization
@@ -20,10 +20,14 @@ public class CameraController : MonoBehaviour
     void LateUpdate()
     {
 
+        
+
         if (player != null)
         {
+            Vector3 playerTransform = player.transform.position;
+
             // Set the position of the camera's transform to be the same as the player's, but offset by the calculated offset distance.
-            transform.position = player.transform.position + offset;
+            transform.position = new Vector3(playerTransform.x,  playerTransform.y, transform.position.z);
         }
     }
 }
