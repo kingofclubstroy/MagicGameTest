@@ -62,11 +62,27 @@ public class UPAImage : ScriptableObject {
 
 	//MISC VARIABLES
 
-	public bool dirty = false;		// Used for determining if data has changed
-	
-	
-	// Class constructor
-	public UPAImage () {
+	public bool dirty = false;      // Used for determining if data has changed
+
+    #region custom variables
+
+    List<List<Vector2>> templateObjects;
+
+    List<Vector2> currentTemplate;
+
+    int templateIndex = 0;
+
+    int pixelIndex = 0;
+
+    Color currentPixelColor;
+
+    Vector2 currentPixelPosition;
+
+    #endregion
+
+
+    // Class constructor
+    public UPAImage () {
 		// do nothing so far
 	}
 
@@ -91,6 +107,12 @@ public class UPAImage : ScriptableObject {
 			return;
 
 		Undo.RecordObject (layers[layer].tex, "ColorPixel");
+
+        Debug.Log("SetPixelByPos");
+
+        Debug.Log(pixelCoordinate.x);
+        Debug.Log(pixelCoordinate.y);
+
 
 		layers[layer].SetPixel ((int)pixelCoordinate.x, (int)pixelCoordinate.y, color);
 		
@@ -223,4 +245,231 @@ public class UPAImage : ScriptableObject {
 			selectedLayer = index - 1;
 		}
 	}
+
+    public void loopThroughImage()
+    {
+
+        List<List<Vector2>> unsortedTemplateObjects = new List<List<Vector2>>();
+
+        for (int j = 0; j < height; j++)
+        {
+
+            for (int i = 0; i < width; i++)
+            {
+
+                Color color = layers[0].GetPixel(i, j);
+
+                if (color != Color.clear)
+                {
+
+                    bool found = false;
+                    foreach(List<Vector2> keyTest in unsortedTemplateObjects)
+                    {
+
+                        Vector2 pos = new Vector2(i, j);
+
+                        if (keyTest.Contains(pos))
+                        {
+                            found = true;
+                            break;
+                        }
+
+                    }
+
+                    if (! found)
+                    {
+                        unsortedTemplateObjects.Add(setupCrawl(i, j));
+                    }
+                    
+                }
+
+            }
+
+        }
+
+        templateObjects = sortTemplateObjects(unsortedTemplateObjects);
+
+        currentTemplate = templateObjects[0];
+
+        pixelIndex = 0;
+
+        templateIndex = 0;
+
+        currentPixelPosition = new Vector2(-1, -1);
+
+        focusPixel();
+
+
+    }
+
+
+    void focusPixel()
+    {
+
+        if(currentPixelPosition != new Vector2(-1, -1))
+        {
+            setBackColor();
+        }
+
+
+        setColor();
+
+
+    }
+
+    void setColor()
+    {
+
+        currentPixelPosition = currentTemplate[pixelIndex];
+        
+
+
+        currentPixelColor = layers[0].GetPixel((int) currentPixelPosition.x, (int) currentPixelPosition.y);
+
+        layers[0].SetPixel((int)currentPixelPosition.x, (int)currentPixelPosition.y - height, Color.cyan);
+
+
+    }
+
+    public void focusNextPixel()
+    {
+        if(pixelIndex + 1 < currentTemplate.Count)
+        {
+            //there is another pixel in this object
+            pixelIndex += 1;
+        } else
+        {
+            if(templateIndex + 1 < templateObjects.Count)
+            {
+                //there is another object, so lets set the current object and reset the pixel index
+                templateIndex += 1;
+                currentTemplate = templateObjects[templateIndex];
+                pixelIndex = 0;
+            } else
+            {
+                return;
+            }
+        }
+
+        focusPixel();
+    }
+
+    void setBackColor()
+    {
+        //need to set the current pixel to original color
+        
+        
+        layers[0].SetPixel((int)currentPixelPosition.x, (int) currentPixelPosition.y - height, currentPixelColor);
+    }
+
+
+    List<Vector2> setupCrawl(int x, int y)
+    {
+
+        List<Vector2> key = new List<Vector2>();
+
+        return crawlThrough(new Vector2(x, y), key);
+
+    }
+
+    List<Vector2> crawlThrough(Vector2 pos, List<Vector2> key)
+    {
+
+        if(pos.x < 0 || pos.x >= width || pos.y < 0 || pos.y >= height || key.Contains(pos))
+        {
+            return key;
+        }
+
+        Color color = layers[0].GetPixel((int)pos.x, (int)pos.y);
+
+        if (color == Color.clear)
+        {
+            //clear so not part of object
+            // or we already have added this to the dictionary
+            return key;
+        }
+
+        //we know its part of the object, so lets add it to the key dictionary, and then check other neighbouring areas
+        key.Add(pos);
+
+        //East
+        key = crawlThrough(new Vector2(pos.x + 1, pos.y), key);
+
+        //SouthEast
+        key = crawlThrough(new Vector2(pos.x + 1, pos.y + 1), key);
+
+        //South
+        key = crawlThrough(new Vector2(pos.x, pos.y + 1), key);
+
+        //SouthWest
+        key = crawlThrough(new Vector2(pos.x - 1, pos.y + 1), key);
+
+        //West
+        key = crawlThrough(new Vector2(pos.x - 1, pos.y), key);
+
+        //NorthWest
+        key = crawlThrough(new Vector2(pos.x - 1, pos.y - 1), key);
+
+        //North
+        key = crawlThrough(new Vector2(pos.x, pos.y - 1), key);
+
+        //NorthEast
+        key = crawlThrough(new Vector2(pos.x + 1, pos.y - 1), key);
+
+        return key;
+
+    }
+
+    List<List<Vector2>> sortTemplateObjects(List<List<Vector2>> objs)
+    {
+
+        List<List<Vector2>> finalObjects = new List<List<Vector2>>();
+
+        foreach(List<Vector2> obj in objs)
+        {
+
+            List<Vector2> sortedList = new List<Vector2>();
+
+            for (int y = height - 1; y >= 0; y--)
+            {
+
+                List<Vector2> tempList = new List<Vector2>();
+
+                foreach(Vector2 pos in obj)
+                {
+
+                    if(pos.y == y)
+                    {
+                        tempList.Add(pos);
+                    }
+
+                }
+
+                for (int x = 0; x < width; x++)
+                {
+
+                    foreach(Vector2 pos in tempList)
+                    {
+                        if (pos.x == x)
+                        {
+                            sortedList.Add(pos);
+                        }
+                    }
+
+
+                }
+
+            }
+
+            finalObjects.Add(sortedList);
+
+        }
+
+        return finalObjects;
+
+    }
+
+
+
+
 }

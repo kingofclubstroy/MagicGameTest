@@ -207,6 +207,20 @@ public class UPADrawer : MonoBehaviour {
 
         }
 
+        if (GUI.Button(new Rect(1090, 4, 75, 30), "Loop Image"))
+        {
+
+            CurrentImg.loopThroughImage();
+
+        }
+
+        if (GUI.Button(new Rect(1170, 4, 75, 30), "Next Pixel"))
+        {
+
+            CurrentImg.focusNextPixel();
+
+        }
+
 
         Vector2 pixelCoordinate = CurrentImg.GetReadablePixelCoordinate (mousePos);
 		GUI.Label (new Rect (880, 11, 100, 30), "(" + (int)pixelCoordinate.x + "," + (int)pixelCoordinate.y + ")", style);

@@ -85,8 +85,11 @@ public class UPALayer {
 		if (!locked) {
 			tex.SetPixel (x, y, color);
 			tex.Apply ();
+
+            Debug.Log(x);
+            Debug.Log(y);
 		
-			map [x + y * - 1 * parentImg.width - parentImg.height] = color;
+			//map [x + y * - 1 * parentImg.width - parentImg.height] = color;
 		}
 	}
 	
