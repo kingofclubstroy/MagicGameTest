@@ -41,8 +41,9 @@ public class UPADrawer : MonoBehaviour {
 	// DRAWING METHODS
 
 	// Draw an image inside the editor window
-	public static void DrawImage (UPAImage img) {
-		Rect texPos = img.GetImgRect();
+	public static void DrawImage (UPAImage img, bool isTemplate) {
+
+		Rect texPos = img.GetImgRect(isTemplate);
 
 		Texture2D bg = new Texture2D (1,1);
 		bg.SetPixel (0,0, Color.clear);
@@ -204,6 +205,20 @@ public class UPADrawer : MonoBehaviour {
             {
                 Debug.Log(armor.armorPieces[i].name);
             }
+
+        }
+
+        if (GUI.Button(new Rect(1090, 4, 75, 30), "Loop Image"))
+        {
+
+            CurrentImg.loopThroughImage();
+
+        }
+
+        if (GUI.Button(new Rect(1170, 4, 75, 30), "Next Pixel"))
+        {
+
+            CurrentImg.focusNextPixel();
 
         }
 
