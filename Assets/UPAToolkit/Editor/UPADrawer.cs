@@ -41,8 +41,9 @@ public class UPADrawer : MonoBehaviour {
 	// DRAWING METHODS
 
 	// Draw an image inside the editor window
-	public static void DrawImage (UPAImage img) {
-		Rect texPos = img.GetImgRect();
+	public static void DrawImage (UPAImage img, bool isTemplate) {
+
+		Rect texPos = img.GetImgRect(isTemplate);
 
 		Texture2D bg = new Texture2D (1,1);
 		bg.SetPixel (0,0, Color.clear);

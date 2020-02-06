@@ -168,13 +168,48 @@ public class UPAImage : ScriptableObject {
 	}
 
 	// Get the rect of the image as displayed in the editor
-	public Rect GetImgRect () {
-		float ratio = (float)height / (float)width;
-		float w = gridSpacing * 30;
-		float h = ratio * gridSpacing * 30;
-		
-		float xPos = window.width / 2f - w/2f + gridOffsetX;
-		float yPos = window.height / 2f - h/2f + 20 + gridOffsetY;
+	public Rect GetImgRect (bool isTemplate = false) {
+
+        int pixelSize;
+        float divisor;
+        int offsetX;
+
+        float yPos, xPos;
+
+        float ratio, w, h;
+        if (isTemplate)
+        {
+            pixelSize = 30;
+            divisor = 4f;
+
+            xPos = 0;
+            yPos = 60;
+
+            ratio = (float)height / (float)width;
+
+            w = gridSpacing * pixelSize;
+            h = ratio * gridSpacing * pixelSize;
+
+            return new Rect(xPos, yPos, w, h);
+
+
+
+        }
+        else
+        {
+            pixelSize = 57;
+            divisor = 2f;
+            offsetX = width / 2;
+            
+        }
+
+		ratio = (float)height / (float)width;
+        w = gridSpacing * pixelSize;
+        h = ratio * gridSpacing * pixelSize;
+
+
+        xPos = window.width / divisor - w/divisor + gridOffsetX + (w * 0.58f);
+		yPos = window.height / divisor - h/divisor + 20 + gridOffsetY + 20;
 
 		return new Rect (xPos,yPos, w, h);
 	}
@@ -251,7 +286,7 @@ public class UPAImage : ScriptableObject {
 
         List<List<Vector2>> unsortedTemplateObjects = new List<List<Vector2>>();
 
-        for (int j = 0; j < height; j++)
+        for (int j = height - 1; j >= 0; j--)
         {
 
             for (int i = 0; i < width; i++)
@@ -306,10 +341,7 @@ public class UPAImage : ScriptableObject {
     void focusPixel()
     {
 
-        if(currentPixelPosition != new Vector2(-1, -1))
-        {
-            setBackColor();
-        }
+        setBackColor();
 
 
         setColor();
@@ -354,12 +386,17 @@ public class UPAImage : ScriptableObject {
         focusPixel();
     }
 
-    void setBackColor()
+    public void setBackColor()
     {
-        //need to set the current pixel to original color
+        //need to set the current pixel to original color if there was a past color
+
+        if (currentPixelPosition != new Vector2(-1, -1))
+        {
+            layers[0].SetPixel((int)currentPixelPosition.x, (int)currentPixelPosition.y - height, currentPixelColor);
+        }
+
+
         
-        
-        layers[0].SetPixel((int)currentPixelPosition.x, (int) currentPixelPosition.y - height, currentPixelColor);
     }
 
 

@@ -192,12 +192,21 @@ public class UPAEditorWindow : EditorWindow {
 		#endregion
 		
 		// DRAW IMAGE
-		UPADrawer.DrawImage ( CurrentImg );
-		
-		UPADrawer.DrawToolbar (window.position, mousePos);
+		UPADrawer.DrawImage ( CurrentImg , false);
+
+        //Test draw another image
+        UPADrawer.DrawImage(CurrentImg, true);
+
+        UPADrawer.DrawToolbar (window.position, mousePos);
 		
 		UPADrawer.DrawLayerPanel ( window.position );
 		
 		e.Use();	// Release event handler
 	}
+
+    private void OnDestroy()
+    {
+        Debug.Log("Editor window: onDestroy");
+        CurrentImg.setBackColor();
+    }
 }
