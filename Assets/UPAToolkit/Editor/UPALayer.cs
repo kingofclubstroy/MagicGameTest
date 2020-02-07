@@ -85,9 +85,6 @@ public class UPALayer {
 		if (!locked) {
 			tex.SetPixel (x, y, color);
 			tex.Apply ();
-
-            Debug.Log(x);
-            Debug.Log(y);
 		
 			//map [x + y * - 1 * parentImg.width - parentImg.height] = color;
 		}
@@ -109,5 +106,35 @@ public class UPALayer {
 	public int GetOrder () {
 		return parentImg.layers.IndexOf (this);
 	}
+
+    public void setAlpha(bool addAlpha)
+    {
+
+        float newAlpha;
+        if(addAlpha)
+        {
+            newAlpha = 0.5f;
+        } else
+        {
+            newAlpha = 1f;
+        }
+
+        for(int y = 0; y < tex.height; y++)
+        {
+            for(int x = 0; x < tex.width; x++)
+            {
+
+                Color color = GetPixel(x, y);
+
+                if(color != Color.clear)
+                {
+                    color.a = newAlpha;
+                    SetPixel(x, y, color);
+                }
+
+            }
+        }
+
+    }
 
 }

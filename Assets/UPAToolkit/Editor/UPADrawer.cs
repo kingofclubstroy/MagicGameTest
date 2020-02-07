@@ -19,6 +19,12 @@ public class UPADrawer : MonoBehaviour {
 		set { UPAEditorWindow.CurrentImg = value; }
 	}
 
+    private static UPAImage TemplateImage
+    {
+        get { return UPAEditorWindow.TemplateImage; }
+        set { UPAEditorWindow.TemplateImage = value; }
+    }
+
 
 	// VISUAL SETTINGS
 	
@@ -119,7 +125,10 @@ public class UPADrawer : MonoBehaviour {
 			UPAImageCreationWindow.Init ();
 		}
 		if ( GUI.Button (new Rect (60, 4, 50, 30), "Open") ) {
-			CurrentImg = UPASession.OpenImage ();
+            //CurrentImg = UPASession.OpenFolder(false);
+            CurrentImg = UPASession.OpenImage();
+
+            CurrentImg.initilizeAlphas();
 			if (CurrentImg == null)
 				return;
 		}
@@ -208,22 +217,24 @@ public class UPADrawer : MonoBehaviour {
 
         }
 
-        if (GUI.Button(new Rect(1090, 4, 75, 30), "Loop Image"))
+        if (GUI.Button(new Rect(1090, 4, 75, 30), "Load template"))
         {
 
-            CurrentImg.loopThroughImage();
+            Debug.Log("load template pressed");
+            UPAImage img = UPASession.OpenFolder(true);
+
+            img.initilizeAlphas();
+            img.loopThroughImage();
 
         }
 
-        if (GUI.Button(new Rect(1170, 4, 75, 30), "Next Pixel"))
+        if (GUI.Button(new Rect(1175, 4, 100, 30), "Load Animations"))
         {
-
-            CurrentImg.focusNextPixel();
-
+            List<UPAImage> animation = UPASession.OpenAnimationsFromFolder(false);
+            Debug.Log("fetched animations!!!");
+            Debug.Log(animation.Count);
         }
-
-
-        Vector2 pixelCoordinate = CurrentImg.GetReadablePixelCoordinate (mousePos);
+            Vector2 pixelCoordinate = CurrentImg.GetReadablePixelCoordinate (mousePos);
 		GUI.Label (new Rect (880, 11, 100, 30), "(" + (int)pixelCoordinate.x + "," + (int)pixelCoordinate.y + ")", style);
 
 		if (CurrentImg.tool == UPATool.ColorPicker) {

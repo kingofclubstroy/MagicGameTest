@@ -12,6 +12,8 @@ public class UPAEditorWindow : EditorWindow {
 	public static UPAEditorWindow window;	// The static instance of the window
 	
 	public static UPAImage CurrentImg;		// The img currently being edited
+
+    public static UPAImage TemplateImage; // The template image in the corner
 	
 	
 	// HELPFUL GETTERS AND SETTERS
@@ -64,10 +66,30 @@ public class UPAEditorWindow : EditorWindow {
 		#endif
 		
 		string path = EditorPrefs.GetString ("currentImgPath", "");
-		
-		if (path.Length != 0)
-			CurrentImg = UPASession.OpenImageAtPath (path);
-	}
+
+        Debug.Log(path);
+       
+
+        string templatePath = EditorPrefs.GetString("templateImgPath", "");
+
+        Debug.Log(templatePath);
+
+        if (path.Length != 0)
+        {
+            Debug.Log("opening image at path");
+            CurrentImg = UPASession.OpenImageAtPath(path, false);
+            CurrentImg.initilizeAlphas();
+            Debug.Log(CurrentImg.currentPixelPosition);
+        }
+
+        if (templatePath.Length != 0)
+        {
+            Debug.Log("opening image at path");
+            TemplateImage = UPASession.OpenImageAtPath(templatePath, true);
+            TemplateImage.initilizeAlphas();
+            TemplateImage.loopThroughImage();
+        }
+    }
 	
 	
 	// Draw the Pixel Art Editor.
@@ -77,29 +99,67 @@ public class UPAEditorWindow : EditorWindow {
 		if (window == null)
 			Init ();
 		
-		if (CurrentImg == null) { 
+		if (CurrentImg == null || TemplateImage == null) {
+
+           
 			
 			string curImgPath = EditorPrefs.GetString ("currentImgPath", "");
-			
-			if (curImgPath.Length != 0) {
-				CurrentImg = UPASession.OpenImageAtPath (curImgPath);
-				return;
-			}
-			
-			if ( GUI.Button (new Rect (window.position.width / 2f - 140, window.position.height /2f - 25, 130, 50), "New Image") ) {
-				UPAImageCreationWindow.Init ();
-			}
-			if ( GUI.Button (new Rect (window.position.width / 2f + 10, window.position.height /2f - 25, 130, 50), "Open Image") ) {
-				CurrentImg = UPASession.OpenImage ();
-				return;
+            string templateImgPath = EditorPrefs.GetString("templateImgPath", "");
+
+            
+
+
+            if (curImgPath.Length != 0) {
+				CurrentImg = UPASession.OpenImageAtPath (curImgPath, false);
+				
 			}
 
+            if(templateImgPath.Length != 0)
+            {
+                TemplateImage = UPASession.OpenImageAtPath(templateImgPath, true);
+                
+            }
+
+            if (CurrentImg == null)
+            {
+
+                if (GUI.Button(new Rect(window.position.width / 2f - 140, window.position.height / 2f - 25, 130, 50), "New Frame"))
+                {
+                    UPAImageCreationWindow.Init();
+                }
+                if (GUI.Button(new Rect(window.position.width / 2f + 10, window.position.height / 2f - 25, 130, 50), "Open Frame"))
+                {
+                    CurrentImg = UPASession.OpenImage();
+                    return;
+                }
+
+            } else if (TemplateImage == null)
+            {
+               
+
+                if (GUI.Button(new Rect(window.position.width / 2f - 140, window.position.height / 2f - 25, 130, 50), "New Template"))
+                {
+                    UPAImageCreationWindow.Init();
+                }
+                if (GUI.Button(new Rect(window.position.width / 2f + 10, window.position.height / 2f - 25, 130, 50), "Open Template"))
+                {
+                    TemplateImage = UPASession.OpenFolder(true);
+                    TemplateImage.loopThroughImage();
+                    return;
+                }
+            }
+
+           
 			
 			return;
 		}
+
+       
 		
 		// Init the textures correctly, won't cost performance if nothing to load
 		CurrentImg.LoadAllTexsFromMaps();
+
+        TemplateImage.LoadAllTexsFromMaps();
 		
 		EditorGUI.DrawRect (window.position, new Color32 (30,30,30,255));
 		
@@ -138,17 +198,17 @@ public class UPAEditorWindow : EditorWindow {
 			// Key down
 			if (e.type == EventType.KeyDown) {
 				if (e.keyCode == KeyCode.W) {
-					gridOffsetY += 20f;
+                    CurrentImg.changeLayer(1);
 				}
 				if (e.keyCode == KeyCode.S) {
-					gridOffsetY -= 20f;
+                    CurrentImg.changeLayer(-1);
 				}
 				if (e.keyCode == KeyCode.A) {
-					gridOffsetX += 20f;
-				}
+                    TemplateImage.focusPixel(-1);
+                }
 				if (e.keyCode == KeyCode.D) {
-					gridOffsetX -= 20f;
-				}
+                    TemplateImage.focusPixel(1);
+                }
 				
 				if (e.keyCode == KeyCode.Alpha1) {
 					tool = UPATool.PaintBrush;
@@ -183,6 +243,8 @@ public class UPAEditorWindow : EditorWindow {
 				}
 			}
 		}
+
+        
 		
 		// TODO: Better way of doing this?
 		// Why does it behave so weirdly with my mac tablet.
@@ -192,10 +254,10 @@ public class UPAEditorWindow : EditorWindow {
 		#endregion
 		
 		// DRAW IMAGE
-		UPADrawer.DrawImage ( CurrentImg , false);
+		UPADrawer.DrawImage (CurrentImg , false);
 
         //Test draw another image
-        UPADrawer.DrawImage(CurrentImg, true);
+        UPADrawer.DrawImage(TemplateImage, true);
 
         UPADrawer.DrawToolbar (window.position, mousePos);
 		
@@ -206,7 +268,8 @@ public class UPAEditorWindow : EditorWindow {
 
     private void OnDestroy()
     {
-        Debug.Log("Editor window: onDestroy");
-        CurrentImg.setBackColor();
+       
+        TemplateImage.setBackColor();
+        TemplateImage.setAllNormalAlpha();
     }
 }

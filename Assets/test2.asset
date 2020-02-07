@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b5d402f598c2042759f69fa56f14b05b, type: 3}
-  m_Name: Pixel Image
+  m_Name: test2
   m_EditorClassIdentifier: 
   width: 32
   height: 32
@@ -1042,7 +1042,7 @@ MonoBehaviour:
     - {r: 0, g: 0, b: 0, a: 0}
     - {r: 0, g: 0, b: 0, a: 0}
     tex: {fileID: 0}
-    enabled: 1
+    enabled: 0
     opacity: 1
     mode: 0
     locked: 0
@@ -3106,7 +3106,7 @@ MonoBehaviour:
     - {r: 0, g: 0, b: 0, a: 0}
     - {r: 0, g: 0, b: 0, a: 0}
     tex: {fileID: 0}
-    enabled: 1
+    enabled: 0
     opacity: 1
     mode: 0
     locked: 0
@@ -4138,7 +4138,7 @@ MonoBehaviour:
     - {r: 0, g: 0, b: 0, a: 0}
     - {r: 0, g: 0, b: 0, a: 0}
     tex: {fileID: 0}
-    enabled: 1
+    enabled: 0
     opacity: 1
     mode: 0
     locked: 0
@@ -4148,6 +4148,6 @@ MonoBehaviour:
   gridOffsetY: 0
   gridOffsetX: 0
   selectedColor: {r: 1, g: 0, b: 0, a: 1}
-  tool: 0
+  tool: 1
   gridBGIndex: 0
   dirty: 1

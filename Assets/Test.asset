@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b5d402f598c2042759f69fa56f14b05b, type: 3}
-  m_Name: split template
+  m_Name: Test
   m_EditorClassIdentifier: 
   width: 32
   height: 32
@@ -1051,7 +1051,7 @@ MonoBehaviour:
   _gridSpacing: 10
   gridOffsetY: 0
   gridOffsetX: 0
-  selectedColor: {r: 0.41509432, g: 0.107689574, b: 0.107689574, a: 1}
+  selectedColor: {r: 1, g: 0, b: 0, a: 1}
   tool: 0
-  gridBGIndex: 2
+  gridBGIndex: 0
   dirty: 1

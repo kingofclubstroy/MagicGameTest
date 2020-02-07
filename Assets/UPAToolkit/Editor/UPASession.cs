@@ -5,6 +5,7 @@
 using UnityEngine;
 using UnityEditor;
 using System.IO;
+using System.Collections.Generic;
 
 public class UPASession {
 
@@ -49,6 +50,8 @@ public class UPASession {
 		if (path.Length != 0) {
 			// Check if the loaded file is an Asset or Image
 			if (path.EndsWith(".asset")) {
+
+                Debug.Log("is asset");
 				path = FileUtil.GetProjectRelativePath(path);
 				UPAImage img = AssetDatabase.LoadAssetAtPath(path, typeof(UPAImage)) as UPAImage;
 				EditorPrefs.SetString ("currentImgPath", path);
@@ -56,6 +59,7 @@ public class UPASession {
 			}
 			else
 			{
+                
 				// Load Texture from file
 				Texture2D tex = LoadImageFromFile(path);
 				// Create a new Image with textures dimensions
@@ -76,6 +80,8 @@ public class UPASession {
 	}
 
 	public static Texture2D LoadImageFromFile (string path) {
+
+        Debug.Log("LoadImageFromFile:");
 		Texture2D tex = null;
 		byte[] fileData;
 		if (File.Exists(path))     {
@@ -100,16 +106,157 @@ public class UPASession {
 		return img;
 	}
 
-	public static UPAImage OpenImageAtPath (string path) {
+    public static UPAImage OpenFolder(bool isTemplate)
+    {
+        string path = EditorUtility.OpenFolderPanel(
+            "Choose Template Folder",
+            "",
+            "");
+
+
+        Debug.Log("path running");
+        Debug.Log(path);
+
+        if (path.Length != 0)
+        {
+            
+            //TODO: Want to filter out asset later
+           
+
+            return OpenImagesFromFolder(path, isTemplate);
+                
+            
+        }
+
+        return null;
+    }
+
+    public static UPAImage OpenImagesFromFolder(string path, bool isTemplate)
+    {
+        if (path.Length != 0)
+        {
+
+            DirectoryInfo dir = new DirectoryInfo(path);
+            FileInfo[] info = dir.GetFiles("*.png");
+
+
+            return loadImageFromFileInfo(info, isTemplate);
+
+            //TODO: need to change this as i will be juggling lots of images for animations and templates
+            //EditorPrefs.SetString("currentImgPath", path);
+            //return img;
+        }
+
+        return null;
+
+        
+    }
+
+    public static List<UPAImage> OpenAnimationsFromFolder(bool isTemplate)
+    {
+
+        string path = EditorUtility.OpenFolderPanel(
+            "Choose Template Folder",
+            "",
+            "");
+
+        if (path.Length != 0)
+        {
+
+            List<UPAImage> animation = new List<UPAImage>();
+
+            DirectoryInfo dir = new DirectoryInfo(path);
+            FileInfo[] info = dir.GetFiles("*.png");
+
+            List<FileInfo[]> frames = sortFrames(info);
+
+
+            foreach(FileInfo[] frame in frames)
+            {
+
+                animation.Add(loadImageFromFileInfo(frame, isTemplate));
+
+            }
+
+            return animation;
+            
+        }
+
+        return null;
+
+    }
+
+    static UPAImage customCreateImage(int w, int h, bool isTemplate)
+    {
+
+        //TODO: want to pass in the same path that the image was pulled from, so you don't have to navigate back
+        string path = EditorUtility.SaveFilePanel("Create UPAImage",
+                                                    "Assets/", "Pixel Image.asset", "asset");
+        if (path == "")
+        {
+            return null;
+        }
+
+        path = FileUtil.GetProjectRelativePath(path);
+
+        UPAImage img = ScriptableObject.CreateInstance<UPAImage>();
+        AssetDatabase.CreateAsset(img, path);
+
+        AssetDatabase.SaveAssets();
+
+        img.Init(w, h);
+        EditorUtility.SetDirty(img);
+        
+        
+
+        if (isTemplate)
+        {
+
+            EditorPrefs.SetString("templateImgPath", AssetDatabase.GetAssetPath(img));
+            UPAEditorWindow.TemplateImage = img;
+
+        } else
+        {
+            EditorPrefs.SetString("currentImgPath", AssetDatabase.GetAssetPath(img));
+            UPAEditorWindow.CurrentImg = img;
+        }
+
+        if (UPAEditorWindow.window != null)
+            UPAEditorWindow.window.Repaint();
+        else
+            UPAEditorWindow.Init();
+
+        img.gridSpacing = 10 - Mathf.Abs(img.width - img.height) / 100f;
+        return img;
+        
+    }
+
+    
+
+	public static UPAImage OpenImageAtPath (string path, bool isTemplate) {
+
+        string variableName;
+        if(isTemplate)
+        {
+            variableName = "templateImgPath";
+        } else
+        {
+            variableName = "currentImgPath";
+        }
+
+
 		if (path.Length != 0) {
 			UPAImage img = AssetDatabase.LoadAssetAtPath(path, typeof(UPAImage)) as UPAImage;
 
+            
+
 			if (img == null) {
-				EditorPrefs.SetString ("currentImgPath", "");
+				EditorPrefs.SetString (variableName, "");
 				return null;
 			}
 
-			EditorPrefs.SetString ("currentImgPath", path);
+            //TODO: need to change this as i will be juggling lots of images for animations and templates
+			EditorPrefs.SetString (variableName, path);
 			return img;
 		}
 		
@@ -175,4 +322,143 @@ public class UPASession {
 		
 		return true;
 	}
+
+    static List<FileInfo[]> sortFrames(FileInfo[] info)
+    {
+
+        List<FileInfo[]> finalAnimation = new List<FileInfo[]>();
+
+        List<FileInfo> tempList = new List<FileInfo>();
+
+        foreach(FileInfo f in info)
+        {
+            tempList.Add(f);
+        }
+
+        List<FileInfo> currentFrame = new List<FileInfo>();
+
+        int frameIndex = 1;
+
+        
+        while (tempList.Count > 0)
+        {
+            bool found = false;
+
+            // Go through all file paths and grab the paths that belong to the same frame
+            foreach(FileInfo f in tempList)
+            {
+                string[] split = f.ToString().Split('-');
+                if(int.Parse(split[0]) == frameIndex)
+                {
+                    found = true;
+                    currentFrame.Add(f);
+                    tempList.Remove(f);
+
+                    if(tempList.Count == 0)
+                    {
+                        found = false;
+                    }
+                }
+            }
+
+            if (found == false)
+            {
+                //increment frame index so the next loop will be looking for the next frame
+                frameIndex += 1;
+
+                //Now we have to sort by layer
+                List<FileInfo> finalFrame = new List<FileInfo>();
+
+                int layer = 1;
+
+                while (currentFrame.Count > 0)
+                {
+
+                    found = false;
+
+                    // Go through all files and find the one that belongs to the correct layer
+                    foreach (FileInfo f in currentFrame)
+                    {
+                        string[] split = f.ToString().Split('-');
+                        if (int.Parse(split[1]) == layer)
+                        {
+                            found = true;
+                            finalFrame.Add(f);
+                            currentFrame.Remove(f);
+
+                            layer += 1;
+
+                            break;
+                        }
+
+
+                    }
+
+                    if (found == false)
+                    {
+                        //Didnt find anything for that layer, so lets just increase by 1
+                        layer += 1;
+                    }
+
+
+                }
+
+                //now we have a final sorted frame, but need to convert to an array for some reason? TODO: fix this if proformance needs to be improved
+
+                FileInfo[] frame = finalFrame.ToArray();
+
+                //Add the frame to the final list of all frames for that animation
+                finalAnimation.Add(frame);
+            }
+
+              
+        }
+
+        return finalAnimation;
+
+    }
+
+    static UPAImage loadImageFromFileInfo(FileInfo[] info, bool isTemplate)
+    {
+        Texture2D[] textures = new Texture2D[info.Length];
+
+        for (int i = 0; i < info.Length; i++)
+        {
+            FileInfo f = info[i];
+            Debug.Log(f);
+            textures[i] = LoadImageFromFile(f.ToString());
+
+        }
+
+        Debug.Log("textrue size = " + textures.Length);
+
+        Texture2D tex0 = textures[0];
+
+        UPAImage img = customCreateImage(tex0.width, tex0.height, isTemplate);
+
+        for (int layerNum = 0; layerNum < textures.Length; layerNum++)
+        {
+
+            Texture2D tex = textures[layerNum];
+
+            if (layerNum != 0)
+            {
+                img.AddLayer();
+            }
+            // Set pixel colors
+            img.layers[layerNum].tex = tex;
+            img.layers[layerNum].tex.filterMode = FilterMode.Point;
+            img.layers[layerNum].tex.Apply();
+            for (int x = 0; x < img.width; x++)
+            {
+                for (int y = 0; y < img.height; y++)
+                {
+                    img.layers[layerNum].map[x + y * tex.width] = tex.GetPixel(x, tex.height - 1 - y);
+                }
+            }
+        }
+
+
+        return img;
+    }
 }

@@ -49,7 +49,10 @@ public class UPAImage : ScriptableObject {
 		get {
 			return Mathf.Clamp(_selectedLayer, 0, layerCount);
 		}
-		set { _selectedLayer = value; }
+		set {
+            layerChanged(_selectedLayer, value);
+            _selectedLayer = value;
+        }
 	}
 	
 	
@@ -76,7 +79,7 @@ public class UPAImage : ScriptableObject {
 
     Color currentPixelColor;
 
-    Vector2 currentPixelPosition;
+    public Vector2 currentPixelPosition;
 
     #endregion
 
@@ -353,8 +356,6 @@ public class UPAImage : ScriptableObject {
     {
 
         currentPixelPosition = currentTemplate[pixelIndex];
-        
-
 
         currentPixelColor = layers[0].GetPixel((int) currentPixelPosition.x, (int) currentPixelPosition.y);
 
@@ -363,24 +364,37 @@ public class UPAImage : ScriptableObject {
 
     }
 
-    public void focusNextPixel()
+    public void focusPixel(int direction)
     {
-        if(pixelIndex + 1 < currentTemplate.Count)
+        if(pixelIndex + direction < currentTemplate.Count && pixelIndex + direction >= 0)
         {
             //there is another pixel in this object
-            pixelIndex += 1;
+            pixelIndex += direction;
+
         } else
         {
-            if(templateIndex + 1 < templateObjects.Count)
+
+            //there is another object, so lets set the current object and reset the pixel index
+            templateIndex += direction;
+
+            if(templateIndex >= templateObjects.Count)
             {
-                //there is another object, so lets set the current object and reset the pixel index
-                templateIndex += 1;
-                currentTemplate = templateObjects[templateIndex];
-                pixelIndex = 0;
-            } else
+                templateIndex = 0;
+            } else if(templateIndex < 0)
             {
-                return;
+                templateIndex = templateObjects.Count - 1;
             }
+            currentTemplate = templateObjects[templateIndex];
+
+            if (direction < 0)
+            {
+                pixelIndex = currentTemplate.Count - 1;
+            }
+            else
+            {
+                pixelIndex = 0;
+            }
+            
         }
 
         focusPixel();
@@ -502,9 +516,58 @@ public class UPAImage : ScriptableObject {
 
         }
 
+
         return finalObjects;
 
     }
+
+    
+    public void changeLayer(int direction)
+    {
+
+        int tempLayer = (selectedLayer + direction) % (layerCount);
+        if(tempLayer < 0)
+        {
+            tempLayer = layerCount - 1;
+        }
+
+
+
+        selectedLayer = tempLayer;
+
+        Debug.Log(selectedLayer);
+        dirty = true;
+
+    }
+
+    void layerChanged(int previousLayer, int newLayer)
+    {
+        layers[previousLayer].setAlpha(true);
+        layers[newLayer].setAlpha(false);
+    }
+
+    public void setAllNormalAlpha()
+    {
+        foreach(UPALayer layer in layers)
+        {
+            layer.setAlpha(false);
+        }
+    }
+
+    public void initilizeAlphas()
+    {
+
+        for(int i = 0; i < layerCount; i++)
+        {
+            if(i != selectedLayer)
+            {
+                layers[i].setAlpha(true);
+            }
+            
+        }
+
+    }
+
 
 
 
