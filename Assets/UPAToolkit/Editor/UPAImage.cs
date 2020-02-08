@@ -50,6 +50,7 @@ public class UPAImage : ScriptableObject {
 			return Mathf.Clamp(_selectedLayer, 0, layerCount);
 		}
 		set {
+
             layerChanged(_selectedLayer, value);
             _selectedLayer = value;
         }
@@ -185,7 +186,7 @@ public class UPAImage : ScriptableObject {
             pixelSize = 30;
             divisor = 4f;
 
-            xPos = 0;
+            xPos = 130;
             yPos = 60;
 
             ratio = (float)height / (float)width;

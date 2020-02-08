@@ -6,6 +6,7 @@
 
 using UnityEngine;
 using UnityEditor;
+using System.Collections.Generic;
 
 public class UPAEditorWindow : EditorWindow {
 	
@@ -14,6 +15,10 @@ public class UPAEditorWindow : EditorWindow {
 	public static UPAImage CurrentImg;		// The img currently being edited
 
     public static UPAImage TemplateImage; // The template image in the corner
+
+    public static List<UPAImage> animation; // The list of frames in an animation
+
+    public static int animationIndex = 0;
 	
 	
 	// HELPFUL GETTERS AND SETTERS
@@ -65,7 +70,7 @@ public class UPAEditorWindow : EditorWindow {
 		window.titleContent = new GUIContent ("Pixel Art Editor");
 		#endif
 		
-		string path = EditorPrefs.GetString ("currentImgPath", "");
+		string path = EditorPrefs.GetString ("currentAnimationPath", "");
 
         Debug.Log(path);
        
@@ -77,9 +82,10 @@ public class UPAEditorWindow : EditorWindow {
         if (path.Length != 0)
         {
             Debug.Log("opening image at path");
-            CurrentImg = UPASession.OpenImageAtPath(path, false);
+            animation = UPASession.OpenAnimationsFromFolder(false, path);
             CurrentImg.initilizeAlphas();
-            Debug.Log(CurrentImg.currentPixelPosition);
+            animationIndex = 0;
+           
         }
 
         if (templatePath.Length != 0)
@@ -103,35 +109,40 @@ public class UPAEditorWindow : EditorWindow {
 
            
 			
-			string curImgPath = EditorPrefs.GetString ("currentImgPath", "");
+			string curImgPath = EditorPrefs.GetString ("currentAnimationPath", "");
             string templateImgPath = EditorPrefs.GetString("templateImgPath", "");
 
             
 
 
             if (curImgPath.Length != 0) {
-				CurrentImg = UPASession.OpenImageAtPath (curImgPath, false);
-				
-			}
+
+                animation = UPASession.OpenAnimationsFromFolder(false, curImgPath);
+                CurrentImg.initilizeAlphas();
+                animationIndex = 0;
+
+            }
 
             if(templateImgPath.Length != 0)
             {
                 TemplateImage = UPASession.OpenImageAtPath(templateImgPath, true);
-                
+                TemplateImage.initilizeAlphas();
+                TemplateImage.loopThroughImage();
+
             }
 
             if (CurrentImg == null)
             {
 
-                if (GUI.Button(new Rect(window.position.width / 2f - 140, window.position.height / 2f - 25, 130, 50), "New Frame"))
+                if (GUI.Button(new Rect(window.position.width / 2f - 140, window.position.height / 2f - 25, 130, 50), "Load Animation"))
                 {
-                    UPAImageCreationWindow.Init();
+                    //UPASession.OpenImage();
+                    animation = UPASession.OpenAnimationsFromFolder(false);
+                    CurrentImg.initilizeAlphas();
+                    animationIndex = 0;
                 }
-                if (GUI.Button(new Rect(window.position.width / 2f + 10, window.position.height / 2f - 25, 130, 50), "Open Frame"))
-                {
-                    CurrentImg = UPASession.OpenImage();
-                    return;
-                }
+
+                
 
             } else if (TemplateImage == null)
             {
@@ -144,6 +155,7 @@ public class UPAEditorWindow : EditorWindow {
                 if (GUI.Button(new Rect(window.position.width / 2f + 10, window.position.height / 2f - 25, 130, 50), "Open Template"))
                 {
                     TemplateImage = UPASession.OpenFolder(true);
+                    TemplateImage.initilizeAlphas();
                     TemplateImage.loopThroughImage();
                     return;
                 }
@@ -221,15 +233,22 @@ public class UPAEditorWindow : EditorWindow {
 					tool = UPATool.ColorPicker;
 				}
 				
-				if (e.keyCode == KeyCode.UpArrow) {
-					gridSpacing *= 1.2f;
+				if (e.keyCode == KeyCode.UpArrow) { 
+                    CurrentImg.layers[0].setAlpha(true);
 				}
 				if (e.keyCode == KeyCode.DownArrow) {
-					gridSpacing *= 0.8f;
-					gridSpacing -= 2;
-				}
-				
-			}
+                    CurrentImg.layers[0].setAlpha(false);
+                }
+                if (e.keyCode == KeyCode.LeftArrow)
+                {
+                    changeFrame(-1);
+                }
+                if (e.keyCode == KeyCode.RightArrow)
+                {
+                    changeFrame(1);
+                }
+
+            }
 			
 			if (e.control) {
 				if (lastTool == UPATool.Empty) {
@@ -262,14 +281,59 @@ public class UPAEditorWindow : EditorWindow {
         UPADrawer.DrawToolbar (window.position, mousePos);
 		
 		UPADrawer.DrawLayerPanel ( window.position );
+
+        UPADrawer.DrawFramePanel(window.position);
 		
 		e.Use();	// Release event handler
 	}
 
-    private void OnDestroy()
+    private void OnDisable()
     {
-       
+        Debug.Log("im disabled");
         TemplateImage.setBackColor();
         TemplateImage.setAllNormalAlpha();
+
+
+
+        foreach (UPAImage image in animation)
+        {
+            image.setAllNormalAlpha();
+        }
     }
+
+    private void OnEnable()
+    {
+        Debug.Log("im enabled");
+    }
+
+    void changeFrame(int direction)
+    {
+
+        if(animation == null || animation.Count == 0)
+        {
+            return;
+        }
+
+        if(animationIndex + direction < 0)
+        {
+            animationIndex = animation.Count - 1;
+
+        } else if (animationIndex + direction >= animation.Count)
+        {
+            animationIndex = 0;
+
+        } else
+        {
+            animationIndex += direction;
+        }
+
+        int selectedLayer = CurrentImg.selectedLayer;
+
+        CurrentImg = animation[animationIndex];
+
+        CurrentImg.selectedLayer = selectedLayer;
+
+        
+
+    } 
 }

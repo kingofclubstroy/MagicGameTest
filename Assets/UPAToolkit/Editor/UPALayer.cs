@@ -91,6 +91,8 @@ public class UPALayer {
 	}
 	
 	public void LoadTexFromMap () {
+
+        Debug.Log("loading texture from map");
 		tex = new Texture2D (parentImg.width, parentImg.height);
 
 		for (int x = 0; x < parentImg.width; x++) {
@@ -119,15 +121,16 @@ public class UPALayer {
             newAlpha = 1f;
         }
 
-        for(int y = 0; y < tex.height; y++)
+        for(int y = 0; y < parentImg.height; y++)
         {
-            for(int x = 0; x < tex.width; x++)
+            for(int x = 0; x < parentImg.width; x++)
             {
 
                 Color color = GetPixel(x, y);
 
-                if(color != Color.clear)
+                if (color.a > 0)
                 {
+                    
                     color.a = newAlpha;
                     SetPixel(x, y, color);
                 }
@@ -136,5 +139,11 @@ public class UPALayer {
         }
 
     }
+
+    
+
+
+
+
 
 }

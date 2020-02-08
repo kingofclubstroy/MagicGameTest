@@ -230,12 +230,16 @@ public class UPADrawer : MonoBehaviour {
 
         if (GUI.Button(new Rect(1175, 4, 100, 30), "Load Animations"))
         {
-            List<UPAImage> animation = UPASession.OpenAnimationsFromFolder(false);
-            Debug.Log("fetched animations!!!");
-            Debug.Log(animation.Count);
+            UPAEditorWindow.animation = UPASession.OpenAnimationsFromFolder(false);
+
+
+            
         }
-            Vector2 pixelCoordinate = CurrentImg.GetReadablePixelCoordinate (mousePos);
-		GUI.Label (new Rect (880, 11, 100, 30), "(" + (int)pixelCoordinate.x + "," + (int)pixelCoordinate.y + ")", style);
+
+        Vector2 pixelCoordinate = CurrentImg.GetReadablePixelCoordinate (mousePos);
+        //CurrentImg.GetPixelByPos(pixelCoordinate, CurrentImg.selectedLayer);
+        GUI.Label(new Rect(1200, 11, 200, 30), "(" + CurrentImg.GetPixelByPos(mousePos, CurrentImg.selectedLayer) + ")", style);
+        //GUI.Label (new Rect (880, 11, 100, 30), "(" + (int)pixelCoordinate.x + "," + (int)pixelCoordinate.y + ")", style);
 
 		if (CurrentImg.tool == UPATool.ColorPicker) {
 			style.fontStyle = FontStyle.Bold;
@@ -254,9 +258,6 @@ public class UPADrawer : MonoBehaviour {
 	public static void DrawLayerPanel (Rect window) {
 		
 		style.imagePosition = ImagePosition.ImageAbove;
-		
-		int from = 0;
-		int to = 0;
 
 		if (CurrentImg == null)
 			return;
@@ -280,40 +281,11 @@ public class UPADrawer : MonoBehaviour {
 			if (tempLayer.enabled != layerEnabled)
 				tempLayer.parentImg.dirty = true;
 
-			if (removeLayerIcon == null)
-				removeLayerIcon = (Texture2D)Resources.Load ("UI/CrossWhite");
-
-			if (tempLayer.locked) {
-				if (GUI.Button (new Rect (80, window.height - 43 - i * 36, 15, 15), Resources.Load("UI/locked") as Texture2D,style)) {
-					tempLayer.locked = false;
-				}
-			} else {
-				if (GUI.Button (new Rect (80, window.height - 43 - i * 36, 15, 15), Resources.Load("UI/unlocked") as Texture2D,style)) {
-					tempLayer.locked = true;
-				}
-			}
-
 			
-			if (i + 1 < CurrentImg.layers.Count) {
-				if (GUI.Button (new Rect (97, window.height - 60  - i * 36, 22, 16), "+")) {
-					from = i;
-					to = i + 1;
-				}
-			}
-			
-			if (i > 0) {
-				if (GUI.Button (new Rect (97, window.height - 44 - i * 36, 22, 16), "-")) {
-					from = i;
-					to = i - 1;
-				}
-			}
-
 			CurrentImg.layers[i] = tempLayer;
 		}
 
-		if (from != 0 || to != 0) {
-			CurrentImg.ChangeLayerPosition (from, to);
-		}
+		
 
 		GUIStyle smallButon = new GUIStyle();
 		smallButon.fontSize = 8;
@@ -420,5 +392,36 @@ public class UPADrawer : MonoBehaviour {
 
 		//CurrentImg.selectedLayer = GUI.Toolbar (new Rect (4, window.height - 200, 90, 30), CurrentImg.selectedLayer, layerNames);
 	}
-	
+
+    public static void DrawFramePanel(Rect window)
+    {
+
+        style.imagePosition = ImagePosition.ImageAbove;
+
+        if (CurrentImg == null || UPAEditorWindow.animation == null)
+            return;
+
+        for (int i = 0; i < UPAEditorWindow.animation.Count; i++)
+        {
+            GUI.backgroundColor = Color.white;
+            if (i == UPAEditorWindow.animationIndex)
+            {
+                GUI.backgroundColor = new Color(0.7f, 0.7f, 0.7f);
+            }
+
+            UPALayer tempLayer = CurrentImg.layers[i];
+            if (GUI.Button(new Rect(820 + i * 70, window.height - 45, 65, 33), ""))
+            {
+                UPAEditorWindow.animationIndex = i;
+                CurrentImg = UPAEditorWindow.animation[i];
+            }
+
+            GUI.backgroundColor = Color.white;
+            GUI.Label(new Rect(830 + i * 70, window.height - 40, 90, 30), "" + (i + 1));
+        }
+
+
+
+    }
+
 }
