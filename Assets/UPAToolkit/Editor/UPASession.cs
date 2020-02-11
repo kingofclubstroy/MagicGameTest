@@ -52,6 +52,7 @@ public class UPASession {
 			if (path.EndsWith(".asset")) {
 
                 Debug.Log("is asset");
+                Debug.Log(path);
 				path = FileUtil.GetProjectRelativePath(path);
 				UPAImage img = AssetDatabase.LoadAssetAtPath(path, typeof(UPAImage)) as UPAImage;
 				EditorPrefs.SetString ("currentImgPath", path);
@@ -81,7 +82,7 @@ public class UPASession {
 
 	public static Texture2D LoadImageFromFile (string path) {
 
-        Debug.Log("LoadImageFromFile:");
+        
 		Texture2D tex = null;
 		byte[] fileData;
 		if (File.Exists(path))     {
@@ -152,13 +153,18 @@ public class UPASession {
         
     }
 
-    public static List<UPAImage> OpenAnimationsFromFolder(bool isTemplate)
+    public static List<UPAImage> OpenAnimationsFromFolder(bool isTemplate, string path = "")
     {
 
-        string path = EditorUtility.OpenFolderPanel(
-            "Choose Template Folder",
-            "",
-            "");
+        if (path.Length == 0)
+        {
+
+            path = EditorUtility.OpenFolderPanel(
+                "Choose Animation Folder",
+                "Assets/Sprites",
+                "");
+
+        }
 
         if (path.Length != 0)
         {
@@ -166,23 +172,105 @@ public class UPASession {
             List<UPAImage> animation = new List<UPAImage>();
 
             DirectoryInfo dir = new DirectoryInfo(path);
-            FileInfo[] info = dir.GetFiles("*.png");
+            FileInfo[] info = dir.GetFiles("*.asset");
+            Debug.Log("length = " + info.Length);
+           
 
-            List<FileInfo[]> frames = sortFrames(info);
 
-
-            foreach(FileInfo[] frame in frames)
+            if (info.Length > 0)
             {
+                Debug.Log("info length greator than 0");
 
-                animation.Add(loadImageFromFileInfo(frame, isTemplate));
+                Debug.Log(path);
+               
+                //We have some asset files, so lets load those in, instead of creating new ones
+                //TODO: i dont know if these frames are loaded in order, may need to sort
+                for (int i = 0; i < info.Length; i++ )
+                {
 
+                    string newPath = path + "\\" + (i + 1) + ".asset";
+                    newPath = FileUtil.GetProjectRelativePath(newPath);
+                    
+                    UPAImage frameImage = OpenFrameAtPath(newPath);
+                    frameImage.initilizeAlphas();
+                    animation.Add(frameImage);
+                }
             }
+            else
+            {
+                info = dir.GetFiles("*.png");
+
+                List<FileInfo[]> frames = sortFrames(info);
+
+                int frameNumber = 1;
+
+
+                foreach (FileInfo[] frame in frames)
+                {
+
+                    string newPath = path + "\\" + frameNumber + ".asset";
+
+                    UPAImage i = loadImageFromFileInfo(frame, isTemplate, newPath);
+                    i.initilizeAlphas();
+                    animation.Add(i);
+
+                    frameNumber += 1;
+
+                }
+            }
+
+           
+
+            UPAImage img = animation[0];
+
+            Debug.Log(img.GetType());
+            
+            EditorPrefs.SetString("currentAnimationPath", path);
+            UPAEditorWindow.CurrentImg = img;
+            
+
+            if (UPAEditorWindow.window != null)
+                UPAEditorWindow.window.Repaint();
+            else
+                UPAEditorWindow.Init();
+
+            
 
             return animation;
             
         }
 
         return null;
+
+    }
+
+    static UPAImage CreateAnimationFrame(int w, int h, string path)
+    {
+
+        //TODO: want to pass in the same path that the image was pulled from, so you don't have to navigate back
+        
+        if (path == "")
+        {
+            return null;
+        }
+
+        Debug.Log("creating custom image");
+        Debug.Log(path);
+
+        path = FileUtil.GetProjectRelativePath(path);
+        Debug.Log(path);
+
+        UPAImage img = ScriptableObject.CreateInstance<UPAImage>();
+        AssetDatabase.CreateAsset(img, path);
+
+        AssetDatabase.SaveAssets();
+
+        img.Init(w, h);
+        EditorUtility.SetDirty(img);
+
+
+        img.gridSpacing = 10 - Mathf.Abs(img.width - img.height) / 100f;
+        return img;
 
     }
 
@@ -197,7 +285,11 @@ public class UPASession {
             return null;
         }
 
+        Debug.Log("creating custom image");
+        Debug.Log(path);
+
         path = FileUtil.GetProjectRelativePath(path);
+        Debug.Log(path);
 
         UPAImage img = ScriptableObject.CreateInstance<UPAImage>();
         AssetDatabase.CreateAsset(img, path);
@@ -231,9 +323,10 @@ public class UPASession {
         
     }
 
-    
+   
 
-	public static UPAImage OpenImageAtPath (string path, bool isTemplate) {
+
+    public static UPAImage OpenImageAtPath (string path, bool isTemplate) {
 
         string variableName;
         if(isTemplate)
@@ -345,9 +438,12 @@ public class UPASession {
             bool found = false;
 
             // Go through all file paths and grab the paths that belong to the same frame
-            foreach(FileInfo f in tempList)
+            for(int x = tempList.Count - 1; x >= 0; x--)
             {
-                string[] split = f.ToString().Split('-');
+                FileInfo f = tempList[x];
+                string[] split = splitPath(f.ToString());
+
+               
                 if(int.Parse(split[0]) == frameIndex)
                 {
                     found = true;
@@ -377,9 +473,11 @@ public class UPASession {
                     found = false;
 
                     // Go through all files and find the one that belongs to the correct layer
-                    foreach (FileInfo f in currentFrame)
+                    for (int i = currentFrame.Count - 1; i >= 0; i--)
                     {
-                        string[] split = f.ToString().Split('-');
+                        FileInfo f = currentFrame[i];
+
+                        string[] split = splitPath(f.ToString());
                         if (int.Parse(split[1]) == layer)
                         {
                             found = true;
@@ -418,23 +516,31 @@ public class UPASession {
 
     }
 
-    static UPAImage loadImageFromFileInfo(FileInfo[] info, bool isTemplate)
+    static UPAImage loadImageFromFileInfo(FileInfo[] info, bool isTemplate, string path = "")
     {
         Texture2D[] textures = new Texture2D[info.Length];
 
         for (int i = 0; i < info.Length; i++)
         {
             FileInfo f = info[i];
-            Debug.Log(f);
+            
             textures[i] = LoadImageFromFile(f.ToString());
 
         }
 
-        Debug.Log("textrue size = " + textures.Length);
-
         Texture2D tex0 = textures[0];
+        UPAImage img;
 
-        UPAImage img = customCreateImage(tex0.width, tex0.height, isTemplate);
+        if (path.Length != 0)
+        {
+            //TODO: i set some things that were set when an image was created after all animations run,
+            //then the layers are added lower down... is this a problem or we good?
+            img = CreateAnimationFrame(tex0.width, tex0.height, path);
+        }
+        else
+        {
+            img = customCreateImage(tex0.width, tex0.height, isTemplate);
+        }
 
         for (int layerNum = 0; layerNum < textures.Length; layerNum++)
         {
@@ -449,6 +555,9 @@ public class UPASession {
             img.layers[layerNum].tex = tex;
             img.layers[layerNum].tex.filterMode = FilterMode.Point;
             img.layers[layerNum].tex.Apply();
+
+            img.layers[layerNum].name = splitPath(info[layerNum].ToString())[2].Split('.')[0];
+
             for (int x = 0; x < img.width; x++)
             {
                 for (int y = 0; y < img.height; y++)
@@ -460,5 +569,26 @@ public class UPASession {
 
 
         return img;
+    }
+
+    static string[] splitPath(string path)
+    {
+        string[] tempSplit = path.Split('\\');
+        return tempSplit[tempSplit.Length -1].Split('-');
+    }
+
+    public static UPAImage OpenFrameAtPath(string path)
+    {
+
+
+        if (path.Length != 0)
+        {
+            UPAImage img = AssetDatabase.LoadAssetAtPath(path, typeof(UPAImage)) as UPAImage;
+
+
+            return img;
+        }
+
+        return null;
     }
 }
