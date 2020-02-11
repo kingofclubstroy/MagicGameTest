@@ -296,7 +296,7 @@ public class UPAImage : ScriptableObject {
             for (int i = 0; i < width; i++)
             {
 
-                Color color = layers[0].GetPixel(i, j);
+                Color color = layers[selectedLayer].GetPixel(i, j);
 
                 if (color != Color.clear)
                 {
@@ -358,9 +358,11 @@ public class UPAImage : ScriptableObject {
 
         currentPixelPosition = currentTemplate[pixelIndex];
 
-        currentPixelColor = layers[0].GetPixel((int) currentPixelPosition.x, (int) currentPixelPosition.y);
+        currentPixelColor = layers[selectedLayer].GetPixel((int) currentPixelPosition.x, (int) currentPixelPosition.y);
 
-        layers[0].SetPixel((int)currentPixelPosition.x, (int)currentPixelPosition.y - height, Color.cyan);
+        layers[selectedLayer].SetPixel((int)currentPixelPosition.x, (int)currentPixelPosition.y - height, Color.cyan);
+
+        UPAEditorWindow.CurrentImg.layers[UPAEditorWindow.CurrentImg.selectedLayer].colorMappedPixels(currentPixelPosition);
 
 
     }
@@ -407,7 +409,7 @@ public class UPAImage : ScriptableObject {
 
         if (currentPixelPosition != new Vector2(-1, -1))
         {
-            layers[0].SetPixel((int)currentPixelPosition.x, (int)currentPixelPosition.y - height, currentPixelColor);
+            layers[selectedLayer].SetPixel((int)currentPixelPosition.x, (int)currentPixelPosition.y - height, currentPixelColor);
         }
 
 
@@ -432,7 +434,7 @@ public class UPAImage : ScriptableObject {
             return key;
         }
 
-        Color color = layers[0].GetPixel((int)pos.x, (int)pos.y);
+        Color color = layers[selectedLayer].GetPixel((int)pos.x, (int)pos.y);
 
         if (color == Color.clear)
         {
@@ -523,7 +525,7 @@ public class UPAImage : ScriptableObject {
     }
 
     
-    public void changeLayer(int direction)
+    public string changeLayer(int direction)
     {
 
         int tempLayer = (selectedLayer + direction) % (layerCount);
@@ -532,19 +534,44 @@ public class UPAImage : ScriptableObject {
             tempLayer = layerCount - 1;
         }
 
-
-
         selectedLayer = tempLayer;
+
+        //layers[selectedLayer].colorMappedPixels(UPAEditorWindow.TemplateImage.currentPixelPosition);
 
         Debug.Log(selectedLayer);
         dirty = true;
+
+        return layers[selectedLayer].name;
+
+    }
+
+    public void findLayer(string layerName)
+    {
+
+        for (int i = 0; i < layers.Count; i++)
+        {
+
+            if(layers[i].name == layerName)
+            {
+                setBackColor();
+                selectedLayer = i;
+                loopThroughImage();
+                dirty = true;
+                
+            }
+
+        }
 
     }
 
     void layerChanged(int previousLayer, int newLayer)
     {
+        layers[previousLayer].setMappedColorsBack();
         layers[previousLayer].setAlpha(true);
+        
         layers[newLayer].setAlpha(false);
+        layers[newLayer].colorMappedPixels(UPAEditorWindow.TemplateImage.currentPixelPosition);
+
     }
 
     public void setAllNormalAlpha()
@@ -567,6 +594,19 @@ public class UPAImage : ScriptableObject {
             
         }
 
+    }
+
+    public void mapPixelByPos(Vector2 pos, Vector2 templatePos)
+    {
+        Vector2 pixelCoordinate = GetPixelCoordinate(pos);
+
+        if (pixelCoordinate == new Vector2(-1, -1))
+            return;
+
+        layers[selectedLayer].mapPixel(templatePos, pixelCoordinate);
+
+        EditorUtility.SetDirty(this);
+        dirty = true;
     }
 
 

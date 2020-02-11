@@ -149,26 +149,22 @@ public class UPADrawer : MonoBehaviour {
 		//bgColor = EditorGUI.ColorField (new Rect (400, 4, 70, 25), bgColor);
 		
 		GUI.backgroundColor = Color.white;
-		if (CurrentImg.tool == UPATool.PaintBrush)
+		if (UPAEditorWindow.selectedTool == UPATool.PaintBrush)
 			GUI.backgroundColor = new Color (0.7f, 0.7f, 0.7f);
 		if (GUI.Button (new Rect (320, 4, 60, 30), "Paint")) {
-			CurrentImg.tool = UPATool.PaintBrush;
+            UPAEditorWindow.selectedTool = UPATool.PaintBrush;
 		}
 		GUI.backgroundColor = Color.white;
-		if (CurrentImg.tool == UPATool.BoxBrush)
+		if (UPAEditorWindow.selectedTool == UPATool.Map)
 			GUI.backgroundColor = new Color (0.7f, 0.7f, 0.7f);
-		if (GUI.Button (new Rect (450, 4, 60, 30), "Box Fill")) {
-			EditorUtility.DisplayDialog(
-				"In Development",
-				"This feature is currently being developed.",
-				"Get it done please");
-			//tool = UPATool.BoxBrush;
+		if (GUI.Button (new Rect (450, 4, 60, 30), "Map")) {
+            UPAEditorWindow.selectedTool = UPATool.Map;
 		}
 		GUI.backgroundColor = Color.white;
-		if (CurrentImg.tool == UPATool.Eraser)
+		if (UPAEditorWindow.selectedTool == UPATool.Eraser)
 			GUI.backgroundColor = new Color (0.7f, 0.7f, 0.7f);
 		if (GUI.Button (new Rect (385, 4, 60, 30), "Erase")) {
-			CurrentImg.tool = UPATool.Eraser;
+            UPAEditorWindow.selectedTool = UPATool.Eraser;
 		}
 		GUI.backgroundColor = Color.white;
 		

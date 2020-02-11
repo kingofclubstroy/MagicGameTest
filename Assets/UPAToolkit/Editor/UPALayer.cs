@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEditor;
+using System.Collections.Generic;
 
 [System.Serializable]
 public class UPALayer {
@@ -16,9 +17,19 @@ public class UPALayer {
 	public bool locked;
 	
 	public UPAImage parentImg;
-	
-	// Constructor
-	public UPALayer (UPAImage img) {
+
+    #region custom variables
+
+    VectorDictionary colorMapDictionary;
+
+
+    VectorColorDictionary originalColorDictionary;
+    
+
+    #endregion
+
+    // Constructor
+    public UPALayer (UPAImage img) {
 		name = "Layer " + (img.layers.Count + 1);
 		opacity = 1;
 		mode = BlendMode.NORMAL;
@@ -140,10 +151,101 @@ public class UPALayer {
 
     }
 
-    
+    public void mapPixel(Vector2 templatePixel, Vector2 layerPixel)
+    {
+
+        if (colorMapDictionary == null)
+        {
+            colorMapDictionary = new VectorDictionary();
+        }
+
+        if (originalColorDictionary == null)
+        {
+            originalColorDictionary = new VectorColorDictionary();
+        }
+
+        if(colorMapDictionary.ContainsValue(templatePixel)) {
+
+            Vector2 keyToSwap = Vector2.negativeInfinity;
+
+            //We know that this pixel is already mapped to something on this layer
+            //so lets go through and find which one it is
+            foreach (Vector2 key in colorMapDictionary.Keys)
+            {
+                if(colorMapDictionary[key] == templatePixel)
+                {
+                    if(key != layerPixel)
+                    {
+                        //the pixel we are mapping isn't the same as the already set pixel, so we shall replace these
+                        keyToSwap = key;
+
+                    } else
+                    {
+                        //We are mapping the same pixel, so lets just stop here
+                        return;
+                    }
+                }
+            }
+
+            if(keyToSwap != Vector2.negativeInfinity)
+            {
+                colorMapDictionary.Remove(keyToSwap);
+                SetPixel((int)keyToSwap.x, (int)keyToSwap.y, originalColorDictionary[keyToSwap]);
+
+                originalColorDictionary.Remove(keyToSwap);
+            }
+
+        }
+
+        
+        originalColorDictionary[layerPixel] = GetPixel((int) layerPixel.x, (int) layerPixel.y);
+
+        colorMapDictionary[layerPixel] = templatePixel;
 
 
 
+        colorMappedPixels(templatePixel);
+
+    }
+
+    public void colorMappedPixels(Vector2 currentlySelected)
+    {
+
+        if (colorMapDictionary != null)
+        {
+
+            foreach (Vector2 key in colorMapDictionary.Keys)
+            {
+                Color color;
+                if (colorMapDictionary[key] == currentlySelected)
+                {
+                    color = UPAColors.SelectedColor;
+                }
+                else
+                {
+                    color = UPAColors.MappedColor;
+                }
+
+                SetPixel((int)key.x, (int)key.y, color);
+
+            }
+        }
+
+    }
+
+    public void setMappedColorsBack()
+    {
+        if (originalColorDictionary != null)
+        {
+
+            foreach (Vector2 key in originalColorDictionary.Keys)
+            {
+                Color color = originalColorDictionary[key];
 
 
+                SetPixel((int)key.x, (int)key.y, color);
+
+            }
+        }
+    }
 }

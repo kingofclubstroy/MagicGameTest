@@ -19,6 +19,8 @@ public class UPAEditorWindow : EditorWindow {
     public static List<UPAImage> animation; // The list of frames in an animation
 
     public static int animationIndex = 0;
+
+    public static UPATool selectedTool;
 	
 	
 	// HELPFUL GETTERS AND SETTERS
@@ -36,10 +38,7 @@ public class UPAEditorWindow : EditorWindow {
 		set { CurrentImg.gridOffsetY = value; }
 	}
 	
-	private UPATool tool {
-		get { return CurrentImg.tool; }
-		set { CurrentImg.tool = value; }
-	}
+	
 	private Color32 selectedColor {
 		get { return CurrentImg.selectedColor; }
 		set { CurrentImg.selectedColor = value; }
@@ -60,8 +59,13 @@ public class UPAEditorWindow : EditorWindow {
 	
 	[MenuItem ("Window/Pixel Art Editor %#p")]
 	public static void Init () {
-		// Get existing open window or if none, make new one
-		window = (UPAEditorWindow)EditorWindow.GetWindow (typeof (UPAEditorWindow));
+
+        selectedTool = UPATool.Map;
+
+        //EditorPrefs.SetString("templateImgPath", "");
+        //EditorPrefs.SetString("currentAnimationPath", "");
+        // Get existing open window or if none, make new one
+        window = (UPAEditorWindow)EditorWindow.GetWindow (typeof (UPAEditorWindow));
 		#if UNITY_4_3
 		window.title = "Pixel Art Editor";
 		#elif UNITY_4_6
@@ -107,7 +111,7 @@ public class UPAEditorWindow : EditorWindow {
 		
 		if (CurrentImg == null || TemplateImage == null) {
 
-           
+            Debug.Log("one is null");
 			
 			string curImgPath = EditorPrefs.GetString ("currentAnimationPath", "");
             string templateImgPath = EditorPrefs.GetString("templateImgPath", "");
@@ -189,20 +193,23 @@ public class UPAEditorWindow : EditorWindow {
 			if (e.isMouse && mousePos.y > 40 && e.type != EventType.MouseUp) {
 				if (!UPADrawer.GetLayerPanelRect (window.position).Contains (mousePos)) {
 					
-					if (tool == UPATool.Eraser)
+					if (selectedTool == UPATool.Eraser)
 						CurrentImg.SetPixelByPos (Color.clear, mousePos, CurrentImg.selectedLayer);
-					else if (tool == UPATool.PaintBrush)
+					else if (selectedTool == UPATool.PaintBrush)
 						CurrentImg.SetPixelByPos (selectedColor, mousePos, CurrentImg.selectedLayer);
-					else if (tool == UPATool.BoxBrush)
+					else if (selectedTool == UPATool.BoxBrush)
 						Debug.Log ("TODO: Add Box Brush tool.");
-					else if (tool == UPATool.ColorPicker){
+					else if (selectedTool == UPATool.ColorPicker){
 						Vector2 pCoord = CurrentImg.GetPixelCoordinate (mousePos);
 						Color? newColor = CurrentImg.GetBlendedPixel( (int)pCoord.x, (int)pCoord.y );
 						if (newColor != null && newColor != Color.clear){
 							selectedColor = (Color)newColor;
 						}
-						tool = lastTool;
-					}
+                        selectedTool = lastTool;
+					} else if (selectedTool == UPATool.Map)
+                    {
+                        CurrentImg.mapPixelByPos(mousePos, TemplateImage.currentPixelPosition);
+                    }
 					
 				}
 			}
@@ -210,10 +217,10 @@ public class UPAEditorWindow : EditorWindow {
 			// Key down
 			if (e.type == EventType.KeyDown) {
 				if (e.keyCode == KeyCode.W) {
-                    CurrentImg.changeLayer(1);
+                    changeLayer(1);
 				}
 				if (e.keyCode == KeyCode.S) {
-                    CurrentImg.changeLayer(-1);
+                    changeLayer(-1);
 				}
 				if (e.keyCode == KeyCode.A) {
                     TemplateImage.focusPixel(-1);
@@ -223,14 +230,14 @@ public class UPAEditorWindow : EditorWindow {
                 }
 				
 				if (e.keyCode == KeyCode.Alpha1) {
-					tool = UPATool.PaintBrush;
+                    selectedTool = UPATool.PaintBrush;
 				}
 				if (e.keyCode == KeyCode.Alpha2) {
-					tool = UPATool.Eraser;
+                    selectedTool = UPATool.Eraser;
 				}
 				if (e.keyCode == KeyCode.P) {
-					lastTool = tool;
-					tool = UPATool.ColorPicker;
+					lastTool = selectedTool;
+                    selectedTool = UPATool.ColorPicker;
 				}
 				
 				if (e.keyCode == KeyCode.UpArrow) { 
@@ -252,12 +259,12 @@ public class UPAEditorWindow : EditorWindow {
 			
 			if (e.control) {
 				if (lastTool == UPATool.Empty) {
-					lastTool = tool;
-					tool = UPATool.Eraser;
+					lastTool = selectedTool;
+                    selectedTool = UPATool.Eraser;
 				}
 			} else if (e.type == EventType.KeyUp && e.keyCode == KeyCode.LeftControl) {
 				if (lastTool != UPATool.Empty) {
-					tool = lastTool;
+                    selectedTool = lastTool;
 					lastTool = UPATool.Empty;
 				}
 			}
@@ -299,6 +306,8 @@ public class UPAEditorWindow : EditorWindow {
         {
             image.setAllNormalAlpha();
         }
+
+        CurrentImg.layers[CurrentImg.selectedLayer].setMappedColorsBack();
     }
 
     private void OnEnable()
@@ -336,4 +345,10 @@ public class UPAEditorWindow : EditorWindow {
         
 
     } 
+
+    void changeLayer(int direction)
+    {
+        TemplateImage.findLayer(CurrentImg.changeLayer(direction));
+       
+    }
 }

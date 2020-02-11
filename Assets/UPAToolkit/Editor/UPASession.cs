@@ -158,13 +158,15 @@ public class UPASession {
 
         if (path.Length == 0)
         {
-
+            
             path = EditorUtility.OpenFolderPanel(
                 "Choose Animation Folder",
                 "Assets/Sprites",
                 "");
 
         }
+
+
 
         if (path.Length != 0)
         {
@@ -188,7 +190,9 @@ public class UPASession {
                 for (int i = 0; i < info.Length; i++ )
                 {
 
-                    string newPath = path + "\\" + (i + 1) + ".asset";
+                    string newPath;
+                    
+                    newPath = path + "\\" + (i + 1) + ".asset";
                     newPath = FileUtil.GetProjectRelativePath(newPath);
                     
                     UPAImage frameImage = OpenFrameAtPath(newPath);
@@ -518,7 +522,10 @@ public class UPASession {
 
     static UPAImage loadImageFromFileInfo(FileInfo[] info, bool isTemplate, string path = "")
     {
+        Debug.Log("loading image from file info");
         Texture2D[] textures = new Texture2D[info.Length];
+
+        Debug.Log("info length = " + info.Length);
 
         for (int i = 0; i < info.Length; i++)
         {
@@ -533,14 +540,18 @@ public class UPASession {
 
         if (path.Length != 0)
         {
+            Debug.Log("path != 0 it = " + path);
             //TODO: i set some things that were set when an image was created after all animations run,
             //then the layers are added lower down... is this a problem or we good?
             img = CreateAnimationFrame(tex0.width, tex0.height, path);
         }
         else
         {
+            Debug.Log("no path");
             img = customCreateImage(tex0.width, tex0.height, isTemplate);
         }
+
+        Debug.Log("length of textures = " + textures.Length);
 
         for (int layerNum = 0; layerNum < textures.Length; layerNum++)
         {
@@ -556,7 +567,16 @@ public class UPASession {
             img.layers[layerNum].tex.filterMode = FilterMode.Point;
             img.layers[layerNum].tex.Apply();
 
-            img.layers[layerNum].name = splitPath(info[layerNum].ToString())[2].Split('.')[0];
+            if(isTemplate)
+            {
+                img.layers[layerNum].name = splitPath(info[layerNum].ToString())[0].Split('.')[0];
+
+            } else
+            {
+                img.layers[layerNum].name = splitPath(info[layerNum].ToString())[2].Split('.')[0];
+            }
+
+            
 
             for (int x = 0; x < img.width; x++)
             {
