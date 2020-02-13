@@ -248,6 +248,15 @@ public class UPASession {
 
     }
 
+    public static UPAImage CreateUPAImage(int w, int h)
+    {
+        UPAImage img = ScriptableObject.CreateInstance<UPAImage>();
+        img.Init(w, h);
+        img.gridSpacing = 10 - Mathf.Abs(img.width - img.height) / 100f;
+
+        return img;
+    }
+
     static UPAImage CreateAnimationFrame(int w, int h, string path)
     {
 
@@ -258,22 +267,24 @@ public class UPASession {
             return null;
         }
 
+        UPAImage img = CreateUPAImage(w, h);
+
         Debug.Log("creating custom image");
         Debug.Log(path);
 
         path = FileUtil.GetProjectRelativePath(path);
         Debug.Log(path);
 
-        UPAImage img = ScriptableObject.CreateInstance<UPAImage>();
+        
         AssetDatabase.CreateAsset(img, path);
 
         AssetDatabase.SaveAssets();
 
-        img.Init(w, h);
+       
         EditorUtility.SetDirty(img);
 
 
-        img.gridSpacing = 10 - Mathf.Abs(img.width - img.height) / 100f;
+       
         return img;
 
     }
@@ -520,7 +531,7 @@ public class UPASession {
 
     }
 
-    static UPAImage loadImageFromFileInfo(FileInfo[] info, bool isTemplate, string path = "")
+    static UPAImage loadImageFromFileInfo(FileInfo[] info, bool isTemplate, string path = "", bool save = false)
     {
         Debug.Log("loading image from file info");
         Texture2D[] textures = new Texture2D[info.Length];
@@ -547,8 +558,16 @@ public class UPASession {
         }
         else
         {
-            Debug.Log("no path");
-            img = customCreateImage(tex0.width, tex0.height, isTemplate);
+            if (save)
+            {
+                img = CreateUPAImage(tex0.width, tex0.height);
+            }
+            else
+            {
+                Debug.Log("no path");
+                img = customCreateImage(tex0.width, tex0.height, isTemplate);
+
+            }
         }
 
         Debug.Log("length of textures = " + textures.Length);
@@ -589,6 +608,26 @@ public class UPASession {
 
 
         return img;
+    }
+
+    public static UPAImage LoadImageTemplate(Dictionary<string, string> paths)
+    {
+
+        List<FileInfo> infoList = new List<FileInfo>();
+
+        foreach (string path in paths.Values)
+        {
+            DirectoryInfo dir = new DirectoryInfo(path);
+            FileInfo[] tempInfo = dir.GetFiles("*.png");
+
+            infoList.AddRange(tempInfo);
+        }
+
+        FileInfo[] info = infoList.ToArray();
+
+
+        return loadImageFromFileInfo(info, true, "", true);
+
     }
 
     static string[] splitPath(string path)

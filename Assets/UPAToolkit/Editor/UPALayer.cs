@@ -20,10 +20,10 @@ public class UPALayer {
 
     #region custom variables
 
-    VectorDictionary colorMapDictionary;
+    public VectorDictionary colorMapDictionary;
 
 
-    VectorColorDictionary originalColorDictionary;
+    public VectorColorDictionary originalColorDictionary;
     
 
     #endregion
@@ -248,4 +248,6 @@ public class UPALayer {
             }
         }
     }
+
+    
 }

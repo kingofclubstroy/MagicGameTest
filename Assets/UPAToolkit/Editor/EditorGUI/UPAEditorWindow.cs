@@ -21,6 +21,10 @@ public class UPAEditorWindow : EditorWindow {
     public static int animationIndex = 0;
 
     public static UPATool selectedTool;
+
+    public static bool gettingPreviewArmor = false;
+
+    Dictionary<string, string> pathDictionary = new Dictionary<string, string>();
 	
 	
 	// HELPFUL GETTERS AND SETTERS
@@ -169,6 +173,103 @@ public class UPAEditorWindow : EditorWindow {
 			
 			return;
 		}
+
+        if(gettingPreviewArmor)
+        {
+
+            if (GUI.Button(new Rect(window.position.width / 2f, window.position.height / 8f, 130, 50), "Load Head"))
+            {
+
+                pathDictionary["head"] = EditorUtility.OpenFolderPanel(
+                "Choose Animation Folder",
+                "Assets/Sprites/Head",
+                "");
+
+            }
+
+            if (GUI.Button(new Rect(window.position.width / 2f - 70, window.position.height / 8f + 60, 130, 50), "Load Arms"))
+            {
+
+                pathDictionary["arms"] = EditorUtility.OpenFolderPanel(
+               "Choose Animation Folder",
+               "Assets/Sprites/Arms",
+               "");
+
+            }
+
+            if (GUI.Button(new Rect(window.position.width / 2f + 70, window.position.height / 8f + 60, 130, 50), "Load Body"))
+            {
+
+                pathDictionary["body"] = EditorUtility.OpenFolderPanel(
+               "Choose Animation Folder",
+               "Assets/Sprites/Body",
+               "");
+
+            }
+
+            if (GUI.Button(new Rect(window.position.width / 2f, window.position.height / 8f + 120, 130, 50), "Load Legs"))
+            {
+
+                pathDictionary["legs"] = EditorUtility.OpenFolderPanel(
+               "Choose Animation Folder",
+               "Assets/Sprites/Legs",
+               "");
+
+            }
+
+            if (GUI.Button(new Rect(window.position.width / 2f + 10, window.position.height / 2f - 25, 130, 50), "Done"))
+            {
+
+                UPAImage armorTemplate = UPASession.LoadImageTemplate(pathDictionary);
+
+                //now we have a map to draw things from lets now map the template to each proper layer
+
+                List<UPAImage> newAnimation = new List<UPAImage>();
+
+                foreach (UPAImage img in animation)
+                {
+
+                    UPAImage newImage = UPASession.CreateUPAImage(img.width, img.height);
+
+                    for (int i = 0; i < img.layers.Count; i++)
+                    {
+
+                        UPALayer layer = new UPALayer(img.layers[i]);
+
+                        UPALayer templateLayer = armorTemplate.GetLayer(layer.name);
+
+                        if(templateLayer != null)
+                        {
+
+                            foreach(Vector2 key in layer.colorMapDictionary.Keys)
+                            {
+                                Vector2 value = layer.colorMapDictionary[key];
+                                layer.SetPixel((int)key.x, (int)key.y, templateLayer.GetPixel((int)value.x, (int)value.y));
+                            }
+
+                        }
+
+                        if(i != 0)
+                        {
+                            newImage.AddLayer();
+                        }
+
+                        newImage.layers[i] = layer;
+
+                    }
+
+                    newAnimation.Add(newImage);
+                }
+
+                animation = newAnimation;
+
+                gettingPreviewArmor = false;
+                pathDictionary.Clear();
+               
+            }
+
+            return;
+        }
 
        
 		

@@ -611,6 +611,18 @@ public class UPAImage : ScriptableObject {
 
 
 
+    public UPALayer GetLayer(string layerName)
+    {
 
+        foreach(UPALayer layer in layers)
+        {
+            if(layer.name == layerName)
+            {
+                return layer;
+            }
+        }
+
+        return null;
+    }
 
 }

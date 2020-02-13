@@ -12404,7 +12404,7 @@ MonoBehaviour:
   gridOffsetY: 0
   gridOffsetX: 0
   selectedColor: {r: 1, g: 0, b: 0, a: 1}
-  tool: 1
+  tool: 0
   gridBGIndex: 0
   dirty: 1
   currentPixelPosition: {x: 0, y: 0}

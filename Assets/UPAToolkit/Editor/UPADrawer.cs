@@ -226,18 +226,20 @@ public class UPADrawer : MonoBehaviour {
 
         if (GUI.Button(new Rect(1175, 4, 100, 30), "Load Animations"))
         {
-            UPAEditorWindow.animation = UPASession.OpenAnimationsFromFolder(false);
-
-
-            
+            UPAEditorWindow.animation = UPASession.OpenAnimationsFromFolder(false); 
         }
 
-        Vector2 pixelCoordinate = CurrentImg.GetReadablePixelCoordinate (mousePos);
+        if (GUI.Button(new Rect(1295, 4, 100, 30), "Preview"))
+        {
+            UPAEditorWindow.gettingPreviewArmor = true;
+        }
+
+        //Vector2 pixelCoordinate = CurrentImg.GetReadablePixelCoordinate (mousePos);
         //CurrentImg.GetPixelByPos(pixelCoordinate, CurrentImg.selectedLayer);
-        GUI.Label(new Rect(1200, 11, 200, 30), "(" + CurrentImg.GetPixelByPos(mousePos, CurrentImg.selectedLayer) + ")", style);
+        //GUI.Label(new Rect(1200, 11, 200, 30), "(" + CurrentImg.GetPixelByPos(mousePos, CurrentImg.selectedLayer) + ")", style);
         //GUI.Label (new Rect (880, 11, 100, 30), "(" + (int)pixelCoordinate.x + "," + (int)pixelCoordinate.y + ")", style);
 
-		if (CurrentImg.tool == UPATool.ColorPicker) {
+        if (CurrentImg.tool == UPATool.ColorPicker) {
 			style.fontStyle = FontStyle.Bold;
 			style.fontSize = 15;
 			GUI.Label (new Rect (window.width/2f - 140, 60, 100, 30), "Click on a pixel to choose a color.", style);
