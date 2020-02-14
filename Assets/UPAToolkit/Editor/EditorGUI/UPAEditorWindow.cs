@@ -168,6 +168,7 @@ public class UPAEditorWindow : EditorWindow {
                 if (GUI.Button(new Rect(window.position.width / 2f + 10, window.position.height / 2f - 25, 130, 50), "Open Template"))
                 {
                     TemplateImage = UPASession.OpenFolder(true);
+                    TemplateImage.LoadAllTexsFromMaps();
                     TemplateImage.initilizeAlphas();
                     TemplateImage.loopThroughImage();
                     return;
@@ -187,7 +188,7 @@ public class UPAEditorWindow : EditorWindow {
 
                 pathDictionary["head"] = EditorUtility.OpenFolderPanel(
                 "Choose Animation Folder",
-                "Assets/Sprites/Head",
+                "Assets/Sprites/Heads",
                 "");
 
             }
