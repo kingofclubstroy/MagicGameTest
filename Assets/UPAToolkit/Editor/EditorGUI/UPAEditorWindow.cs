@@ -66,8 +66,8 @@ public class UPAEditorWindow : EditorWindow {
 
         selectedTool = UPATool.Map;
 
-        //EditorPrefs.SetString("templateImgPath", "");
-        //EditorPrefs.SetString("currentAnimationPath", "");
+        EditorPrefs.SetString("templateImgPath", "");
+        EditorPrefs.SetString("currentAnimationPath", "");
         // Get existing open window or if none, make new one
         window = (UPAEditorWindow)EditorWindow.GetWindow (typeof (UPAEditorWindow));
 		#if UNITY_4_3
@@ -236,13 +236,20 @@ public class UPAEditorWindow : EditorWindow {
 
                         UPALayer layer = new UPALayer(img.layers[i]);
 
+
+
                         UPALayer templateLayer = armorTemplate.GetLayer(layer.name);
 
                         if(templateLayer != null)
                         {
 
+                            Debug.Log("layer does not == null!");
+
+                            
+
                             foreach(Vector2 key in layer.colorMapDictionary.Keys)
                             {
+                                
                                 Vector2 value = layer.colorMapDictionary[key];
                                 layer.SetPixel((int)key.x, (int)key.y, templateLayer.GetPixel((int)value.x, (int)value.y));
                             }

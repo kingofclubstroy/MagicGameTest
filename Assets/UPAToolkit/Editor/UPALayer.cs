@@ -58,13 +58,25 @@ public class UPALayer {
 
 	// Create clone of other UPALayer
 	public UPALayer(UPALayer original) {
-		name = original.name + " - Clone";
+		name = original.name;
 		opacity = 1;
 		mode = original.mode;
 
 		map = (Color[]) original.map.Clone();
 		tex = new Texture2D (original.parentImg.width, original.parentImg.height);
-		tex.SetPixels (original.tex.GetPixels ());
+
+        Texture2D parentTex = original.tex;
+
+        if (parentTex != null)
+        {
+
+            //TODO: may be bad to turn this off
+            tex.SetPixels(original.tex.GetPixels());
+
+        } else
+        {
+            Debug.LogError("no parent tex!!");
+        }
 
 		tex.filterMode = FilterMode.Point;
 		tex.Apply ();
@@ -72,6 +84,10 @@ public class UPALayer {
 		enabled = true;
 		locked = original.locked;
 		parentImg = original.parentImg;
+
+        colorMapDictionary = original.colorMapDictionary;
+
+
 
 		// Because Unity won't record map (Color[]) as an undo,
 		// we instead register a callback to LoadMapFromTex since undoing textures works fine

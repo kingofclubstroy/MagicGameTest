@@ -614,8 +614,16 @@ public class UPAImage : ScriptableObject {
     public UPALayer GetLayer(string layerName)
     {
 
+        Debug.Log("getting layer:");
+
+        Debug.Log(layerName);
+
+
         foreach(UPALayer layer in layers)
         {
+
+            Debug.Log("layer name = ");
+            Debug.Log(layer.name);
             if(layer.name == layerName)
             {
                 return layer;

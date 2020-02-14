@@ -1047,6 +1047,12 @@ MonoBehaviour:
     mode: 0
     locked: 0
     parentImg: {fileID: 11400000}
+    colorMapDictionary:
+      keys: []
+      values: []
+    originalColorDictionary:
+      keys: []
+      values: []
   - name: Head
     map:
     - {r: 0, g: 0, b: 0, a: 0}
@@ -2079,6 +2085,12 @@ MonoBehaviour:
     mode: 0
     locked: 0
     parentImg: {fileID: 11400000}
+    colorMapDictionary:
+      keys: []
+      values: []
+    originalColorDictionary:
+      keys: []
+      values: []
   - name: LLeg
     map:
     - {r: 0, g: 0, b: 0, a: 0}
@@ -3111,6 +3123,12 @@ MonoBehaviour:
     mode: 0
     locked: 0
     parentImg: {fileID: 11400000}
+    colorMapDictionary:
+      keys: []
+      values: []
+    originalColorDictionary:
+      keys: []
+      values: []
   - name: LLegArm
     map:
     - {r: 0, g: 0, b: 0, a: 0}
@@ -4143,6 +4161,12 @@ MonoBehaviour:
     mode: 0
     locked: 0
     parentImg: {fileID: 11400000}
+    colorMapDictionary:
+      keys: []
+      values: []
+    originalColorDictionary:
+      keys: []
+      values: []
   - name: RLeg
     map:
     - {r: 0, g: 0, b: 0, a: 0}
@@ -5175,6 +5199,12 @@ MonoBehaviour:
     mode: 0
     locked: 0
     parentImg: {fileID: 11400000}
+    colorMapDictionary:
+      keys: []
+      values: []
+    originalColorDictionary:
+      keys: []
+      values: []
   - name: RLegArm
     map:
     - {r: 0, g: 0, b: 0, a: 0}
@@ -6207,6 +6237,12 @@ MonoBehaviour:
     mode: 0
     locked: 0
     parentImg: {fileID: 11400000}
+    colorMapDictionary:
+      keys: []
+      values: []
+    originalColorDictionary:
+      keys: []
+      values: []
   - name: LShoulder
     map:
     - {r: 0, g: 0, b: 0, a: 0}
@@ -7239,6 +7275,36 @@ MonoBehaviour:
     mode: 0
     locked: 0
     parentImg: {fileID: 11400000}
+    colorMapDictionary:
+      keys:
+      - {x: 11, y: -9}
+      - {x: 12, y: -9}
+      - {x: 11, y: -10}
+      - {x: 12, y: -10}
+      - {x: 11, y: -11}
+      - {x: 12, y: -11}
+      values:
+      - {x: 0, y: 31}
+      - {x: 1, y: 31}
+      - {x: 0, y: 30}
+      - {x: 1, y: 30}
+      - {x: 0, y: 29}
+      - {x: 1, y: 29}
+    originalColorDictionary:
+      keys:
+      - {x: 11, y: -9}
+      - {x: 12, y: -9}
+      - {x: 11, y: -10}
+      - {x: 12, y: -10}
+      - {x: 11, y: -11}
+      - {x: 12, y: -11}
+      values:
+      - {r: 0.09411765, g: 0.2627451, b: 0.5686275, a: 1}
+      - {r: 0.09411765, g: 0.2627451, b: 0.5686275, a: 1}
+      - {r: 0.09411765, g: 0.2627451, b: 0.5686275, a: 1}
+      - {r: 0.09411765, g: 0.2627451, b: 0.5686275, a: 1}
+      - {r: 0.09411765, g: 0.2627451, b: 0.5686275, a: 1}
+      - {r: 0.09411765, g: 0.2627451, b: 0.5686275, a: 1}
   - name: LMid
     map:
     - {r: 0, g: 0, b: 0, a: 0}
@@ -8271,6 +8337,12 @@ MonoBehaviour:
     mode: 0
     locked: 0
     parentImg: {fileID: 11400000}
+    colorMapDictionary:
+      keys: []
+      values: []
+    originalColorDictionary:
+      keys: []
+      values: []
   - name: LFore
     map:
     - {r: 0, g: 0, b: 0, a: 0}
@@ -9303,6 +9375,60 @@ MonoBehaviour:
     mode: 0
     locked: 0
     parentImg: {fileID: 11400000}
+    colorMapDictionary:
+      keys:
+      - {x: 15, y: -10}
+      - {x: 14, y: -9}
+      - {x: 14, y: -10}
+      - {x: 13, y: -10}
+      - {x: 14, y: -11}
+      - {x: 13, y: -11}
+      - {x: 14, y: -12}
+      - {x: 12, y: -11}
+      - {x: 13, y: -12}
+      - {x: 12, y: -12}
+      - {x: 13, y: -13}
+      - {x: 12, y: -13}
+      values:
+      - {x: 0, y: 18}
+      - {x: 1, y: 19}
+      - {x: 0, y: 19}
+      - {x: 1, y: 20}
+      - {x: 0, y: 20}
+      - {x: 1, y: 21}
+      - {x: 0, y: 21}
+      - {x: 1, y: 22}
+      - {x: 0, y: 22}
+      - {x: 1, y: 23}
+      - {x: 0, y: 23}
+      - {x: 0, y: 24}
+    originalColorDictionary:
+      keys:
+      - {x: 15, y: -10}
+      - {x: 14, y: -9}
+      - {x: 14, y: -10}
+      - {x: 13, y: -10}
+      - {x: 14, y: -11}
+      - {x: 13, y: -11}
+      - {x: 14, y: -12}
+      - {x: 12, y: -11}
+      - {x: 13, y: -12}
+      - {x: 12, y: -12}
+      - {x: 13, y: -13}
+      - {x: 12, y: -13}
+      values:
+      - {r: 0, g: 0, b: 0, a: 1}
+      - {r: 0, g: 0, b: 0, a: 1}
+      - {r: 0, g: 0, b: 0, a: 1}
+      - {r: 0.09411765, g: 0.2627451, b: 0.5686275, a: 1}
+      - {r: 0.09411765, g: 0.2627451, b: 0.5686275, a: 1}
+      - {r: 0.09411765, g: 0.2627451, b: 0.5686275, a: 1}
+      - {r: 0.09411765, g: 0.2627451, b: 0.5686275, a: 1}
+      - {r: 0.09411765, g: 0.2627451, b: 0.5686275, a: 1}
+      - {r: 0.09411765, g: 0.2627451, b: 0.5686275, a: 1}
+      - {r: 0.09411765, g: 0.2627451, b: 0.5686275, a: 1}
+      - {r: 0.09411765, g: 0.2627451, b: 0.5686275, a: 1}
+      - {r: 0.09411765, g: 0.2627451, b: 0.5686275, a: 1}
   - name: RShoulder
     map:
     - {r: 0, g: 0, b: 0, a: 0}
@@ -10335,6 +10461,12 @@ MonoBehaviour:
     mode: 0
     locked: 0
     parentImg: {fileID: 11400000}
+    colorMapDictionary:
+      keys: []
+      values: []
+    originalColorDictionary:
+      keys: []
+      values: []
   - name: RMid
     map:
     - {r: 0, g: 0, b: 0, a: 0}
@@ -11367,6 +11499,12 @@ MonoBehaviour:
     mode: 0
     locked: 0
     parentImg: {fileID: 11400000}
+    colorMapDictionary:
+      keys: []
+      values: []
+    originalColorDictionary:
+      keys: []
+      values: []
   - name: RFore
     map:
     - {r: 0, g: 0, b: 0, a: 0}
@@ -12399,6 +12537,12 @@ MonoBehaviour:
     mode: 0
     locked: 0
     parentImg: {fileID: 11400000}
+    colorMapDictionary:
+      keys: []
+      values: []
+    originalColorDictionary:
+      keys: []
+      values: []
   finalImg: {fileID: 0}
   _gridSpacing: 10
   gridOffsetY: 0

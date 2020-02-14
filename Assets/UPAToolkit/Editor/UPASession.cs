@@ -192,11 +192,21 @@ public class UPASession {
 
                     string newPath;
                     
-                    newPath = path + "\\" + (i + 1) + ".asset";
+                    newPath = path + "/" + (i + 1) + ".asset";
                     newPath = FileUtil.GetProjectRelativePath(newPath);
+
+                    Debug.Log("expected path = Assets / Sprites / Front RunTest / 1.asset");
+
+                    Debug.Log("new path = ");
+
+
+
+                    //newPath = "Assets/Sprites/Front RunTest/1";
+
+                    Debug.Log(newPath);
                     
                     UPAImage frameImage = OpenFrameAtPath(newPath);
-                    frameImage.initilizeAlphas();
+                    //frameImage.initilizeAlphas();
                     animation.Add(frameImage);
                 }
             }
@@ -643,6 +653,18 @@ public class UPASession {
         if (path.Length != 0)
         {
             UPAImage img = AssetDatabase.LoadAssetAtPath(path, typeof(UPAImage)) as UPAImage;
+
+            
+
+            if(img == null)
+            {
+                Debug.Log("image is null!?!");
+            } else
+            {
+                Debug.Log("image found!");
+                Debug.Log("number layers = ");
+                Debug.Log(img.layers.Count);
+            }
 
 
             return img;
