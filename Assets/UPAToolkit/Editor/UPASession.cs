@@ -206,7 +206,10 @@ public class UPASession {
                     Debug.Log(newPath);
                     
                     UPAImage frameImage = OpenFrameAtPath(newPath);
-                    //frameImage.initilizeAlphas();
+
+                    frameImage.LoadAllTexsFromMaps();
+
+                    frameImage.initilizeAlphas();
                     animation.Add(frameImage);
                 }
             }

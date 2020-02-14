@@ -126,8 +126,13 @@ public class UPAEditorWindow : EditorWindow {
             if (curImgPath.Length != 0) {
 
                 animation = UPASession.OpenAnimationsFromFolder(false, curImgPath);
-                CurrentImg.initilizeAlphas();
-                animationIndex = 0;
+
+                if (animation.Count > 0)
+                {
+                    CurrentImg = animation[0];
+                    //CurrentImg.initilizeAlphas();
+                    animationIndex = 0;
+                }
 
             }
 

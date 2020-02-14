@@ -1048,11 +1048,15 @@ MonoBehaviour:
     locked: 0
     parentImg: {fileID: 11400000}
     colorMapDictionary:
-      keys: []
-      values: []
+      keys:
+      - {x: 13, y: -10}
+      values:
+      - {x: 9, y: 24}
     originalColorDictionary:
-      keys: []
-      values: []
+      keys:
+      - {x: 13, y: -10}
+      values:
+      - {r: 0.11764706, g: 0.33333334, b: 0.7294118, a: 1}
   - name: Head
     map:
     - {r: 0, g: 0, b: 0, a: 0}
