@@ -5,7 +5,7 @@ using System.Collections.Generic;
 [System.Serializable]
 public class UPALayer {
 	public enum BlendMode {
-		NORMAL, MULTIPLY, SCREEN
+		NORMAL, MULTIPLY, SCREEN, NOALPHA, NULL
 	};
 
 	public string name;

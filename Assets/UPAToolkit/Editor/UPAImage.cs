@@ -125,13 +125,21 @@ public class UPAImage : ScriptableObject {
 	}
 
 	// Return a certain pixel by position in window
-	public Color GetPixelByPos (Vector2 pos, int layer) {
+	public Color GetPixelByPos (Vector2 pos, int layer, bool finalImage = false) {
 		Vector2 pixelCoordinate = GetPixelCoordinate (pos);
 
 		if (pixelCoordinate == new Vector2 (-1, -1)) {
 			return Color.clear;
 		} else {
-			return layers[layer].GetPixel ((int)pixelCoordinate.x, (int)pixelCoordinate.y);
+
+            if (finalImage)
+            {
+                return finalImg.GetPixel((int)pixelCoordinate.x, (int)pixelCoordinate.y);
+            }
+            else
+            {
+                return layers[layer].GetPixel((int)pixelCoordinate.x, (int)pixelCoordinate.y);
+            }
 		}
 	}
 
@@ -245,12 +253,20 @@ public class UPAImage : ScriptableObject {
 		return coord;
 	}
 
-	public Texture2D GetFinalImage (bool update) {
+	public Texture2D GetFinalImage (bool update, bool savingAnim = false) {
 
 		if (!dirty && finalImg != null || !update && finalImg != null)
 			return finalImg;
 
-		finalImg = UPADrawer.CalculateBlendedTex(layers);
+        if(savingAnim)
+        {
+            finalImg = UPADrawer.CalculateBlendedTex(layers, UPALayer.BlendMode.NOALPHA);
+        } else
+        {
+            finalImg = UPADrawer.CalculateBlendedTex(layers);
+        }
+
+		
 		finalImg.filterMode = FilterMode.Point;
 		finalImg.Apply();
 

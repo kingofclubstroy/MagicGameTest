@@ -91,7 +91,7 @@ public class UPAEditorWindow : EditorWindow {
         {
             Debug.Log("opening image at path");
             animation = UPASession.OpenAnimationsFromFolder(false, path);
-            CurrentImg.initilizeAlphas();
+            //CurrentImg.initilizeAlphas();
             animationIndex = 0;
            
         }
@@ -100,7 +100,7 @@ public class UPAEditorWindow : EditorWindow {
         {
             Debug.Log("opening image at path");
             TemplateImage = UPASession.OpenImageAtPath(templatePath, true);
-            TemplateImage.initilizeAlphas();
+            //TemplateImage.initilizeAlphas();
             TemplateImage.loopThroughImage();
         }
     }
@@ -188,7 +188,7 @@ public class UPAEditorWindow : EditorWindow {
 
                 pathDictionary["head"] = EditorUtility.OpenFolderPanel(
                 "Choose Animation Folder",
-                "Assets/Sprites/Heads",
+                "Assets/Sprites/Armor/Heads/",
                 "");
 
             }
@@ -198,7 +198,7 @@ public class UPAEditorWindow : EditorWindow {
 
                 pathDictionary["arms"] = EditorUtility.OpenFolderPanel(
                "Choose Animation Folder",
-               "Assets/Sprites/Arms",
+               "Assets/Sprites/Armor/Arms/",
                "");
 
             }
@@ -208,7 +208,7 @@ public class UPAEditorWindow : EditorWindow {
 
                 pathDictionary["body"] = EditorUtility.OpenFolderPanel(
                "Choose Animation Folder",
-               "Assets/Sprites/Body",
+               "Assets/Sprites/Armor/Bodies/",
                "");
 
             }
@@ -218,7 +218,7 @@ public class UPAEditorWindow : EditorWindow {
 
                 pathDictionary["legs"] = EditorUtility.OpenFolderPanel(
                "Choose Animation Folder",
-               "Assets/Sprites/Legs",
+               "Assets/Sprites/Legs/",
                "");
 
             }

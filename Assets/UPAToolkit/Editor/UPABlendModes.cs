@@ -25,6 +25,7 @@ namespace AssemblyCSharpEditor
 	public class UPABlendModes
 	{
 		public static Texture2D Blend (Texture2D lowerLayer, float lowerOpacity, Texture2D upperLayer, float upperOpacity, UPALayer.BlendMode mode) {
+
 			switch (mode) {
 			case UPALayer.BlendMode.NORMAL:
 				return Normal(lowerLayer, lowerOpacity, upperLayer, upperOpacity);
@@ -32,6 +33,8 @@ namespace AssemblyCSharpEditor
 				return Multiply(lowerLayer, lowerOpacity, upperLayer, upperOpacity);
 			case UPALayer.BlendMode.SCREEN:
 				return Screen(lowerLayer, lowerOpacity, upperLayer, upperOpacity);
+            case UPALayer.BlendMode.NOALPHA:
+                    return NoAlpha(lowerLayer, lowerOpacity, upperLayer, upperOpacity);
 			default:
 				return Normal(lowerLayer, lowerOpacity, upperLayer, upperOpacity);
 			}
@@ -122,6 +125,34 @@ namespace AssemblyCSharpEditor
 			return result;
 		}
 
-	}
+        private static Texture2D NoAlpha(Texture2D lowerLayer, float lowerOpacity, Texture2D upperLayer, float upperOpacity)
+        {
+            Texture2D result = new Texture2D(lowerLayer.width, lowerLayer.height);
+            result.filterMode = FilterMode.Point;
+            for (int x = 0; x < lowerLayer.width; x++)
+            {
+                for (int y = 0; y < lowerLayer.height; y++)
+                {
+                    Color lower = lowerLayer.GetPixel(x, y);
+                    Color upper = upperLayer.GetPixel(x, y);
+
+                    Color c = lower;
+                   
+                    if(upper != Color.clear)
+                    {
+                        c = upper;
+                    }
+
+                    result.SetPixel(x, y, c);
+                }
+            }
+
+            result.Apply();
+            return result;
+        }
+
+
+
+    }
 }
 

@@ -77,7 +77,7 @@ public class UPADrawer : MonoBehaviour {
 	}
 
 	// Calculates the blended image given a list of layers
-	public static Texture2D CalculateBlendedTex(List<UPALayer> _layers)
+	public static Texture2D CalculateBlendedTex(List<UPALayer> _layers, UPALayer.BlendMode mode = UPALayer.BlendMode.NULL)
 	{
 		if (_layers.Count > 0)
 		{
@@ -85,16 +85,24 @@ public class UPADrawer : MonoBehaviour {
 			Texture2D _result = null;
 			for (int i = 0; i < _layers.Count; i++)
 			{
+                UPALayer.BlendMode tempMode;
+                if(mode == UPALayer.BlendMode.NULL)
+                {
+                    tempMode = _layers[i].mode;
+                } else
+                {
+                    tempMode = mode;
+                }
 				if (!_layers[i].enabled)
 					continue;
 
 				if (_result == null)
 				{
-					_result = UPABlendModes.Blend(_layers[i].tex, _layers[i].opacity, _layers[i].tex, _layers[i].opacity, _layers[i].mode);
+					_result = UPABlendModes.Blend(_layers[i].tex, _layers[i].opacity, _layers[i].tex, _layers[i].opacity, tempMode);
 				}
 				else
 				{
-					_result = UPABlendModes.Blend(_result, 1, _layers[i].tex, _layers[i].opacity, _layers[i].mode);
+					_result = UPABlendModes.Blend(_result, 1, _layers[i].tex, _layers[i].opacity, tempMode);
 				}
 			}
 			if (_result == null)
@@ -226,7 +234,7 @@ public class UPADrawer : MonoBehaviour {
 
         if (GUI.Button(new Rect(1175, 4, 100, 30), "Load Animations"))
         {
-            UPAEditorWindow.animation = UPASession.OpenAnimationsFromFolder(false); 
+            UPAEditorWindow.animation = UPASession.OpenAnimationsFromFolder(false);
         }
 
         if (GUI.Button(new Rect(1295, 4, 100, 30), "Preview"))
@@ -234,10 +242,15 @@ public class UPADrawer : MonoBehaviour {
             UPAEditorWindow.gettingPreviewArmor = true;
         }
 
-        //Vector2 pixelCoordinate = CurrentImg.GetReadablePixelCoordinate (mousePos);
+        if (GUI.Button(new Rect(1410, 4, 100, 30), "Save Anim"))
+        {
+            UPAAnimator.MakeAnimationClip(UPAEditorWindow.animation);
+        }
+
+        //Vector2 pixelCoordinate = CurrentImg.GetReadablePixelCoordinate(mousePos);
         //CurrentImg.GetPixelByPos(pixelCoordinate, CurrentImg.selectedLayer);
-        //GUI.Label(new Rect(1200, 11, 200, 30), "(" + CurrentImg.GetPixelByPos(mousePos, CurrentImg.selectedLayer) + ")", style);
-        //GUI.Label (new Rect (880, 11, 100, 30), "(" + (int)pixelCoordinate.x + "," + (int)pixelCoordinate.y + ")", style);
+        //GUI.Label(new Rect(1200, 11, 200, 30), "(" + CurrentImg.GetPixelByPos(mousePos, CurrentImg.selectedLayer, true) + ")", style);
+        //GUI.Label(new Rect(880, 11, 100, 30), "(" + (int)pixelCoordinate.x + "," + (int)pixelCoordinate.y + ")", style);
 
         if (CurrentImg.tool == UPATool.ColorPicker) {
 			style.fontStyle = FontStyle.Bold;

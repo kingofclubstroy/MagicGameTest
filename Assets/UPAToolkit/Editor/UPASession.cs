@@ -209,7 +209,9 @@ public class UPASession {
 
                     frameImage.LoadAllTexsFromMaps();
 
-                    frameImage.initilizeAlphas();
+                    frameImage.setAllNormalAlpha();
+
+                    //frameImage.initilizeAlphas();
                     animation.Add(frameImage);
                 }
             }
@@ -384,12 +386,23 @@ public class UPASession {
 		return null;
 	}
 
-	public static bool ExportImage (UPAImage img, TextureType type, TextureExtension extension) {
-		string path = EditorUtility.SaveFilePanel(
-			"Export image as " + extension.ToString(),
-			"Assets/",
-			img.name + "." + extension.ToString().ToLower(),
-			extension.ToString().ToLower());
+	public static bool ExportImage (UPAImage img, TextureType type, TextureExtension extension, string path = "", bool savingAnim = false) {
+
+        if (path == "")
+        {
+            path = EditorUtility.SaveFilePanel(
+                "Export image as " + extension.ToString(),
+                "Assets/Sprites/TestSpritesAnimation/",
+                img.name + "." + extension.ToString().ToLower(),
+                extension.ToString().ToLower());
+
+            Debug.LogError("path before = " + path);
+
+            path = FileUtil.GetProjectRelativePath(path);
+
+            Debug.LogError("path after = " + path);
+
+        }
 		
 		if (path.Length == 0)
 			return false;
@@ -397,7 +410,7 @@ public class UPASession {
 		byte[] bytes;
 		if (extension == TextureExtension.PNG) {
 			// Encode texture into PNG
-			bytes = img.GetFinalImage(true).EncodeToPNG();
+			bytes = img.GetFinalImage(true, savingAnim).EncodeToPNG();
 		} else {
 			// Encode texture into JPG
 			
@@ -412,7 +425,7 @@ public class UPASession {
 			#endif
 		}
 		
-		path = FileUtil.GetProjectRelativePath(path);
+		
 		
 		//Write to a file in the project folder
 		File.WriteAllBytes(path, bytes);
