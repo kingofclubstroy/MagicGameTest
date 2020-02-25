@@ -14,6 +14,10 @@ public class TileScript : MonoBehaviour
 
     private FireObject fireObject;
 
+    static int numTiles;
+
+    public int tileNumber;
+
     //Is fire the same as heat? like the same value, but only different visually and when spells require it?
 
     //TODO: remove hidden set functions, make explicit getters and setters and use those when we want extra functionality besides just setting
@@ -138,6 +142,10 @@ public class TileScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+
+        numTiles += 1;
+
+        tileNumber = numTiles;
 
         heat = 0;
 
@@ -412,6 +420,11 @@ public class TileScript : MonoBehaviour
 
     public void setSprite(Sprite sprite)
     {
+
+        if(spriteRenderer == null)
+        {
+            spriteRenderer = GetComponent<SpriteRenderer>();
+        }
 
         if (sprite != null)
         {

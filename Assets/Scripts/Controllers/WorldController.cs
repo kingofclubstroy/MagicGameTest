@@ -4,7 +4,7 @@ using UnityEngine;
 
 using EventCallbacks;
 
-public class WorldController : MonoBehaviour, IWorldController
+public class WorldController : MonoBehaviour
 {
     public GameObject tilePrefab;
     List<List<TileScript>> tileMap;
@@ -58,7 +58,7 @@ public class WorldController : MonoBehaviour, IWorldController
                     tileMap.Add(new List<TileScript>());
                 }
 
-                GameObject tile = Instantiate(tilePrefab, new Vector2(transform.position.x + i * size, transform.position.y - j * size), Quaternion.identity);
+                GameObject tile = Instantiate(tilePrefab, new Vector2(transform.position.x + i * size, transform.position.y + j * size), Quaternion.identity);
 
                 TileScript tileScript = tile.GetComponent<TileScript>();
 
@@ -109,38 +109,53 @@ public class WorldController : MonoBehaviour, IWorldController
 
 
 
-    public List<TileScript> findNeighbours(Vector2 position)
+    public List<TileScript> findNeighbours(Vector2 position, bool diaganals = false)
     {
 
         //need to find the adjacent neighbours ie: north, east, south, west, northWest, northEast, southEast, southWest 
         List<TileScript> adjacentList = new List<TileScript>();
 
+        if(position.x < 0 || position.y < 0)
+        {
+            return adjacentList;
+        }
+
         int x = (int) position.x;
         int y = (int)position.y;
 
         //North tile
-        adjacentList.Add(getTile(x, y - 1));
+        adjacentList.Add(getTile(x, y + 1));
 
         //East
         adjacentList.Add(getTile(x + 1, y));
 
         //South
-        adjacentList.Add(getTile(x, y + 1));
+        adjacentList.Add(getTile(x, y - 1));
 
         //West
         adjacentList.Add(getTile(x - 1, y));
 
-        //NorthWest
-        //adjacentList.Add(getTile(x - 1, y - 1));
+        if (diaganals)
+        {
 
-        //NorthEast
-        //adjacentList.Add(getTile(x + 1, y - 1));
+            //NorthWest
+            adjacentList.Add(getTile(x - 1, y + 1));
 
-        //SouthEast
-        //adjacentList.Add(getTile(x + 1, y + 1));
+            //NorthEast
+            adjacentList.Add(getTile(x + 1, y + 1));
 
-        //SouthWest
-        //adjacentList.Add(getTile(x - 1, y + 1));
+            //SouthEast
+            adjacentList.Add(getTile(x + 1, y - 1));
+
+            //SouthWest
+            adjacentList.Add(getTile(x - 1, y - 1));
+
+            //Current Tile
+            adjacentList.Add(getTile(x, y));
+
+            
+
+        }
 
         return adjacentList;
 
@@ -217,6 +232,18 @@ public class WorldController : MonoBehaviour, IWorldController
     void UnitDied(UnitDeathEvent unitDeathEvent)
     {
         Debug.Log("Unit died");
+    }
+
+
+    public Vector2 GetTilePositionFromWorld(Vector2 worldPosition)
+    {
+
+        if(worldPosition.x < 0 || worldPosition.x > size * width || worldPosition.y < 0 || worldPosition.y > size * height)
+        {
+            return new Vector2(-1, -1);
+        }
+
+        return new Vector2(Mathf.Floor(worldPosition.x / size), Mathf.Floor(worldPosition.y / size));
     }
 
 }
