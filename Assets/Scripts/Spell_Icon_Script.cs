@@ -21,6 +21,8 @@ public class Spell_Icon_Script : MonoBehaviour
 
     float currentElementCharge = 0;
 
+    List<List<Vector2>> overChargePixelsList = new List<List<Vector2>>();
+
     // Start is called before the first frame update
     void Start()
     {
@@ -56,6 +58,7 @@ public class Spell_Icon_Script : MonoBehaviour
 
         colorTexture(elementColor);
 
+        initializeOverchargePixels();
        
 
         
@@ -64,6 +67,9 @@ public class Spell_Icon_Script : MonoBehaviour
 
     void colorTexture(Color elementColor)
     {
+
+        Debug.Log("sampleTextures width = " + SampleTexture.width);
+        Debug.Log("sample textures height = " + SampleTexture.height);
 
         texture = new Texture2D(SampleTexture.width, SampleTexture.height);
 
@@ -82,11 +88,14 @@ public class Spell_Icon_Script : MonoBehaviour
             for (int y = 0; y < texture.height; y++)
             {
 
-                if (texture.GetPixel(x, y) != Color.clear)
+                if (texture.GetPixel(x, y).a == 1)
                 {
 
                     texture.SetPixel(x, y, alphaColor);
 
+                } else
+                {
+                    texture.SetPixel(x, y, Color.clear);
                 }
 
             }
@@ -112,12 +121,59 @@ public class Spell_Icon_Script : MonoBehaviour
     {
 
         bool pixelsChanged = false;
+        bool overCharged = false;
+        int chargeIndex = -1;
 
-        float percent = (currentElementCharge / spell.castingCost);
+        float percent;
+        int index;
 
-        int index = Mathf.FloorToInt(percent * texture.height) - 1;
+        if (currentElementCharge > spell.castingCost && spell.overCharge.Length > 0)
+        {
+            Debug.Log("overcharging...");
+            Debug.Log("overcharge list length = " + spell.overCharge.Length);
 
-        if (index >= 0 && index < texture.height)
+            bool found = false;
+
+            float overChargeAmount = currentElementCharge - spell.castingCost;
+            overCharged = true;
+            foreach (float chargeAmount in spell.overCharge)
+            {
+                chargeIndex++;
+                if (overChargeAmount <= chargeAmount)
+                {
+                    found = true;
+                    break;
+                }
+
+                overChargeAmount -= chargeAmount;
+            }
+
+            if (found)
+            {
+
+                percent = overChargeAmount / (spell.overCharge[chargeIndex]);
+                Debug.Log("percent = " + percent);
+                index = Mathf.FloorToInt(percent * overChargePixelsList[chargeIndex].Count) - 1;
+                Debug.Log("index = " + index);
+                Debug.Log("max index = " + overChargePixelsList[chargeIndex]);
+
+            } else
+            {
+                //Its overcharged so lets return
+                
+                return;
+            }
+
+        }
+        else
+        {
+
+            percent = (currentElementCharge / spell.castingCost);
+            index = Mathf.FloorToInt(percent * texture.height) - 1;
+
+        }
+
+        if (index >= 0 && (index < texture.height || overCharged))
         {
 
             if (index != lastIndex)
@@ -128,23 +184,34 @@ public class Spell_Icon_Script : MonoBehaviour
 
                 if (index < lastIndex)
                 {
-
+                   
+                   
                     for (int tempIndex = index; tempIndex <= lastIndex; tempIndex++)
                     {
 
-                        for (int x = 0; x < texture.width; x++)
+                        if (overCharged)
+                        {
+                            Vector2 pixelVector = overChargePixelsList[chargeIndex][tempIndex];
+                            texture.SetPixel((int)pixelVector.x, (int)pixelVector.y, Color.clear);
+                        }
+                        else
                         {
 
-                            if (texture.GetPixel(x, tempIndex) != Color.clear)
+                            for (int x = 0; x < texture.width; x++)
                             {
 
-                                texture.SetPixel(x, tempIndex, alphaColor);
+                                if (texture.GetPixel(x, tempIndex).a > 0)
+                                {
+
+                                    texture.SetPixel(x, tempIndex, alphaColor);
+
+                                }
 
                             }
-
                         }
 
                     }
+                    
 
                 }
                 else
@@ -153,15 +220,24 @@ public class Spell_Icon_Script : MonoBehaviour
                     for (int tempIndex = lastIndex + 1; tempIndex <= index; tempIndex++)
                     {
 
-                        for (int x = 0; x < texture.width; x++)
+                        if (overCharged)
+                        {
+                            Vector2 pixelVector = overChargePixelsList[chargeIndex][tempIndex];
+                            texture.SetPixel((int)pixelVector.x, (int)pixelVector.y, elementColor);
+                        }
+                        else
                         {
 
-                            if (texture.GetPixel(x, tempIndex) != Color.clear)
+                            for (int x = 0; x < texture.width; x++)
                             {
 
-                                texture.SetPixel(x, tempIndex, elementColor);
-                            }
+                                if (texture.GetPixel(x, tempIndex).a > 0)
+                                {
 
+                                    texture.SetPixel(x, tempIndex, elementColor);
+                                }
+
+                            }
                         }
 
                     }
@@ -185,9 +261,7 @@ public class Spell_Icon_Script : MonoBehaviour
             }
         } else
         {
-            Debug.Log("outside range");
-            Debug.Log("index = " + index);
-            Debug.Log("percent = " + percent);
+           
         }
 
     }
@@ -198,5 +272,341 @@ public class Spell_Icon_Script : MonoBehaviour
         Destroy(gameObject);
     }
 
+    void initializeOverchargePixels()
+    {
+
+        Dictionary<int, Vector2> previousPixelMap = null;
+
+        //Loop through the number of times the spell can be overcharged, for now we will only do once
+        for(int i = 0; i < spell.overCharge.Length; i++)
+        {
+
+            previousPixelMap = GetOverChargePixelMap(previousPixelMap);
+
+            List<Vector2> overChargedList = new List<Vector2>();
+
+            Debug.Log("pixel map count = " + previousPixelMap.Count);
+
+            for(int index = 0; index < previousPixelMap.Count; index++)
+            {
+                overChargedList.Add(previousPixelMap[index]);
+            }
+
+            overChargePixelsList.Add(overChargedList);
+            
+
+        }
+
+    }
+
+    public enum Direction
+    {
+        LEFT,
+        RIGHT,
+        UP,
+        DOWN,
+        TOPLEFT,
+        TOPRIGHT,
+        BOTTOMLEFT,
+        BOTTOMRIGHT
+    }
+
+    /*Checks if the pixel is clear in a given direction
+     * 
+     **/
+    bool lookDirection (Vector2 testingVector, Dictionary<int, Vector2> pixelDict = null)
+    {
+
+        if (pixelDict == null)
+        {
+            return texture.GetPixel((int) testingVector.x, (int) testingVector.y).a < 0.1f;
+        }
+        else
+        {
+            return pixelDict.ContainsValue(testingVector) == false;
+        }
+
+
+    }
+
     
+
+    Vector2 GetDirectionVector(Direction direction, Vector2 currentPixel)
+    {
+
+        Vector2 testingVector;
+
+        switch (direction)
+        {
+            case Direction.LEFT:
+                testingVector = new Vector2(currentPixel.x - 1, currentPixel.y);
+                break;
+
+            case Direction.RIGHT:
+                testingVector = new Vector2(currentPixel.x + 1, currentPixel.y);
+                break;
+
+            case Direction.UP:
+                testingVector = new Vector2(currentPixel.x, currentPixel.y + 1);
+                break;
+
+            case Direction.DOWN:
+                testingVector = new Vector2(currentPixel.x, currentPixel.y - 1);
+                break;
+
+            case Direction.TOPLEFT:
+                testingVector = new Vector2(currentPixel.x - 1, currentPixel.y + 1);
+                break;
+
+            case Direction.TOPRIGHT:
+                testingVector = new Vector2(currentPixel.x + 1, currentPixel.y + 1);
+                break;
+
+            case Direction.BOTTOMLEFT:
+                testingVector = new Vector2(currentPixel.x - 1, currentPixel.y - 1);
+                break;
+
+            case Direction.BOTTOMRIGHT:
+                testingVector = new Vector2(currentPixel.x + 1, currentPixel.y - 1);
+                break;
+
+            default:
+                testingVector = currentPixel;
+                break;
+        }
+
+        return testingVector;
+    }
+
+
+    Dictionary<int, Vector2> GetOverChargePixelMap(Dictionary<int, Vector2> previousPixelMap)
+    {
+        //This will keep track of order in the dictionary
+        int index = 0;
+
+        //this dictionary will hold an int as a reference to order the pixels go through, and a vector to show actual pixel position
+        //TODO: this may not be the best way to do this, don know how fast dictionary.containsKey() runs...
+        Dictionary<int, Vector2> pixelMap = new Dictionary<int, Vector2>();
+
+        //Start by getting the first pixel, starting at the leftmost pixel that is in the middle
+
+        Vector2 initialPixel = new Vector2(-1, -1);
+
+       
+        for (int x = 0; x < texture.width; x++)
+        {
+            if (texture.GetPixel(x, texture.height / 2).a > 0.1f)
+            {
+                initialPixel = new Vector2(x - overChargePixelsList.Count, texture.height / 2);
+                break;
+            }
+        }
+        
+
+        if (initialPixel == new Vector2(-1, -1))
+        {
+            return null;
+        }
+
+        Vector2 currentPixel = initialPixel;
+
+        Debug.Log("current pixel before");
+        Debug.Log(currentPixel);
+        Vector2 testingVector;
+        int number = -1;
+        while (true)
+        {
+            number++;
+            if (number != 0 && currentPixel == initialPixel)
+            {
+                Debug.Log("current pixel after = ");
+                Debug.Log(currentPixel);
+                Debug.Log("number = " + number);
+                break;
+            }
+
+            if (currentPixel.x < texture.width / 2)
+            {
+               
+                //we on the left side
+                if (currentPixel.y >= texture.height / 2)
+                {
+                    //we on the leftTop side
+                   
+                    //Look left and top to potentially add pixel
+                    testingVector = GetDirectionVector(Direction.LEFT, currentPixel);
+                    if (lookDirection(testingVector, previousPixelMap) && pixelMap.ContainsValue(testingVector) == false)
+                    {
+                        
+                        pixelMap[index] = testingVector;
+                        index++;
+                    }
+
+                    testingVector = GetDirectionVector(Direction.UP, currentPixel);
+                    if (lookDirection(testingVector, previousPixelMap) && pixelMap.ContainsValue(testingVector) == false)
+                    {
+                        pixelMap[index] = testingVector;
+                        index++;
+                    }
+
+                    //Now lets find the next pixel by checking up-topRight-right
+                    testingVector = GetDirectionVector(Direction.UP, currentPixel);
+                    if (lookDirection(testingVector, previousPixelMap) == false)
+                    {
+                        currentPixel = testingVector;
+                        continue;
+                    }
+
+                    testingVector = GetDirectionVector(Direction.TOPRIGHT, currentPixel);
+                    if (lookDirection(testingVector, previousPixelMap) == false)
+                    {
+                        currentPixel = testingVector;
+                        continue;
+                    }
+
+                    testingVector = GetDirectionVector(Direction.RIGHT, currentPixel);
+                    if (lookDirection(testingVector, previousPixelMap) == false)
+                    {
+                        currentPixel = testingVector;
+                        continue;
+                    }
+
+                }
+                else
+                {
+                    //we on the leftBot side
+
+                    //Look down and left to potentially add pixel
+                    testingVector = GetDirectionVector(Direction.DOWN, currentPixel);
+                    if (lookDirection(testingVector, previousPixelMap) && pixelMap.ContainsValue(testingVector) == false)
+                    {
+                        pixelMap[index] = testingVector;
+                        index++;
+                    }
+
+                    testingVector = GetDirectionVector(Direction.LEFT, currentPixel);
+                    if (lookDirection(testingVector, previousPixelMap) && pixelMap.ContainsValue(testingVector) == false)
+                    {
+                        pixelMap[index] = testingVector;
+                        index++;
+                    }
+
+                    //Now lets find the next pixel by checking left-topleft-top
+                    testingVector = GetDirectionVector(Direction.LEFT, currentPixel);
+                    if (lookDirection(testingVector, previousPixelMap) == false)
+                    {
+                        currentPixel = testingVector;
+                        continue;
+                    }
+
+                    testingVector = GetDirectionVector(Direction.TOPLEFT, currentPixel);
+                    if (lookDirection(testingVector, previousPixelMap) == false)
+                    {
+                        currentPixel = testingVector;
+                        continue;
+                    }
+
+                    testingVector = GetDirectionVector(Direction.UP, currentPixel);
+                    if (lookDirection(testingVector, previousPixelMap) == false)
+                    {
+                        currentPixel = testingVector;
+                        continue;
+                    }
+                }
+            }
+            else
+            {
+                //we on the Right side
+                if (currentPixel.y >= texture.height / 2)
+                {
+                    //we on the RightTop side
+
+                    //Look Top and right to potentially add pixel
+                    testingVector = GetDirectionVector(Direction.UP, currentPixel);
+                    if (lookDirection(testingVector, previousPixelMap) && pixelMap.ContainsValue(testingVector) == false)
+                    {
+                        pixelMap[index] = testingVector;
+                        index++;
+                    }
+
+                    testingVector = GetDirectionVector(Direction.RIGHT, currentPixel);
+                    if (lookDirection(testingVector, previousPixelMap) && pixelMap.ContainsValue(testingVector) == false)
+                    {
+                        pixelMap[index] = testingVector;
+                        index++;
+                    }
+
+                    //Now lets find the next pixel by checking right-bottomRight-down
+                    testingVector = GetDirectionVector(Direction.RIGHT, currentPixel);
+                    if (lookDirection(testingVector, previousPixelMap) == false)
+                    {
+                        currentPixel = testingVector;
+                        continue;
+                    }
+
+                    testingVector = GetDirectionVector(Direction.BOTTOMRIGHT, currentPixel);
+                    if (lookDirection(testingVector, previousPixelMap) == false)
+                    {
+                        currentPixel = testingVector;
+                        continue;
+                    }
+
+                    testingVector = GetDirectionVector(Direction.DOWN, currentPixel);
+                    if (lookDirection(testingVector, previousPixelMap) == false)
+                    {
+                        currentPixel = testingVector;
+                        continue;
+                    }
+
+                }
+                else
+                {
+                    //we on the RightBot side
+
+                    //Look down and right to potentially add pixel
+                    testingVector = GetDirectionVector(Direction.RIGHT, currentPixel);
+                    if (lookDirection(testingVector, previousPixelMap) && pixelMap.ContainsValue(testingVector) == false)
+                    {
+                        pixelMap[index] = testingVector;
+                        index++;
+                    }
+
+                    testingVector = GetDirectionVector(Direction.DOWN, currentPixel);
+                    if (lookDirection(testingVector, previousPixelMap) && pixelMap.ContainsValue(testingVector) == false)
+                    {
+                        pixelMap[index] = testingVector;
+                        index++;
+                    }
+
+                    //Now lets find the next pixel by checking down-bottomleft-left
+                    testingVector = GetDirectionVector(Direction.DOWN, currentPixel);
+                    if (lookDirection(testingVector, previousPixelMap) == false)
+                    {
+                        currentPixel = testingVector;
+                        continue;
+                    }
+
+                    testingVector = GetDirectionVector(Direction.BOTTOMLEFT, currentPixel);
+                    if (lookDirection(testingVector, previousPixelMap) == false)
+                    {
+                        currentPixel = testingVector;
+                        continue;
+                    }
+
+                    testingVector = GetDirectionVector(Direction.LEFT, currentPixel);
+                    if (lookDirection(testingVector, previousPixelMap) == false)
+                    {
+                        currentPixel = testingVector;
+                        continue;
+                    }
+                }
+
+            }
+
+
+        }
+
+        return pixelMap;
+    }
+
 }

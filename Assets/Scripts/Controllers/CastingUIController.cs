@@ -642,7 +642,11 @@ public class CastingUIController : MonoBehaviour
 
         Spell_Icon_Script icon = obj.GetComponent<Spell_Icon_Script>();
 
-        icon.Initialize(new TempSpell(element, 40), getColor(element));
+        float[] overChargeList = new float[2];
+        overChargeList[0] = 20;
+        overChargeList[1] = 20;
+
+        icon.Initialize(new TempSpell(element, 40, overChargeList), getColor(element));
 
         spellIcons.Add(icon);
 

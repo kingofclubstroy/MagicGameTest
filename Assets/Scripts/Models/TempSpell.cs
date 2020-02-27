@@ -9,10 +9,20 @@ public class TempSpell
 
     public float castingCost;
 
-    public TempSpell(CastingElements.Element element, float castingCost)
+    public float[] overCharge;
+
+    public TempSpell(CastingElements.Element element, float castingCost, float[] overCharge = null)
     {
         this.castingCost = castingCost;
         this.element = element;
+
+        if (overCharge != null)
+        {
+            this.overCharge = overCharge;
+        } else
+        {
+            this.overCharge = new float[0];
+        }
     }
 
 }
