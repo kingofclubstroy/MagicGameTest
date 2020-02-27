@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class CastingUIController : MonoBehaviour
 {
+
     [SerializeField]
     Sprite sprite;
 
@@ -18,14 +19,13 @@ public class CastingUIController : MonoBehaviour
     Texture2D finalTexture;
 
     [SerializeField]
-    int[] lastIndexes = new int[4];
+    float decayRate = 10f;
 
     [SerializeField]
-    float[] elementCharge = new float[4];
+    float maxElement;
 
-    
     [SerializeField]
-    float chargeRate = 10;
+    float maxCastRate;
 
     enum Quadrent
     {
@@ -34,6 +34,13 @@ public class CastingUIController : MonoBehaviour
         BottomLeft,
         BottomRight
     }
+
+    [SerializeField]
+    GameObject spellIconPrefab;
+
+    List<CastingElements> elementList = new List<CastingElements>();
+
+    List<Spell_Icon_Script> spellIcons = new List<Spell_Icon_Script>();
 
     // Start is called before the first frame update
     void Start()
@@ -51,6 +58,8 @@ public class CastingUIController : MonoBehaviour
             makePixelMap(texture);
         }
 
+        
+
     }
 
     // Update is called once per frame
@@ -61,48 +70,89 @@ public class CastingUIController : MonoBehaviour
 
         bool pixelsChanged = false;
 
+        //TODO: remove delta time dependence, may want to do a 30-60 fps limit, and may want to go with integers and not floats
         if (Input.GetKey(KeyCode.Space))
         {
 
-            elementDifference = chargeRate * Time.deltaTime;
+            elementDifference = Time.deltaTime;
+
+            GetSurroundingElements();
 
         }
         else
         {
-            elementDifference = (chargeRate * Time.deltaTime * -1);
+            elementDifference = Time.deltaTime * -1;
 
         }
 
         if (elementDifference != 0)
         {
 
-            for (int i = 0; i < pixelList.Count; i++)
+            bool allZero = true;
+            int i = 0;
+            foreach (CastingElements element in elementList)
             {
 
                 List<Vector2> circleList = pixelList[i];
 
-                float elementCasted = Mathf.Clamp(elementCharge[i] + elementDifference, 0, 100);
+                float tempElementDifference = 0;
 
-                int lastIndex = lastIndexes[i];
+                if (elementDifference < 0)
+                {
+                    tempElementDifference = decayRate * elementDifference;
+                }
+                else
+                {
+                    //TODO: may want to change these numbers, but they will work for now
+                    //Setting the amount casted to be related to the ratio amount of element present and the theiritical max amount that could be,
+                    // multiplied by the max cast speed im temporarly setting as 50 (maybe there are augments that improve this)
+                    tempElementDifference = ((element.updateAmount/900f) * 50f) * elementDifference;
+
+                }
+
+                float elementCasted = Mathf.Clamp(element.amount + tempElementDifference, 0, 100);
+
+               
+
+                if(elementCasted != 0)
+                {
+                    allZero = false;
+                }
+
+                if(elementCasted > element.updateAmount && elementDifference > 0)
+                {
+                    //The amount of the element casted is more than the amount of element surrounding the player, so lets set tot he amount around
+                    elementCasted = element.updateAmount;
+                }
+
+                foreach (Spell_Icon_Script icon in spellIcons)
+                {
+                    if(element.element == icon.spell.element)
+                    {
+                        icon.setElementCharge(elementCasted);
+                    }
+                }
+
+                element.amount = elementCasted;
 
                 float percent = (elementCasted / 100f);
 
-                int index = Mathf.FloorToInt(percent * circleList.Count) - 1;
+                int index = Mathf.FloorToInt(percent * circleList.Count);
 
                 if (index >= 0 && index < circleList.Count)
                 {
 
-                    if (index != lastIndex)
+                    if (index != element.lastIndex)
                     {
 
                         pixelsChanged = true;
 
-                        Color colorToChange = getColor(i);
+                        Color colorToChange = getColor(element.element);
 
-                        if (index < lastIndex)
+                        if (index < element.lastIndex)
                         {
 
-                            for (int tempIndex = index; tempIndex <= lastIndex; tempIndex++)
+                            for (int tempIndex = index; tempIndex <= element.lastIndex; tempIndex++)
                             {
 
                                 finalTexture.SetPixel((int)circleList[tempIndex].x, (int)circleList[tempIndex].y, Color.clear);
@@ -113,7 +163,7 @@ public class CastingUIController : MonoBehaviour
                         else
                         {
 
-                            for (int tempIndex = lastIndex; tempIndex <= index; tempIndex++)
+                            for (int tempIndex = element.lastIndex; tempIndex <= index; tempIndex++)
                             {
 
                                 finalTexture.SetPixel((int)circleList[tempIndex].x, (int)circleList[tempIndex].y, colorToChange);
@@ -121,13 +171,18 @@ public class CastingUIController : MonoBehaviour
                             }
                         }
 
-                        lastIndex = index;
+                        element.lastIndex = index;
+
 
                     }
 
 
 
                 }
+
+                element.Reset();
+
+                i++;
 
             }
 
@@ -142,6 +197,20 @@ public class CastingUIController : MonoBehaviour
                 SpriteRenderer.material.shader = Shader.Find("Sprites/Default");
 
             }
+
+            if(allZero)
+            {
+
+                foreach(Spell_Icon_Script icon in spellIcons)
+                {
+                    icon.destroy();
+                }
+                //all of the casting elements have decayed to 0, so lets clear the list
+                spellIcons.Clear();
+                elementList.Clear();
+            }
+
+            
 
         }
 
@@ -166,7 +235,7 @@ public class CastingUIController : MonoBehaviour
 
         Vector2 firstPixel = findFirstPixel(circleTexture);
 
-        Debug.Log(firstPixel);
+        
 
         Vector2 currentPixel = firstPixel;
 
@@ -178,13 +247,9 @@ public class CastingUIController : MonoBehaviour
 
         circleList.Add(firstPixel);
 
-        
-
         while(true)
         {
             currentPixel = findNextPixel(currentPixel, circleTexture);
-
-            Debug.Log(currentPixel);
 
             if (currentPixel == firstPixel)
             {
@@ -224,11 +289,11 @@ public class CastingUIController : MonoBehaviour
             if(currentPixel.x <= circleTexture.width/2)
             {
                 //Is the top left quadrent
-                Debug.Log("top left quadrent");
+                
                 return Quadrent.TopLeft;
             } else
             {
-                Debug.Log("top right quadrent");
+               
                 return Quadrent.TopRight;
             }
         } else
@@ -237,13 +302,13 @@ public class CastingUIController : MonoBehaviour
             //In the bottom quadrent
             if (currentPixel.x <= circleTexture.width / 2)
             {
-                Debug.Log("bottom left quadrent");
+                
                 //Is the bottom left quadrent
                 return Quadrent.BottomLeft;
             }
             else
             {
-                Debug.Log("bottom right quadrent");
+                
                 return Quadrent.BottomRight;
             }
 
@@ -412,26 +477,180 @@ public class CastingUIController : MonoBehaviour
     }
 
 
-    Color getColor(int index)
+    Color getColor(CastingElements.Element element)
     {
 
-        switch(index)
+        switch(element)
         {
-            case 0:
+            case CastingElements.Element.FIRE:
                 return Color.red;
 
-            case 1:
+            case CastingElements.Element.NATURE:
+              
                 return Color.green;
 
-            case 2:
+            case CastingElements.Element.WATER:
                 return Color.blue;
 
-            case 3:
+            case CastingElements.Element.EARTH:
                 //brown
-                return new Color(204f, 148f, 115f);
+                return new Color(204f/255f, 148f/255f, 115f/255f);
+
+            case CastingElements.Element.WIND:
+                return Color.white;
         }
 
+        Debug.Log("default color");
+
         return Color.white;
+
+    }
+
+
+    void GetSurroundingElements()
+    {
+
+        List<TileScript> neighbouringTiles = WorldController.instance.findNeighbours(WorldController.instance.GetTilePositionFromWorld(this.transform.parent.position), true);
+
+        bool startOfCast = false;
+
+        //Check to see if we have an empty element list, so we know we will have to sort the elements based on casting speed
+        if (elementList.Count == 0)
+        {
+            
+            startOfCast = true;
+        }
+
+        foreach (TileScript tile in neighbouringTiles)
+        {
+
+            if (tile != null)
+            {
+
+                if (tile.fire > 0)
+                {
+                    CastingElements ele = null;
+
+                    foreach (CastingElements e in elementList)
+                    {
+                        if (e.element == CastingElements.Element.FIRE)
+                        {
+                            ele = e;
+                            break;
+                        }
+                    }
+
+                    if (ele != null)
+                    {
+                        ele.addTempAmount(tile.fire);
+                    }
+                    else
+                    {
+                        CastingElements c = new CastingElements(CastingElements.Element.FIRE);
+                        c.addTempAmount(tile.fire);
+                        elementList.Add(c);
+                        makeSpellIcon(CastingElements.Element.FIRE);
+
+                        
+                    }
+                }
+
+                if (tile.fuel > 0)
+                {
+                    CastingElements ele = null;
+
+                    foreach (CastingElements e in elementList)
+                    {
+                        if (e.element == CastingElements.Element.NATURE)
+                        {
+                            ele = e;
+                            break;
+                        }
+                    }
+
+                    if (ele != null)
+                    {
+                        ele.addTempAmount(tile.fuel);
+                    }
+                    else
+                    {
+
+                        CastingElements c = new CastingElements(CastingElements.Element.NATURE);
+                        c.addTempAmount(tile.fuel);
+                        elementList.Add(c);
+                        makeSpellIcon(CastingElements.Element.NATURE);
+                    }
+                }
+            }
+
+            //TODO: add looking for other elements
+
+        }
+
+        if(startOfCast && elementList.Count > 1)
+        {
+           
+            //We didnt have any elements in the list before we searched and now we have multiple that we need to sort, so lets sort the list
+            elementList.Sort((p1, p2) => p1.updateAmount.CompareTo(p2.updateAmount));
+            
+        }
+
+        if(elementList.Count == 0)
+        {
+            Debug.Log("no elements around");
+        }
+    }
+
+    void makeSpellIcon(CastingElements.Element element)
+    {
+
+        //TODO: i am assuming an icon has a radius of 4
+
+        Vector3 position;
+        float distance = finalTexture.width/2;
+
+        switch (spellIcons.Count) {
+
+            case 0:
+                position = new Vector3(this.transform.position.x + (-1 * distance), this.transform.position.y + distance);
+                break;
+
+            case 1:
+                position = new Vector3(this.transform.position.x + distance, this.transform.position.y + distance);
+                break;
+
+            case 2:
+                position = new Vector3(this.transform.position.x + distance, this.transform.position.y + (-1 * distance));
+                break;
+
+            case 3:
+                position = new Vector3(this.transform.position.x + (-1 * distance), this.transform.position.y + (-1 * distance));
+                break;
+
+            default:
+                position = new Vector3(this.transform.position.x + (-1 * distance), this.transform.position.y + distance);
+                break;
+
+
+        }
+
+        GameObject obj = Instantiate(spellIconPrefab, this.transform);
+
+        obj.transform.position = position;
+
+        //GameObject obj = Instantiate(spellIconPrefab, position, Quaternion.identity);
+
+        Spell_Icon_Script icon = obj.GetComponent<Spell_Icon_Script>();
+
+        float[] overChargeList = new float[2];
+        overChargeList[0] = 20;
+        overChargeList[1] = 20;
+
+        icon.Initialize(new TempSpell(element, 40, overChargeList), getColor(element));
+
+        spellIcons.Add(icon);
+
+
 
     }
 

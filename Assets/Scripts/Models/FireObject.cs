@@ -100,8 +100,8 @@ public class FireObject
 
 
             //TODO: reduce the constraints on position as there are more fires (because we expect them to be smaller and take up less space)
-            float yPos = tilePosition.y - size / 2 + Random.Range(0, (size - size / 8));
-            Vector3 testPosition = new Vector3(tilePosition.x - size / 2 + Random.Range(size / 8, size - size / 8), yPos, 0);
+            float yPos = tilePosition.y + Random.Range(0, (size - size / 16));
+            Vector3 testPosition = new Vector3(tilePosition.x + Random.Range(size / 16, size - size / 16), yPos, 0);
 
             bool tooClose = false;
 
@@ -112,9 +112,7 @@ public class FireObject
                 //TODO: set minimum distance between fire on a tile, for now im chosing an abrituary value
 
                 float distance = Mathf.Abs(Vector2.Distance(testPosition, fire.position));
-                Debug.Log(distance);
-
-
+                
                 if (distance <= minDistance)
                 {
                     //too close so i continue the while loop to try another position

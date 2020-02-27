@@ -27,13 +27,20 @@ public class MovementController : MonoBehaviour
     void Update()
     {
 
-        float h = Input.GetAxis("Horizontal");
-        float v = Input.GetAxis("Vertical");
+        //TODO: dont want to be doing this, but i must for now, means when holding space (casting) you cant move
+        if(Input.GetKey(KeyCode.Space) == false)
+        {
+           
+            float h = Input.GetAxis("Horizontal");
+            float v = Input.GetAxis("Vertical");
 
-        Vector3 tempVect = new Vector3(h, v, 0);
-        tempVect = tempVect.normalized * speed * Time.deltaTime;
+            Vector3 tempVect = new Vector3(h, v, 0);
+            tempVect = tempVect.normalized * speed * Time.deltaTime;
 
-        this.transform.position += tempVect;
+            this.transform.position += tempVect;
+        }
+
+        
 
     }
 

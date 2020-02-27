@@ -11,10 +11,10 @@ public class SpriteController : MonoBehaviour
     private FireObject[] fireSprites;
 
     [SerializeField]
-    private Sprite[] grassSprites;
+    private Sprite[] grassSprites = new Sprite[5];
 
     [SerializeField]
-    private Sprite[] groundSprites;
+    private Sprite[] groundSprites = new Sprite[5];
 
     #endregion
 
@@ -38,7 +38,7 @@ public class SpriteController : MonoBehaviour
         
         if (grassSprites.Length == 0)
         {
-
+            Debug.Log("grass null");
             return null;
         }
 
