@@ -9,20 +9,33 @@ public class TempSpell
 
     public float castingCost;
 
-    public float[] overCharge;
+    private float[] overCharge;
 
-    public TempSpell(CastingElements.Element element, float castingCost, float[] overCharge = null)
+    public SpellType spellType;
+
+    public float[] OverCharge { get => overCharge; set => overCharge = value; }
+
+    public TempSpell(CastingElements.Element element, float castingCost, float[] overCharge = null, SpellType spellType = SpellType.PROJECTILE)
     {
         this.castingCost = castingCost;
         this.element = element;
+        this.spellType = spellType;
 
         if (overCharge != null)
         {
-            this.overCharge = overCharge;
+            this.OverCharge = overCharge;
         } else
         {
-            this.overCharge = new float[0];
+            this.OverCharge = new float[0];
         }
     }
+
+    public enum SpellType {
+
+        PROJECTILE,
+        SPAWNED
+
+    }
+
 
 }

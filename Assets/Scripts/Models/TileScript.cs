@@ -18,6 +18,10 @@ public class TileScript : MonoBehaviour
 
     public int tileNumber;
 
+    Dictionary<Vector2, int> GrowthSpots;
+
+    Texture2D texture;
+
     //Is fire the same as heat? like the same value, but only different visually and when spells require it?
 
     //TODO: remove hidden set functions, make explicit getters and setters and use those when we want extra functionality besides just setting
@@ -75,6 +79,7 @@ public class TileScript : MonoBehaviour
             if(_growing)
             {
                 isActive = true;
+
             } else
             {
                 checkIfActive();
@@ -104,6 +109,9 @@ public class TileScript : MonoBehaviour
     public Vector2 position;
 
     private bool changed;
+
+    int pixelsGrown = 0;
+    int mostGrowthPressure = 0;
 
 
 
@@ -152,11 +160,21 @@ public class TileScript : MonoBehaviour
 
         spriteRenderer = GetComponent<SpriteRenderer>();
 
+        Texture2D mtexture = spriteRenderer.sprite.texture;
+
+        texture = new Texture2D(mtexture.width, mtexture.height);
+        texture.filterMode = FilterMode.Point;
+
+        GrowthSpots = new Dictionary<Vector2, int>();
+
         flamability = 6f;
         fuelDensity = 1.5f;
         fuelGrowth = 10f;
         growthThreshold = 40f;
-        spriteUpdate();
+        //spriteUpdate();
+
+        //remove this!!!
+        SetWhite(texture);
 
 
 
@@ -174,7 +192,7 @@ public class TileScript : MonoBehaviour
 
         if (changed)
         {
-            spriteUpdate();
+            //spriteUpdate();
         }
         
     }
@@ -274,8 +292,53 @@ public class TileScript : MonoBehaviour
         if(growing && !onFire)
         {
 
-            fuel += (fuelGrowth + (fuelGrowth * (neutrients / 5f))) * Time.deltaTime;
-            changed = true;
+            if (fuel < 100)
+            {
+
+                if (fuel == 0 && GrowthSpots.Count == 0)
+                {
+                    GrowthSpots[new Vector2(0, 0)] = 1;
+                    mostGrowthPressure = 1;
+                }
+
+                float fuelChange = (fuelGrowth + (fuelGrowth * (neutrients / 5f))) * Time.deltaTime;
+
+                
+
+                fuel += fuelChange;
+
+                int growthToDraw = ((int)((texture.width * texture.height) * (fuel / 100f)) - pixelsGrown);
+
+                
+
+                for (int i = 0; i < growthToDraw; i++)
+                {
+
+                    List<Vector2> potentalPixels = new List<Vector2>();
+                    int rand = Random.Range(1, mostGrowthPressure + 1);
+
+                    
+                    foreach (Vector2 key in GrowthSpots.Keys)
+                    {
+                        if (GrowthSpots[key] >= rand)
+                        {
+
+                            potentalPixels.Add(key);
+                        }
+                        
+                    }
+
+
+
+                    GrowPixel(potentalPixels[Random.Range(0, potentalPixels.Count)]);
+                }
+
+                pixelsGrown += growthToDraw;
+
+                changed = true;
+                ApplyTexture(texture);
+
+            }
 
         }
     }
@@ -459,5 +522,76 @@ public class TileScript : MonoBehaviour
        
 
     }
+
+    void SetWhite(Texture2D tex)
+    {
+        for(int x = 0; x < tex.width; x++)
+        {
+            for (int y = 0; y < tex.height; y++)
+            {
+                tex.SetPixel(x, y, Color.white);
+            }
+        }
+
+        ApplyTexture(tex);
+    }
+
+    void ApplyTexture(Texture2D tex)
+    {
+        tex.Apply();
+
+        spriteRenderer.sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f), 1);
+
+        spriteRenderer.material.mainTexture = tex as Texture;
+        spriteRenderer.material.shader = Shader.Find("Sprites/Default");
+    }
+
+    void GrowPixel(Vector2 pixelPos)
+    {
+        GrowthSpots.Remove(pixelPos);
+
+        texture.SetPixel((int)pixelPos.x, (int) pixelPos.y, Color.green);
+
+        for(int i = -1; i < 2; i++)
+        {
+            for(int j = -1; j < 2; j++)
+            {
+
+                int x = (int)pixelPos.x + i;
+                int y = (int)pixelPos.y + j;
+
+                if (x >= 0 && x < texture.width && y >= 0 && y < texture.height && !(x == 0 && y == 0) && texture.GetPixel(x, y) == Color.white)
+                {
+
+                    Vector2 v = new Vector2(x, y);
+
+                    if(GrowthSpots.ContainsKey(v))
+                    {
+                        GrowthSpots[v] += 1;
+                    } else
+                    {
+                        GrowthSpots[v] = 1;
+                    }
+
+                }
+
+            }
+        }
+
+        int best = 0;
+
+        foreach(int val in GrowthSpots.Values)
+        {
+            if(val > best)
+            {
+                best = val;
+            }
+        }
+
+        mostGrowthPressure = best;
+    }
+
+
+   
 
 }

@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-using EventCallbacks;
-
 public class WorldController : MonoBehaviour
 {
     public GameObject tilePrefab;
@@ -70,28 +68,34 @@ public class WorldController : MonoBehaviour
 
                 tileScript.flamability = Random.Range(0.1f, 10f);
 
-                if (i < x/2 && j < y/2)
+                if(i == 0 && j == 0)
                 {
-                    //the top left corner is on fire
-                    tileScript.onFire = true;
-                    tileScript.neutrients = Random.Range(0f, 100f);
-                    tileScript.fuel = Random.Range(50f, 100f);
-                    tileScript.setSprite(spriteController.getRandomGrassSprite());
+                    tileScript.fuel = 0;
+                    tileScript.growing = true;
                 }
 
-                //if (random <= 1f)
-                else if(i >= x/2 && j >= y/2)  
-                {
-                    //80% chance the tile has fuel to burn but isnt on fire
-                    tileScript.fuel = Random.Range(10f, 30f);
-                    tileScript.growing = true;
-                    tileScript.setSprite(spriteController.getRandomGrassSprite());
+                //if (i < x/2 && j < y/2)
+                //{
+                //    //the top left corner is on fire
+                //    tileScript.onFire = true;
+                //    tileScript.neutrients = Random.Range(0f, 100f);
+                //    tileScript.fuel = Random.Range(50f, 100f);
+                //    //tileScript.setSprite(spriteController.getRandomGrassSprite());
+                //}
+
+                ////if (random <= 1f)
+                //else if(i >= x/2 && j >= y/2)  
+                //{
+                //    //80% chance the tile has fuel to burn but isnt on fire
+                //    tileScript.fuel = Random.Range(10f, 30f);
+                //    tileScript.growing = true;
+                //    //tileScript.setSprite(spriteController.getRandomGrassSprite());
                     
-                } else
-                {
-                    tileScript.neutrients = Random.Range(0f, 20f);
-                    tileScript.setSprite(spriteController.getRandomGroundSprite());
-                }
+                //} else
+                //{
+                //    tileScript.neutrients = Random.Range(0f, 20f);
+                //    //tileScript.setSprite(spriteController.getRandomGroundSprite());
+                //}
               
                 //There is a 20% chance there is no fuel or fire to simulate bare ground
 

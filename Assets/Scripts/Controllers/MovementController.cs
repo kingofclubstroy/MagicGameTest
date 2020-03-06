@@ -12,6 +12,13 @@ public class MovementController : MonoBehaviour
     [SerializeField]
     float speed;
 
+    [SerializeField]
+    CrawlController crawlController;
+
+    Crawl runningCrawl;
+    Vector2 runningStartPosition;
+    float runningStartTime;
+
 
     #endregion
 
@@ -20,7 +27,7 @@ public class MovementController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+       
     }
 
     // Update is called once per frame
@@ -39,6 +46,51 @@ public class MovementController : MonoBehaviour
 
             this.transform.position += tempVect;
         }
+
+        //TODO: remove
+        if(Input.GetKeyDown("space"))
+        {
+            //crawlController.CreateCrawl(transform.position, 60, 60);
+            crawlController.CreateCrawl(transform.position, 1000, 1000);
+        }
+
+        if(Input.GetKeyDown("e"))
+        {
+
+            if(runningCrawl == null)
+            {
+                runningCrawl = crawlController.CreateCrawl(transform.position,(int) (speed * 3) * 3, (int) (speed * 3) * 3);
+                runningStartPosition = transform.position;
+                runningStartTime = Time.time;
+            } 
+
+
+
+
+        } else if(runningCrawl != null)
+        {
+
+            if (Time.time - runningStartTime >= 3)
+            {
+                runningCrawl = null;
+
+            }
+            else
+            {
+                int startingPixel = (int)((speed * 3) * 3) / 2;
+
+                int startX = startingPixel + (int)transform.position.x - (int)runningStartPosition.x;
+                int startY = startingPixel + (int)transform.position.y - (int)runningStartPosition.y;
+
+
+                runningCrawl.GrowByPosition(new Vector2(startX, startY));
+            }
+            
+        }
+
+
+
+
 
         
 

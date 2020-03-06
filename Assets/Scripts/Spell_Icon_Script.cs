@@ -22,12 +22,19 @@ public class Spell_Icon_Script : MonoBehaviour
     float currentElementCharge = 0;
 
     List<List<Vector2>> overChargePixelsList = new List<List<Vector2>>();
+    
+
+
 
     // Start is called before the first frame update
     void Start()
     {
-        
 
+        GetComponent<BoxCollider2D>().size = new Vector2(SampleTexture.width, SampleTexture.height);
+       
+        
+        
+        
     }
 
     // Update is called once per frame
@@ -68,9 +75,6 @@ public class Spell_Icon_Script : MonoBehaviour
     void colorTexture(Color elementColor)
     {
 
-        Debug.Log("sampleTextures width = " + SampleTexture.width);
-        Debug.Log("sample textures height = " + SampleTexture.height);
-
         texture = new Texture2D(SampleTexture.width, SampleTexture.height);
 
         texture.SetPixels(SampleTexture.GetPixels());
@@ -93,20 +97,12 @@ public class Spell_Icon_Script : MonoBehaviour
 
                     texture.SetPixel(x, y, alphaColor);
 
-                } else
-                {
-                    texture.SetPixel(x, y, Color.clear);
                 }
 
             }
         }
 
-        texture.Apply();
-
-        spriteRenderer.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), 1);
-
-        spriteRenderer.material.mainTexture = texture as Texture;
-        spriteRenderer.material.shader = Shader.Find("Sprites/Default");
+        applyTexture();
 
 
     }
@@ -127,16 +123,13 @@ public class Spell_Icon_Script : MonoBehaviour
         float percent;
         int index;
 
-        if (currentElementCharge > spell.castingCost && spell.overCharge.Length > 0)
+        if (currentElementCharge > spell.castingCost && spell.OverCharge.Length > 0)
         {
-            Debug.Log("overcharging...");
-            Debug.Log("overcharge list length = " + spell.overCharge.Length);
-
             bool found = false;
 
             float overChargeAmount = currentElementCharge - spell.castingCost;
             overCharged = true;
-            foreach (float chargeAmount in spell.overCharge)
+            foreach (float chargeAmount in spell.OverCharge)
             {
                 chargeIndex++;
                 if (overChargeAmount <= chargeAmount)
@@ -151,11 +144,10 @@ public class Spell_Icon_Script : MonoBehaviour
             if (found)
             {
 
-                percent = overChargeAmount / (spell.overCharge[chargeIndex]);
-                Debug.Log("percent = " + percent);
+                percent = overChargeAmount / (spell.OverCharge[chargeIndex]);
+               
                 index = Mathf.FloorToInt(percent * overChargePixelsList[chargeIndex].Count) - 1;
-                Debug.Log("index = " + index);
-                Debug.Log("max index = " + overChargePixelsList[chargeIndex]);
+                
 
             } else
             {
@@ -200,7 +192,9 @@ public class Spell_Icon_Script : MonoBehaviour
                             for (int x = 0; x < texture.width; x++)
                             {
 
-                                if (texture.GetPixel(x, tempIndex).a > 0)
+                                Color pixelColor = texture.GetPixel(x, tempIndex);
+
+                                if (pixelColor.a > 0 && pixelColor != Color.white)
                                 {
 
                                     texture.SetPixel(x, tempIndex, alphaColor);
@@ -231,7 +225,9 @@ public class Spell_Icon_Script : MonoBehaviour
                             for (int x = 0; x < texture.width; x++)
                             {
 
-                                if (texture.GetPixel(x, tempIndex).a > 0)
+                                Color pixelColor = texture.GetPixel(x, tempIndex);
+
+                                if (pixelColor.a > 0 && pixelColor != Color.white)
                                 {
 
                                     texture.SetPixel(x, tempIndex, elementColor);
@@ -250,12 +246,7 @@ public class Spell_Icon_Script : MonoBehaviour
 
             if(pixelsChanged)
             {
-                texture.Apply();
-
-                spriteRenderer.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), 1);
-
-                spriteRenderer.material.mainTexture = texture as Texture;
-                spriteRenderer.material.shader = Shader.Find("Sprites/Default");
+                applyTexture();
 
                 
             }
@@ -278,14 +269,12 @@ public class Spell_Icon_Script : MonoBehaviour
         Dictionary<int, Vector2> previousPixelMap = null;
 
         //Loop through the number of times the spell can be overcharged, for now we will only do once
-        for(int i = 0; i < spell.overCharge.Length; i++)
+        for(int i = 0; i < spell.OverCharge.Length; i++)
         {
 
             previousPixelMap = GetOverChargePixelMap(previousPixelMap);
 
             List<Vector2> overChargedList = new List<Vector2>();
-
-            Debug.Log("pixel map count = " + previousPixelMap.Count);
 
             for(int index = 0; index < previousPixelMap.Count; index++)
             {
@@ -410,8 +399,6 @@ public class Spell_Icon_Script : MonoBehaviour
 
         Vector2 currentPixel = initialPixel;
 
-        Debug.Log("current pixel before");
-        Debug.Log(currentPixel);
         Vector2 testingVector;
         int number = -1;
         while (true)
@@ -419,9 +406,7 @@ public class Spell_Icon_Script : MonoBehaviour
             number++;
             if (number != 0 && currentPixel == initialPixel)
             {
-                Debug.Log("current pixel after = ");
-                Debug.Log(currentPixel);
-                Debug.Log("number = " + number);
+                
                 break;
             }
 
@@ -609,4 +594,35 @@ public class Spell_Icon_Script : MonoBehaviour
         return pixelMap;
     }
 
+    public void unselect()
+    {
+        texture.SetPixel((texture.width / 2) - 1, texture.height / 2, Color.clear);
+        texture.SetPixel(texture.width / 2, texture.height / 2, Color.clear);
+        texture.SetPixel((texture.width / 2) - 1, (texture.height / 2) - 1, Color.clear);
+        texture.SetPixel(texture.width / 2, (texture.height / 2) - 1, Color.clear);
+
+        applyTexture();
+    }
+
+    public void select()
+    {
+        texture.SetPixel((texture.width / 2) - 1, texture.height / 2, Color.white);
+        texture.SetPixel(texture.width / 2, texture.height / 2, Color.white);
+        texture.SetPixel((texture.width / 2) - 1, (texture.height / 2) - 1, Color.white);
+        texture.SetPixel(texture.width / 2, (texture.height / 2) - 1, Color.white);
+
+        applyTexture();
+    }
+
+    void applyTexture()
+    {
+        texture.Apply();
+
+        spriteRenderer.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), 1);
+
+        spriteRenderer.material.mainTexture = texture as Texture;
+        spriteRenderer.material.shader = Shader.Find("Sprites/Default");
+    }
+
+   
 }

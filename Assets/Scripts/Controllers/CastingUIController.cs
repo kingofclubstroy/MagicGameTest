@@ -27,6 +27,8 @@ public class CastingUIController : MonoBehaviour
     [SerializeField]
     float maxCastRate;
 
+    Vector2 screenCenter;
+
     enum Quadrent
     {
         TopLeft,
@@ -40,7 +42,11 @@ public class CastingUIController : MonoBehaviour
 
     List<CastingElements> elementList = new List<CastingElements>();
 
-    List<Spell_Icon_Script> spellIcons = new List<Spell_Icon_Script>();
+    public List<Spell_Icon_Script> spellIcons = new List<Spell_Icon_Script>();
+
+    public Spell_Icon_Script selectedSpell;
+
+    bool running = false;
 
     // Start is called before the first frame update
     void Start()
@@ -58,13 +64,91 @@ public class CastingUIController : MonoBehaviour
             makePixelMap(texture);
         }
 
-        
+        screenCenter = new Vector2(Screen.width / 2, Screen.height / 2);
+
 
     }
+
+   
 
     // Update is called once per frame
     void Update()
     {
+
+        updateCastingCircle();
+    }
+
+    void selectSpell()
+    {
+
+        //Get the quadrent of the circle the mouse is in
+        Vector2 positionCentered = (Vector2) Input.mousePosition - screenCenter;
+        Vector2 quadrent = new Vector2(Mathf.Sign(positionCentered.x), Mathf.Sign(positionCentered.y));
+
+        Spell_Icon_Script currentSelectedSpell = null;
+
+        //Now find out what this means and update the selected spell
+        if(quadrent.x == -1)
+        {
+            if(quadrent.y == 1)
+            {
+                //TopLeft quadrent
+                if(spellIcons.Count >= 1)
+                {
+                    currentSelectedSpell = spellIcons[0];
+                }
+            } else
+            {
+                //BottomLeft quadrent
+                if(spellIcons.Count >= 4)
+                {
+                    currentSelectedSpell = spellIcons[3];
+                }
+            }
+        } else
+        {
+            if(quadrent.y == 1)
+            {
+                //TopRight quadrent
+                if(spellIcons.Count >= 2)
+                {
+                    currentSelectedSpell = spellIcons[1];
+                }
+            } else
+            {
+                //BottomRight quadrent
+                if(spellIcons.Count >= 3)
+                {
+                    currentSelectedSpell = spellIcons[2];
+                }
+            }
+        }
+
+        if(currentSelectedSpell != null)
+        {
+            if(currentSelectedSpell == selectedSpell)
+            {
+                //we already have this spell selected, so we can return
+                return;
+            }else
+            {
+                if(selectedSpell != null)
+                {
+                    selectedSpell.unselect();
+                }
+
+                currentSelectedSpell.select();
+                selectedSpell = currentSelectedSpell;
+            }
+
+
+        }
+
+    }
+
+    void updateCastingCircle()
+    {
+
 
         float elementDifference = 0;
 
@@ -78,6 +162,10 @@ public class CastingUIController : MonoBehaviour
 
             GetSurroundingElements();
 
+            running = true;
+
+            //selectSpell();
+
         }
         else
         {
@@ -85,7 +173,9 @@ public class CastingUIController : MonoBehaviour
 
         }
 
-        if (elementDifference != 0)
+
+
+        if (elementDifference > 0 || running == true)
         {
 
             bool allZero = true;
@@ -106,20 +196,20 @@ public class CastingUIController : MonoBehaviour
                     //TODO: may want to change these numbers, but they will work for now
                     //Setting the amount casted to be related to the ratio amount of element present and the theiritical max amount that could be,
                     // multiplied by the max cast speed im temporarly setting as 50 (maybe there are augments that improve this)
-                    tempElementDifference = ((element.updateAmount/900f) * 50f) * elementDifference;
+                    tempElementDifference = ((element.updateAmount / 900f) * 50f) * elementDifference;
 
                 }
 
                 float elementCasted = Mathf.Clamp(element.amount + tempElementDifference, 0, 100);
 
-               
 
-                if(elementCasted != 0)
+
+                if (elementCasted != 0)
                 {
                     allZero = false;
                 }
 
-                if(elementCasted > element.updateAmount && elementDifference > 0)
+                if (elementCasted > element.updateAmount && elementDifference > 0)
                 {
                     //The amount of the element casted is more than the amount of element surrounding the player, so lets set tot he amount around
                     elementCasted = element.updateAmount;
@@ -127,7 +217,7 @@ public class CastingUIController : MonoBehaviour
 
                 foreach (Spell_Icon_Script icon in spellIcons)
                 {
-                    if(element.element == icon.spell.element)
+                    if (element.element == icon.spell.element)
                     {
                         icon.setElementCharge(elementCasted);
                     }
@@ -198,23 +288,30 @@ public class CastingUIController : MonoBehaviour
 
             }
 
-            if(allZero)
+            if (allZero)
             {
 
-                foreach(Spell_Icon_Script icon in spellIcons)
+                foreach (Spell_Icon_Script icon in spellIcons)
                 {
                     icon.destroy();
                 }
                 //all of the casting elements have decayed to 0, so lets clear the list
                 spellIcons.Clear();
                 elementList.Clear();
+                selectedSpell = null;
+
+                //Need to tell everyone that the spell is unselected
+                SpellSelectedEvent spellSelectedEvent = new SpellSelectedEvent();
+                spellSelectedEvent.selected = false;
+
+                spellSelectedEvent.FireEvent();
+
+                running = false;
             }
 
-            
+
 
         }
-
-
     }
 
     void makePixelMap(Texture2D circleTexture)
@@ -500,7 +597,6 @@ public class CastingUIController : MonoBehaviour
                 return Color.white;
         }
 
-        Debug.Log("default color");
 
         return Color.white;
 
@@ -652,6 +748,21 @@ public class CastingUIController : MonoBehaviour
 
 
 
+    }
+
+    public List<Vector2> GetPixelList(int index)
+    {
+        return pixelList[index];
+    }
+
+    public int GetHalfWidth()
+    {
+        return finalTexture.width/2;
+    }
+
+    public int GetHalfHeight()
+    {
+        return finalTexture.height/2;
     }
 
 }
