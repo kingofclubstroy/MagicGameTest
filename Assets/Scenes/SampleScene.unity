@@ -314,8 +314,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 15.87, y: -5.96, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children:
-  - {fileID: 913348260}
+  m_Children: [{fileID: 913348260}]
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -418,7 +417,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 43e1bf19e24c6cc468729af1ff34b524, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 30
+  speed: 80
   crawlController: {fileID: 1582204600}
 --- !u!212 &680286483
 SpriteRenderer:
@@ -850,7 +849,7 @@ MonoBehaviour:
   - {fileID: 2800000, guid: ca27c000fb1904cf2b545b530ad5fae7, type: 3}
   - {fileID: 2800000, guid: db95239b88ebf446da74923014b855b8, type: 3}
   - {fileID: 2800000, guid: aa809d112fad54efaa2d857006f02158, type: 3}
-  decayRate: 60
+  decayRate: 100
   maxElement: 900
   maxCastRate: 30
   spellIconPrefab: {fileID: 4759483009396332395, guid: 55c588fff22bfc74f89af73367724e68,
