@@ -19,6 +19,9 @@ public class MovementController : MonoBehaviour
     Vector2 runningStartPosition;
     float runningStartTime;
 
+    [SerializeField]
+    Animator animator;
+
 
     #endregion
 
@@ -41,6 +44,31 @@ public class MovementController : MonoBehaviour
             float h = Input.GetAxis("Horizontal");
             float v = Input.GetAxis("Vertical");
 
+            if(v != 0 && h == 0)
+            {
+                if(v > 0)
+                {
+                    animator.SetBool("Walking_Up", true);
+                    animator.SetBool("Walking_Down", false);
+                    animator.SetBool("Walking_Left", false);
+                } else
+                {
+                    animator.SetBool("Walking_Up", false);
+                    animator.SetBool("Walking_Down", true);
+                    animator.SetBool("Walking_Left", false);
+                }
+            } else if (h != 0)
+            {
+                animator.SetBool("Walking_Up", false);
+                animator.SetBool("Walking_Down", false);
+                animator.SetBool("Walking_Left", true);
+            } else
+            {
+                animator.SetBool("Walking_Up", false);
+                animator.SetBool("Walking_Down", false);
+                animator.SetBool("Walking_Left", false);
+            }
+
             Vector3 tempVect = new Vector3(h, v, 0);
             tempVect = tempVect.normalized * speed * Time.deltaTime;
 
@@ -50,8 +78,15 @@ public class MovementController : MonoBehaviour
         //TODO: remove
         if(Input.GetKeyDown("space"))
         {
-            //crawlController.CreateCrawl(transform.position, 60, 60);
-            crawlController.CreateCrawl(transform.position, 1000, 1000);
+            crawlController.CreateCrawl(transform.position);
+            //crawlController.CreateCrawl(transform.position, 1000, 1000);
+        }
+
+        if(Input.GetKeyDown("r"))
+        {
+
+            crawlController.AddFire(transform.position);
+
         }
 
         if(Input.GetKeyDown("e"))
@@ -59,7 +94,7 @@ public class MovementController : MonoBehaviour
 
             if(runningCrawl == null)
             {
-                runningCrawl = crawlController.CreateCrawl(transform.position,(int) (speed * 3) * 3, (int) (speed * 3) * 3);
+                runningCrawl = crawlController.CreateCrawl(transform.position);
                 runningStartPosition = transform.position;
                 runningStartTime = Time.time;
             } 
@@ -77,10 +112,10 @@ public class MovementController : MonoBehaviour
             }
             else
             {
-                int startingPixel = (int)((speed * 3) * 3) / 2;
+                int startingPixel = crawlController.GetWidth()/2;
 
-                int startX = startingPixel + (int)transform.position.x - (int)runningStartPosition.x;
-                int startY = startingPixel + (int)transform.position.y - (int)runningStartPosition.y;
+                int startX = startingPixel + (int)transform.position.x;
+                int startY = startingPixel + (int)transform.position.y;
 
 
                 runningCrawl.GrowByPosition(new Vector2(startX, startY));

@@ -75,7 +75,11 @@ public class CastingUIController : MonoBehaviour
     void Update()
     {
 
-        updateCastingCircle();
+        //updateCastingCircle();
+        GetSurroundingElementsPixels();
+
+
+
     }
 
     void selectSpell()
@@ -160,7 +164,7 @@ public class CastingUIController : MonoBehaviour
 
             elementDifference = Time.deltaTime;
 
-            GetSurroundingElements();
+            GetSurroundingElementsPixels();
 
             running = true;
 
@@ -305,6 +309,8 @@ public class CastingUIController : MonoBehaviour
                 spellSelectedEvent.selected = false;
 
                 spellSelectedEvent.FireEvent();
+
+                CrawlController.instance.clearCasting();
 
                 running = false;
             }
@@ -602,9 +608,16 @@ public class CastingUIController : MonoBehaviour
 
     }
 
-
-    void GetSurroundingElements()
+    void GetSurroundingElementsPixels()
     {
+
+        CrawlController.instance.GetNumberPixelsInCircle(this.transform.position, 25);
+
+    }
+
+
+     void GetSurroundingElements()
+     {
 
         List<TileScript> neighbouringTiles = WorldController.instance.findNeighbours(WorldController.instance.GetTilePositionFromWorld(this.transform.parent.position), true);
 
