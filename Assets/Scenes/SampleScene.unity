@@ -314,7 +314,8 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 15.87, y: -5.96, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: [{fileID: 913348260}]
+  m_Children:
+  - {fileID: 913348260}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -369,7 +370,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &659667741
 Transform:
   m_ObjectHideFlags: 0
@@ -404,7 +405,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &680286482
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -418,7 +419,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 80
-  crawlController: {fileID: 1582204600}
+  crawlController: {fileID: 0}
 --- !u!212 &680286483
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -575,9 +576,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 18202b6234d160943a7e6d6a8ba0e926, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 680286481}
-  radius: 40
-  castingUI: {fileID: 2123587980}
+  player: {fileID: 0}
+  radius: 0
+  castingUI: {fileID: 0}
 --- !u!212 &913348262
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -718,7 +719,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!212 &1582204599
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -781,10 +782,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad8beae2a2b303e4ba39ca294539fe10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  width: 75
-  height: 75
-  crawlPrefab: {fileID: 6016699374108337295, guid: 18e5e8518abfda1429cafae8efe349a4,
-    type: 3}
+  crawlPrefab: {fileID: 0}
 --- !u!4 &1582204601
 Transform:
   m_ObjectHideFlags: 0
