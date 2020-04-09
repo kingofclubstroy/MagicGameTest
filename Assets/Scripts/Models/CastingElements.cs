@@ -17,29 +17,22 @@ public class CastingElements
     public Element element;
 
     public float amount = 0;
-    public int numTiles = 0;
 
     public int lastIndex = 0;
 
     public float updateAmount = 0;
     
-    public CastingElements(Element element)
+    public CastingElements(Element element, int update)
     {
 
         this.element = element;
+        this.updateAmount = update;
 
     }
 
     public void addTempAmount(float temp)
     {
-        updateAmount += temp;
-        numTiles += 1;
-    }
-
-    public void Reset()
-    {
-        updateAmount = 0;
-        numTiles = 0;
+        updateAmount = temp;
     }
 
 }

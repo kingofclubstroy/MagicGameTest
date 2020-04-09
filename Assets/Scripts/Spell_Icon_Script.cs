@@ -31,9 +31,6 @@ public class Spell_Icon_Script : MonoBehaviour
     {
 
         GetComponent<BoxCollider2D>().size = new Vector2(SampleTexture.width, SampleTexture.height);
-       
-        
-        
         
     }
 

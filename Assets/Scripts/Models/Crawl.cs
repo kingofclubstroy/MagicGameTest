@@ -418,7 +418,6 @@ public class Crawl
         if(isBurnt(pixelPos))
         {
             neighbourDictionary.Remove(pixelPos);
-            Debug.Log("is Burnt");
             return false;
         }
 

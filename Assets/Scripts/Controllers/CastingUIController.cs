@@ -37,10 +37,14 @@ public class CastingUIController : MonoBehaviour
         BottomRight
     }
 
+    bool reset = true;
+
+
+
     [SerializeField]
     GameObject spellIconPrefab;
 
-    List<CastingElements> elementList = new List<CastingElements>();
+    Dictionary<CastingElements.Element, CastingElements> castingElementDict = new Dictionary<CastingElements.Element, CastingElements>();
 
     public List<Spell_Icon_Script> spellIcons = new List<Spell_Icon_Script>();
 
@@ -75,8 +79,9 @@ public class CastingUIController : MonoBehaviour
     void Update()
     {
 
-        //updateCastingCircle();
         GetSurroundingElementsPixels();
+        updateCastingCircle();
+        
 
 
 
@@ -174,18 +179,19 @@ public class CastingUIController : MonoBehaviour
         else
         {
             elementDifference = Time.deltaTime * -1;
+            reset = true;
 
         }
-
-
 
         if (elementDifference > 0 || running == true)
         {
 
             bool allZero = true;
             int i = 0;
-            foreach (CastingElements element in elementList)
+            foreach (CastingElements.Element element in castingElementDict.Keys)
             {
+
+                CastingElements castingElement = castingElementDict[element];
 
                 List<Vector2> circleList = pixelList[i];
 
@@ -200,11 +206,11 @@ public class CastingUIController : MonoBehaviour
                     //TODO: may want to change these numbers, but they will work for now
                     //Setting the amount casted to be related to the ratio amount of element present and the theiritical max amount that could be,
                     // multiplied by the max cast speed im temporarly setting as 50 (maybe there are augments that improve this)
-                    tempElementDifference = ((element.updateAmount / 900f) * 50f) * elementDifference;
+                    tempElementDifference = ((castingElement.updateAmount / 900f) * 50f) * elementDifference;
 
                 }
 
-                float elementCasted = Mathf.Clamp(element.amount + tempElementDifference, 0, 100);
+                float elementCasted = Mathf.Clamp(castingElement.amount + tempElementDifference, 0, 100);
 
 
 
@@ -213,21 +219,21 @@ public class CastingUIController : MonoBehaviour
                     allZero = false;
                 }
 
-                if (elementCasted > element.updateAmount && elementDifference > 0)
+                if (elementCasted > castingElement.updateAmount && elementDifference > 0)
                 {
                     //The amount of the element casted is more than the amount of element surrounding the player, so lets set tot he amount around
-                    elementCasted = element.updateAmount;
+                    elementCasted = castingElement.updateAmount;
                 }
 
                 foreach (Spell_Icon_Script icon in spellIcons)
                 {
-                    if (element.element == icon.spell.element)
+                    if (castingElement.element == icon.spell.element)
                     {
                         icon.setElementCharge(elementCasted);
                     }
                 }
 
-                element.amount = elementCasted;
+                castingElement.amount = elementCasted;
 
                 float percent = (elementCasted / 100f);
 
@@ -236,17 +242,17 @@ public class CastingUIController : MonoBehaviour
                 if (index >= 0 && index < circleList.Count)
                 {
 
-                    if (index != element.lastIndex)
+                    if (index != castingElement.lastIndex)
                     {
 
                         pixelsChanged = true;
 
-                        Color colorToChange = getColor(element.element);
+                        Color colorToChange = getColor(castingElement.element);
 
-                        if (index < element.lastIndex)
+                        if (index < castingElement.lastIndex)
                         {
 
-                            for (int tempIndex = index; tempIndex <= element.lastIndex; tempIndex++)
+                            for (int tempIndex = index; tempIndex <= castingElement.lastIndex; tempIndex++)
                             {
 
                                 finalTexture.SetPixel((int)circleList[tempIndex].x, (int)circleList[tempIndex].y, Color.clear);
@@ -257,7 +263,7 @@ public class CastingUIController : MonoBehaviour
                         else
                         {
 
-                            for (int tempIndex = element.lastIndex; tempIndex <= index; tempIndex++)
+                            for (int tempIndex = castingElement.lastIndex; tempIndex <= index; tempIndex++)
                             {
 
                                 finalTexture.SetPixel((int)circleList[tempIndex].x, (int)circleList[tempIndex].y, colorToChange);
@@ -265,7 +271,7 @@ public class CastingUIController : MonoBehaviour
                             }
                         }
 
-                        element.lastIndex = index;
+                        castingElement.lastIndex = index;
 
 
                     }
@@ -273,8 +279,6 @@ public class CastingUIController : MonoBehaviour
 
 
                 }
-
-                element.Reset();
 
                 i++;
 
@@ -295,13 +299,16 @@ public class CastingUIController : MonoBehaviour
             if (allZero)
             {
 
+                Debug.Log("all zero");
+
+                Debug.Log(spellIcons.Count);
+
                 foreach (Spell_Icon_Script icon in spellIcons)
                 {
                     icon.destroy();
                 }
                 //all of the casting elements have decayed to 0, so lets clear the list
                 spellIcons.Clear();
-                elementList.Clear();
                 selectedSpell = null;
 
                 //Need to tell everyone that the spell is unselected
@@ -310,7 +317,9 @@ public class CastingUIController : MonoBehaviour
 
                 spellSelectedEvent.FireEvent();
 
+                //TODO: need to group these actions together
                 CrawlController.instance.clearCasting();
+                FireControllerScript.instance.clearCasting();
 
                 running = false;
             }
@@ -611,104 +620,128 @@ public class CastingUIController : MonoBehaviour
     void GetSurroundingElementsPixels()
     {
 
-        CrawlController.instance.GetNumberPixelsInCircle(this.transform.position, 25);
+        DealWithElement(CastingElements.Element.NATURE, CrawlController.instance.GetNumberPixelsInCircle(this.transform.position, 25, reset));
+
+        DealWithElement(CastingElements.Element.FIRE, FireControllerScript.instance.GetNumberPixelsInCircle(this.transform.position, 25, reset));
+        //DealWithElement(CastingElements.Element.EARTH, //TODO:::)
+        //DealWithElement(CastingElements.Element.WATER, //TODO:::)
+        //DealWithElement(CastingElements.Element.WIND, //TODO:::)
+
+        if(reset == true)
+        {
+            Debug.Log("resetting!");
+        }
+        reset = false;
+
+    }
+
+    void DealWithElement(CastingElements.Element element, int pixels)
+    {
+        if(castingElementDict.ContainsKey(element))
+        {
+            castingElementDict[element].addTempAmount(pixels);
+        } else if(pixels > 0)
+        {
+            castingElementDict.Add(element, new CastingElements(element, pixels));
+            makeSpellIcon(element);
+        }
 
     }
 
 
-     void GetSurroundingElements()
-     {
+    // void GetSurroundingElements()
+    // {
 
-        List<TileScript> neighbouringTiles = WorldController.instance.findNeighbours(WorldController.instance.GetTilePositionFromWorld(this.transform.parent.position), true);
+    //    List<TileScript> neighbouringTiles = WorldController.instance.findNeighbours(WorldController.instance.GetTilePositionFromWorld(this.transform.parent.position), true);
 
-        bool startOfCast = false;
+    //    bool startOfCast = false;
 
-        //Check to see if we have an empty element list, so we know we will have to sort the elements based on casting speed
-        if (elementList.Count == 0)
-        {
+    //    //Check to see if we have an empty element list, so we know we will have to sort the elements based on casting speed
+    //    if (elementList.Count == 0)
+    //    {
             
-            startOfCast = true;
-        }
+    //        startOfCast = true;
+    //    }
 
-        foreach (TileScript tile in neighbouringTiles)
-        {
+    //    foreach (TileScript tile in neighbouringTiles)
+    //    {
 
-            if (tile != null)
-            {
+    //        if (tile != null)
+    //        {
 
-                if (tile.fire > 0)
-                {
-                    CastingElements ele = null;
+    //            if (tile.fire > 0)
+    //            {
+    //                CastingElements ele = null;
 
-                    foreach (CastingElements e in elementList)
-                    {
-                        if (e.element == CastingElements.Element.FIRE)
-                        {
-                            ele = e;
-                            break;
-                        }
-                    }
+    //                foreach (CastingElements e in elementList)
+    //                {
+    //                    if (e.element == CastingElements.Element.FIRE)
+    //                    {
+    //                        ele = e;
+    //                        break;
+    //                    }
+    //                }
 
-                    if (ele != null)
-                    {
-                        ele.addTempAmount(tile.fire);
-                    }
-                    else
-                    {
-                        CastingElements c = new CastingElements(CastingElements.Element.FIRE);
-                        c.addTempAmount(tile.fire);
-                        elementList.Add(c);
-                        makeSpellIcon(CastingElements.Element.FIRE);
+    //                if (ele != null)
+    //                {
+    //                    ele.addTempAmount(tile.fire);
+    //                }
+    //                else
+    //                {
+    //                    CastingElements c = new CastingElements(CastingElements.Element.FIRE);
+    //                    c.addTempAmount(tile.fire);
+    //                    elementList.Add(c);
+    //                    makeSpellIcon(CastingElements.Element.FIRE);
 
                         
-                    }
-                }
+    //                }
+    //            }
 
-                if (tile.fuel > 0)
-                {
-                    CastingElements ele = null;
+    //            if (tile.fuel > 0)
+    //            {
+    //                CastingElements ele = null;
 
-                    foreach (CastingElements e in elementList)
-                    {
-                        if (e.element == CastingElements.Element.NATURE)
-                        {
-                            ele = e;
-                            break;
-                        }
-                    }
+    //                foreach (CastingElements e in elementList)
+    //                {
+    //                    if (e.element == CastingElements.Element.NATURE)
+    //                    {
+    //                        ele = e;
+    //                        break;
+    //                    }
+    //                }
 
-                    if (ele != null)
-                    {
-                        ele.addTempAmount(tile.fuel);
-                    }
-                    else
-                    {
+    //                if (ele != null)
+    //                {
+    //                    ele.addTempAmount(tile.fuel);
+    //                }
+    //                else
+    //                {
 
-                        CastingElements c = new CastingElements(CastingElements.Element.NATURE);
-                        c.addTempAmount(tile.fuel);
-                        elementList.Add(c);
-                        makeSpellIcon(CastingElements.Element.NATURE);
-                    }
-                }
-            }
+    //                    CastingElements c = new CastingElements(CastingElements.Element.NATURE, 0);
+    //                    c.addTempAmount(tile.fuel);
+    //                    elementList.Add(c);
+    //                    makeSpellIcon(CastingElements.Element.NATURE);
+    //                }
+    //            }
+    //        }
 
-            //TODO: add looking for other elements
+    //        //TODO: add looking for other elements
 
-        }
+    //    }
 
-        if(startOfCast && elementList.Count > 1)
-        {
+    //    if(startOfCast && elementList.Count > 1)
+    //    {
            
-            //We didnt have any elements in the list before we searched and now we have multiple that we need to sort, so lets sort the list
-            elementList.Sort((p1, p2) => p1.updateAmount.CompareTo(p2.updateAmount));
+    //        //We didnt have any elements in the list before we searched and now we have multiple that we need to sort, so lets sort the list
+    //        elementList.Sort((p1, p2) => p1.updateAmount.CompareTo(p2.updateAmount));
             
-        }
+    //    }
 
-        if(elementList.Count == 0)
-        {
-            Debug.Log("no elements around");
-        }
-    }
+    //    if(elementList.Count == 0)
+    //    {
+    //        Debug.Log("no elements around");
+    //    }
+    //}
 
     void makeSpellIcon(CastingElements.Element element)
     {

@@ -133,53 +133,15 @@ public class CrawlController : MonoBehaviour
         //crawls.Remove(crawl);
     }
 
-    public int GetNumberPixelsInCircle(Vector2 origin, int r)
+    public int GetNumberPixelsInCircle(Vector2 origin, int r, bool reset)
     {
-        if (castingList == null)
+        if (reset)
         {
-            castingList = new HashSet<Vector2>();
+            (HashSet<Vector2>, int) values = HelperFunctions.MakeCircleHashSet(origin, width, height, r, texture, Color.green);
 
-            origin += new Vector2(width / 2, height / 2);
+            totalGrowth = values.Item2;
+            castingList = values.Item1;
 
-            List<Vector2> tmpList = new List<Vector2>();
-            List<Vector2> list = new List<Vector2>();
-            float rSquared = r * r; // using sqared reduces execution time (no square root needed)
-            for (int x = 1; x <= r; x++)
-                for (int y = 0; y <= r; y++)
-                {
-                    Vector2 v = new Vector2(x, y);
-                    if (Vector2.SqrMagnitude(v) <= rSquared)
-                        tmpList.Add(v);
-                    else
-                        break;
-                }
-
-            list.Add(origin);
-            foreach (Vector2 v in tmpList)
-            {
-                Vector2 vMirr = new Vector2(v.x, -1 * v.y);
-
-                list.Add(origin + v);
-                list.Add(origin + new Vector2(v.x * -1, v.y * -1));
-                list.Add(origin + vMirr);
-                list.Add(origin + new Vector2(vMirr.x * -1, vMirr.y * -1));
-            }
-
-
-
-            totalGrowth = 0;
-
-            foreach (Vector2 location in list)
-            {
-
-                castingList.Add(location);
-
-                Color color = texture.GetPixel((int)location.x, (int)location.y);
-                if (color == Color.green)
-                {
-                    totalGrowth += 1;
-                }
-            }
 
         }
 

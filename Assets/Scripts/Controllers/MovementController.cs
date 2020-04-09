@@ -22,6 +22,10 @@ public class MovementController : MonoBehaviour
     [SerializeField]
     Animator animator;
 
+    bool facingRight = true;
+
+    bool casting = false;
+
 
     #endregion
 
@@ -36,6 +40,12 @@ public class MovementController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
+        if(casting && (Input.GetKeyUp("space") || Input.GetKeyUp("r")))
+        {
+            animator.SetBool("Casting", false);
+            casting = false;
+        }
 
         //TODO: dont want to be doing this, but i must for now, means when holding space (casting) you cant move
         if(Input.GetKey(KeyCode.Space) == false)
@@ -62,6 +72,11 @@ public class MovementController : MonoBehaviour
                 animator.SetBool("Walking_Up", false);
                 animator.SetBool("Walking_Down", false);
                 animator.SetBool("Walking_Left", true);
+
+                if (h > 0 && !facingRight)
+                    Flip();
+                else if (h < 0 && facingRight)
+                    Flip();
             } else
             {
                 animator.SetBool("Walking_Up", false);
@@ -78,56 +93,87 @@ public class MovementController : MonoBehaviour
         //TODO: remove
         if(Input.GetKeyDown("space"))
         {
-            crawlController.CreateCrawl(transform.position);
+            Vector2 bottom = transform.position;
+            bottom.y -= 14;
+            crawlController.CreateCrawl(bottom);
+            animator.SetBool("Casting", true);
+            casting = true;
             //crawlController.CreateCrawl(transform.position, 1000, 1000);
         }
 
         if(Input.GetKeyDown("r"))
         {
-
-            crawlController.AddFire(transform.position);
+            Vector2 bottom = transform.position;
+            bottom.y -=  14;
+            crawlController.AddFire(bottom);
+            animator.SetBool("Casting", true);
+            casting = true;
 
         }
 
-        if(Input.GetKeyDown("e"))
+        if (Input.GetKeyDown("q"))
         {
 
-            if(runningCrawl == null)
+            Vector2 bottom = transform.position;
+            bottom.y -= 14;
+
+            for(int x = -3; x <= 3; x++)
             {
-                runningCrawl = crawlController.CreateCrawl(transform.position);
-                runningStartPosition = transform.position;
-                runningStartTime = Time.time;
-            } 
-
-
-
-
-        } else if(runningCrawl != null)
-        {
-
-            if (Time.time - runningStartTime >= 3)
-            {
-                runningCrawl = null;
-
+                for(int y = -3; y <= 3; y++)
+                {
+                   
+                        Vector2 pos = new Vector2(bottom.x + x, bottom.y + y);
+                        WaterControllerScript.instance.AddWater(pos, 100);
+                    
+                }
             }
-            else
-            {
-                int startingPixel = crawlController.GetWidth()/2;
 
-                int startX = startingPixel + (int)transform.position.x;
-                int startY = startingPixel + (int)transform.position.y;
+            WaterControllerScript.instance.applyTexture();
+
+        }
+
+        //if (Input.GetKeyDown("e"))
+        //{
+
+        //    if(runningCrawl == null)
+        //    {
+        //        runningCrawl = crawlController.CreateCrawl(transform.position);
+        //        runningStartPosition = transform.position;
+        //        runningStartTime = Time.time;
+        //    } 
+
+        //} else if(runningCrawl != null)
+        //{
+
+        //    if (Time.time - runningStartTime >= 3)
+        //    {
+        //        runningCrawl = null;
+
+        //    }
+        //    else
+        //    {
+        //        int startingPixel = crawlController.GetWidth()/2;
+
+        //        int startX = startingPixel + (int)transform.position.x;
+        //        int startY = startingPixel + (int)transform.position.y;
 
 
-                runningCrawl.GrowByPosition(new Vector2(startX, startY));
-            }
+        //        runningCrawl.GrowByPosition(new Vector2(startX, startY));
+        //    }
             
+        //}
+
+
+        void Flip()
+        {
+            facingRight = !facingRight;
+            Vector3 theScale = transform.localScale;
+            theScale.x *= -1;
+            transform.localScale = theScale;
         }
 
 
 
-
-
-        
 
     }
 
