@@ -56,7 +56,7 @@ public class CharacterController : MonoBehaviour
 
                     SpellSelectedEvent spellSelected = new SpellSelectedEvent();
 
-                    spellSelected.spell = spellIcon.spell;
+                    //spellSelected.spell = spellIcon.spell;
 
                     spellSelected.FireEvent();
 

@@ -25,6 +25,9 @@ public class CrawlController : MonoBehaviour
 
     public HashSet<Vector2> BurntSpaces;
 
+    [SerializeField]
+    Color growthColor, burntColor;
+
     #region growth variables
 
     Dictionary<Vector2, int> CrawlLocations;
@@ -107,14 +110,31 @@ public class CrawlController : MonoBehaviour
         return texture.GetPixel(x, y);
     }
 
-    public void SetPixel(int x, int y, Color color)
+    public void SetPixel(int x, int y)
     {
-        if(castingList != null && castingList.Contains(new Vector2(x, y)))
+        
+        if (castingList != null && castingList.Contains(new Vector2(x, y)))
         {
             totalGrowth += 1;
         }
 
-        texture.SetPixel((int)x, (int)y, color);
+        texture.SetPixel((int)x, (int)y, growthColor);
+    }
+
+    public void SetOnFire(int x, int y)
+    {
+        if (castingList != null && castingList.Contains(new Vector2(x, y)))
+        {
+            totalGrowth -= 1;
+            
+        } 
+
+        texture.SetPixel((int)x, (int)y, burntColor);
+    }
+
+    public bool CrawlHere(int x, int y)
+    {
+        return texture.GetPixel(x, y) == growthColor;
     }
 
     public int GetHeight()
@@ -135,9 +155,11 @@ public class CrawlController : MonoBehaviour
 
     public int GetNumberPixelsInCircle(Vector2 origin, int r, bool reset)
     {
-        if (reset)
+        if (reset || castingList == null)
         {
-            (HashSet<Vector2>, int) values = HelperFunctions.MakeCircleHashSet(origin, width, height, r, texture, Color.green);
+            origin.x = (int)origin.x;
+            origin.y = (int)origin.y;
+            (HashSet<Vector2>, int) values = HelperFunctions.MakeCircleHashSet(origin, width, height, r, texture, growthColor);
 
             totalGrowth = values.Item2;
             castingList = values.Item1;

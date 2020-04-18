@@ -23,7 +23,7 @@ public class Spell
     CastingAbility ICast;
 
     [SerializeField]
-    CastingElements.Element element;
+    CastingUIController.Element element;
 
     public void Cast()
     {

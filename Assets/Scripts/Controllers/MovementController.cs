@@ -93,18 +93,21 @@ public class MovementController : MonoBehaviour
         //TODO: remove
         if(Input.GetKeyDown("space"))
         {
-            Vector2 bottom = transform.position;
-            bottom.y -= 14;
-            crawlController.CreateCrawl(bottom);
+           
             animator.SetBool("Casting", true);
             casting = true;
             //crawlController.CreateCrawl(transform.position, 1000, 1000);
         }
 
+        if(Input.GetKeyDown("p"))
+        {
+            Vector2 bottom = transform.position;
+            crawlController.CreateCrawl(bottom);
+        }
+
         if(Input.GetKeyDown("r"))
         {
             Vector2 bottom = transform.position;
-            bottom.y -=  14;
             crawlController.AddFire(bottom);
             animator.SetBool("Casting", true);
             casting = true;
@@ -115,7 +118,6 @@ public class MovementController : MonoBehaviour
         {
 
             Vector2 bottom = transform.position;
-            bottom.y -= 14;
 
             for(int x = -3; x <= 3; x++)
             {

@@ -161,7 +161,7 @@ public class FireControllerScript : MonoBehaviour
     public void AddFire(Vector2 position)
     {
 
-        if (CrawlController.instance.GetPixel((int)position.x, (int)position.y) == Color.green && !firePositions.ContainsKey(position))
+        if (CrawlController.instance.CrawlHere((int)position.x, (int)position.y) && !firePositions.ContainsKey(position))
         {
             if (WaterControllerScript.instance.waterHere(position))
             {
@@ -177,11 +177,11 @@ public class FireControllerScript : MonoBehaviour
                 Fire newFire = new Fire(position);
                 firePositions[position] = newFire;
                 fireQueue.Enqueue(newFire);
-                CrawlController.instance.SetPixel((int)position.x, (int)position.y, Color.black);
+                CrawlController.instance.SetOnFire((int)position.x, (int)position.y);
                 texture.SetPixel((int)position.x, (int)position.y, Color.red);
                 CrawlController.instance.BurntSpaces.Add(position);
                 fireGrown++;
-                if(castingList.Contains(position))
+                if (castingList != null && castingList.Contains(position))
                 {
                     totalGrowth += 1;
                 }
@@ -196,9 +196,8 @@ public class FireControllerScript : MonoBehaviour
     {
 
         texture.SetPixel((int)fire.GetPosition().x, (int)fire.GetPosition().y, Color.clear);
-        if (castingList.Contains(fire.GetPosition()))
+        if (castingList != null && castingList.Contains(fire.GetPosition()))
         {
-            Debug.Log("destroying fire in casting list");
             totalGrowth -= 1;
         }
 
@@ -222,13 +221,12 @@ public class FireControllerScript : MonoBehaviour
 
     public int GetNumberPixelsInCircle(Vector2 origin, int r, bool reset)
     {
-        if (reset)
+        if (reset || castingList == null)
         {
             (HashSet<Vector2>, int) values = HelperFunctions.MakeCircleHashSet(origin, width, height, r, texture, Color.red);
 
             totalGrowth = values.Item2;
             castingList = values.Item1;
-
 
         }
 

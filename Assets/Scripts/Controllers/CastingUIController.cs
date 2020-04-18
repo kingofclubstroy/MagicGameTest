@@ -6,19 +6,6 @@ public class CastingUIController : MonoBehaviour
 {
 
     [SerializeField]
-    Sprite sprite;
-
-    [SerializeField]
-    Texture2D[] circleTextureList = new Texture2D[4];
-    
-
-    SpriteRenderer SpriteRenderer;
-
-    List<List<Vector2>> pixelList;
-
-    Texture2D finalTexture;
-
-    [SerializeField]
     float decayRate = 10f;
 
     [SerializeField]
@@ -27,49 +14,47 @@ public class CastingUIController : MonoBehaviour
     [SerializeField]
     float maxCastRate;
 
+    [SerializeField]
+    Texture2D spellTexture;
+
     Vector2 screenCenter;
 
-    enum Quadrent
-    {
-        TopLeft,
-        TopRight,
-        BottomLeft,
-        BottomRight
-    }
+    [SerializeField]
+    SpellTest[] spells;
+
+    int numberSpells;
+    bool firstDeserialization = true;
 
     bool reset = true;
 
+    List<(Element, int)> circlesToInstantiate = new List<(Element, int)>();
 
+    public enum Element
+    {
+        FIRE,
+        NATURE,
+        EARTH,
+        WIND,
+        WATER
+    }
 
     [SerializeField]
     GameObject spellIconPrefab;
 
-    Dictionary<CastingElements.Element, CastingElements> castingElementDict = new Dictionary<CastingElements.Element, CastingElements>();
+    [SerializeField]
+    GameObject CastingCirclePrefab;
+
+    Dictionary<Element, CastingCircleScript> castingElementDict = new Dictionary<Element, CastingCircleScript>();
 
     public List<Spell_Icon_Script> spellIcons = new List<Spell_Icon_Script>();
 
     public Spell_Icon_Script selectedSpell;
 
-    bool running = false;
-
     // Start is called before the first frame update
     void Start()
     {
 
-        SpriteRenderer = GetComponent<SpriteRenderer>();
-
-        Texture2D spriteTexture = sprite.texture;
-
-        pixelList = new List<List<Vector2>>();
-
-
-        foreach(Texture2D texture in circleTextureList)
-        {
-            makePixelMap(texture);
-        }
-
         screenCenter = new Vector2(Screen.width / 2, Screen.height / 2);
-
 
     }
 
@@ -78,13 +63,7 @@ public class CastingUIController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
-        GetSurroundingElementsPixels();
         updateCastingCircle();
-        
-
-
-
     }
 
     void selectSpell()
@@ -158,10 +137,7 @@ public class CastingUIController : MonoBehaviour
     void updateCastingCircle()
     {
 
-
         float elementDifference = 0;
-
-        bool pixelsChanged = false;
 
         //TODO: remove delta time dependence, may want to do a 30-60 fps limit, and may want to go with integers and not floats
         if (Input.GetKey(KeyCode.Space))
@@ -171,444 +147,136 @@ public class CastingUIController : MonoBehaviour
 
             GetSurroundingElementsPixels();
 
-            running = true;
+            updateElements();
 
             //selectSpell();
 
         }
-        else
+        else if (Input.GetKeyUp(KeyCode.Space))
         {
-            elementDifference = Time.deltaTime * -1;
             reset = true;
+            //TODO: need to group these actions together
+            CrawlController.instance.clearCasting();
+            FireControllerScript.instance.clearCasting();
+
+            foreach(CastingCircleScript element in castingElementDict.Values)
+            {
+                element.initializeDestruction();
+                
+            }
+
+            foreach (Spell_Icon_Script spell in spellIcons)
+            {
+                spell.initializeDestruction();
+            }
+
+            spellIcons.Clear();
+
+            castingElementDict.Clear();
 
         }
 
-        if (elementDifference > 0 || running == true)
-        {
-
-            bool allZero = true;
-            int i = 0;
-            foreach (CastingElements.Element element in castingElementDict.Keys)
-            {
-
-                CastingElements castingElement = castingElementDict[element];
-
-                List<Vector2> circleList = pixelList[i];
-
-                float tempElementDifference = 0;
-
-                if (elementDifference < 0)
-                {
-                    tempElementDifference = decayRate * elementDifference;
-                }
-                else
-                {
-                    //TODO: may want to change these numbers, but they will work for now
-                    //Setting the amount casted to be related to the ratio amount of element present and the theiritical max amount that could be,
-                    // multiplied by the max cast speed im temporarly setting as 50 (maybe there are augments that improve this)
-                    tempElementDifference = ((castingElement.updateAmount / 900f) * 50f) * elementDifference;
-
-                }
-
-                float elementCasted = Mathf.Clamp(castingElement.amount + tempElementDifference, 0, 100);
-
-
-
-                if (elementCasted != 0)
-                {
-                    allZero = false;
-                }
-
-                if (elementCasted > castingElement.updateAmount && elementDifference > 0)
-                {
-                    //The amount of the element casted is more than the amount of element surrounding the player, so lets set tot he amount around
-                    elementCasted = castingElement.updateAmount;
-                }
-
-                foreach (Spell_Icon_Script icon in spellIcons)
-                {
-                    if (castingElement.element == icon.spell.element)
-                    {
-                        icon.setElementCharge(elementCasted);
-                    }
-                }
-
-                castingElement.amount = elementCasted;
-
-                float percent = (elementCasted / 100f);
-
-                int index = Mathf.FloorToInt(percent * circleList.Count);
-
-                if (index >= 0 && index < circleList.Count)
-                {
-
-                    if (index != castingElement.lastIndex)
-                    {
-
-                        pixelsChanged = true;
-
-                        Color colorToChange = getColor(castingElement.element);
-
-                        if (index < castingElement.lastIndex)
-                        {
-
-                            for (int tempIndex = index; tempIndex <= castingElement.lastIndex; tempIndex++)
-                            {
-
-                                finalTexture.SetPixel((int)circleList[tempIndex].x, (int)circleList[tempIndex].y, Color.clear);
-
-                            }
-
-                        }
-                        else
-                        {
-
-                            for (int tempIndex = castingElement.lastIndex; tempIndex <= index; tempIndex++)
-                            {
-
-                                finalTexture.SetPixel((int)circleList[tempIndex].x, (int)circleList[tempIndex].y, colorToChange);
-
-                            }
-                        }
-
-                        castingElement.lastIndex = index;
-
-
-                    }
-
-
-
-                }
-
-                i++;
-
-            }
-
-            if (pixelsChanged)
-            {
-
-                finalTexture.Apply();
-
-                SpriteRenderer.sprite = Sprite.Create(finalTexture, new Rect(0, 0, finalTexture.width, finalTexture.height), new Vector2(0.5f, 0.5f), 1);
-
-                SpriteRenderer.material.mainTexture = finalTexture as Texture;
-                SpriteRenderer.material.shader = Shader.Find("Sprites/Default");
-
-            }
-
-            if (allZero)
-            {
-
-                Debug.Log("all zero");
-
-                Debug.Log(spellIcons.Count);
-
-                foreach (Spell_Icon_Script icon in spellIcons)
-                {
-                    icon.destroy();
-                }
-                //all of the casting elements have decayed to 0, so lets clear the list
-                spellIcons.Clear();
-                selectedSpell = null;
-
-                //Need to tell everyone that the spell is unselected
-                SpellSelectedEvent spellSelectedEvent = new SpellSelectedEvent();
-                spellSelectedEvent.selected = false;
-
-                spellSelectedEvent.FireEvent();
-
-                //TODO: need to group these actions together
-                CrawlController.instance.clearCasting();
-                FireControllerScript.instance.clearCasting();
-
-                running = false;
-            }
-
-
-
-        }
+       
     }
 
-    void makePixelMap(Texture2D circleTexture)
+    void updateElements()
     {
-        List<Vector2> circleList = new List<Vector2>();
+
+        //TODO: remove delta time, make fixed?
+        float elementDifference = Time.deltaTime;
+
+        foreach (Element element in castingElementDict.Keys)
+        {
+
+            CastingCircleScript castingElement = castingElementDict[element];
+
+            float tempElementDifference = 0;
+          
+            //TODO: may want to change these numbers, but they will work for now
+            //Setting the amount casted to be related to the ratio amount of element present and the theiritical max amount that could be,
+            // multiplied by the max cast speed im temporarly setting as 50 (maybe there are augments that improve this)
+            tempElementDifference = ((castingElement.updateAmount / 900f) * 50f) * elementDifference;
+
+            if (element == Element.FIRE)
+            {
+                tempElementDifference *= 3;
+            }
+
+            
+            float elementCasted = Mathf.Clamp(castingElement.amount + tempElementDifference, 0, 100);
+
+            if (elementCasted > castingElement.updateAmount && elementDifference > 0)
+            {
+                //The amount of the element casted is more than the amount of element surrounding the player, so lets set tot he amount around
+                elementCasted -= Mathf.Clamp(elementCasted - castingElement.updateAmount, 0, 1);
+            }
+
+            foreach (Spell_Icon_Script icon in spellIcons)
+            {
+                if (element == icon.spell.getElement())
+                {
+                    icon.updateSpellIcon(elementCasted);
+                }
+            }
+
+            castingElement.amount = elementCasted;
+
+            float percent = (elementCasted / 100f);
+
+            //updates the casting circle color
+            castingElement.updateCastingCircleTexture(percent, getColor(element));
+
+        }
+        //if (allZero)
+        //{
+
+        //    foreach (Spell_Icon_Script icon in spellIcons)
+        //    {
+        //        icon.destroy();
+        //    }
+        //    //all of the casting elements have decayed to 0, so lets clear the list
+        //    spellIcons.Clear();
+        //    selectedSpell = null;
+
+        //    //Need to tell everyone that the spell is unselected
+        //    SpellSelectedEvent spellSelectedEvent = new SpellSelectedEvent();
+        //    spellSelectedEvent.selected = false;
+
+        //    spellSelectedEvent.FireEvent();
+
+        //    bool keepUpdating = false;
+
+        //    foreach(Casting)
+
+        //    castingElementDict.Clear();
+
+
+
+        //    running = false;
+        //}
         
-        finalTexture = new Texture2D(circleTexture.width, circleTexture.height, TextureFormat.ARGB32, false);
-
-        finalTexture.filterMode = FilterMode.Point;
-
-        for (int y = 0; y < finalTexture.height; y++)
-        {
-            for (int x = 0; x < finalTexture.width; x++)
-            {
-                finalTexture.SetPixel(x, y, Color.clear);
-            }
-        }
-
-        Vector2 firstPixel = findFirstPixel(circleTexture);
-
-        
-
-        Vector2 currentPixel = firstPixel;
-
-        if (firstPixel == new Vector2(-1, -1))
-        {
-            Debug.LogError("couldn't find first pixel?!?!");
-            return;
-        }
-
-        circleList.Add(firstPixel);
-
-        while(true)
-        {
-            currentPixel = findNextPixel(currentPixel, circleTexture);
-
-            if (currentPixel == firstPixel)
-            {
-                pixelList.Add(circleList);
-                return;
-            }
-
-            circleList.Add(currentPixel);
-        }
-
-
     }
 
-    Vector2 findFirstPixel(Texture2D circleTexture)
-    {
-
-        for(int i = 0; i < circleTexture.width; i++)
-        {
-
-            if(circleTexture.GetPixel(i, circleTexture.height/2) == Color.black)
-            {
-                return new Vector2(i, circleTexture.height / 2);
-            }
-
-        }
-
-        return new Vector2(-1, -1);
-
-    }
-
-    Quadrent GetQuadrent(Vector2 currentPixel, Texture2D circleTexture)
-    {
-
-        if(currentPixel.y >= circleTexture.height/2)
-        {
-            //In the top quadrent
-            if(currentPixel.x <= circleTexture.width/2)
-            {
-                //Is the top left quadrent
-                
-                return Quadrent.TopLeft;
-            } else
-            {
-               
-                return Quadrent.TopRight;
-            }
-        } else
-        {
-
-            //In the bottom quadrent
-            if (currentPixel.x <= circleTexture.width / 2)
-            {
-                
-                //Is the bottom left quadrent
-                return Quadrent.BottomLeft;
-            }
-            else
-            {
-                
-                return Quadrent.BottomRight;
-            }
-
-        }
-
-    }
-
-    Vector2 findNextPixel(Vector2 currentPixel, Texture2D circleTexture)
-    {
-
-        Quadrent quadrent = GetQuadrent(currentPixel, circleTexture);
-
-        switch(quadrent)
-        {
-            case Quadrent.TopLeft:
-
-                if(checkTop(currentPixel, circleTexture) == Color.black)
-                {
-                    return new Vector2(currentPixel.x, currentPixel.y + 1);
-                }
-                if (checkTopRight(currentPixel, circleTexture) == Color.black)
-                {
-                    return new Vector2(currentPixel.x + 1, currentPixel.y + 1);
-                }
-                if (checkRight(currentPixel, circleTexture) == Color.black)
-                {
-                    return new Vector2(currentPixel.x + 1, currentPixel.y);
-                }
-                break;
-
-            case Quadrent.TopRight:
-
-                if (checkBottom(currentPixel, circleTexture) == Color.black)
-                {
-                    return new Vector2(currentPixel.x, currentPixel.y - 1);
-                }
-                if (checkBottomRight(currentPixel, circleTexture) == Color.black)
-                {
-                    return new Vector2(currentPixel.x + 1, currentPixel.y - 1);
-                }
-                if (checkRight(currentPixel, circleTexture) == Color.black)
-                {
-                    return new Vector2(currentPixel.x + 1, currentPixel.y);
-                }
-                break;
-
-            case Quadrent.BottomLeft:
-
-                if (checkTop(currentPixel, circleTexture) == Color.black)
-                {
-                    return new Vector2(currentPixel.x, currentPixel.y + 1);
-                }
-                if (checkTopLeft(currentPixel, circleTexture) == Color.black)
-                {
-                    return new Vector2(currentPixel.x - 1, currentPixel.y + 1);
-                }
-                if (checkLeft(currentPixel, circleTexture) == Color.black)
-                {
-                    return new Vector2(currentPixel.x - 1, currentPixel.y);
-                }
-                break;
-
-            case Quadrent.BottomRight:
-
-                if (checkBottom(currentPixel, circleTexture) == Color.black)
-                {
-                    return new Vector2(currentPixel.x, currentPixel.y - 1);
-                }
-                if (checkBottomLeft(currentPixel, circleTexture) == Color.black)
-                {
-                    return new Vector2(currentPixel.x - 1, currentPixel.y - 1);
-                }
-                if (checkLeft(currentPixel, circleTexture) == Color.black)
-                {
-                    return new Vector2(currentPixel.x - 1, currentPixel.y);
-                }
-                break;
-
-
-
-        }
-
-
-        return new Vector2(-1, -1);
-
-    }
-
-    Color checkLeft(Vector2 currentPixel, Texture2D circleTexture)
-    {
-        if (currentPixel.x - 1 < 0)
-        {
-            return Color.clear;
-        }
-
-        return circleTexture.GetPixel( (int) currentPixel.x - 1, (int) currentPixel.y);
-    }
-
-    Color checkRight(Vector2 currentPixel, Texture2D circleTexture)
-    {
-        if (currentPixel.x + 1 >= circleTexture.width)
-        {
-            return Color.clear;
-        }
-
-        return circleTexture.GetPixel((int)currentPixel.x + 1, (int)currentPixel.y);
-    }
-
-    Color checkTop(Vector2 currentPixel, Texture2D circleTexture)
-    {
-        if (currentPixel.y + 1 >= circleTexture.height)
-        {
-            return Color.clear;
-        }
-
-        return circleTexture.GetPixel((int)currentPixel.x, (int)currentPixel.y + 1);
-    }
-
-    Color checkBottom(Vector2 currentPixel, Texture2D circleTexture)
-    {
-        if (currentPixel.y - 1 < 0)
-        {
-            return Color.clear;
-        }
-
-        return circleTexture.GetPixel((int)currentPixel.x, (int)currentPixel.y - 1);
-    }
-
-    Color checkTopLeft(Vector2 currentPixel, Texture2D circleTexture)
-    {
-        if (currentPixel.x - 1 < 0 || currentPixel.y + 1 >= circleTexture.height)
-        {
-            return Color.clear;
-        }
-
-        return circleTexture.GetPixel((int)currentPixel.x - 1, (int)currentPixel.y + 1);
-    }
-
-    Color checkTopRight(Vector2 currentPixel, Texture2D circleTexture)
-    {
-        if (currentPixel.x + 1 >= circleTexture.width || currentPixel.y + 1 >= circleTexture.height)
-        {
-            return Color.clear;
-        }
-
-        return circleTexture.GetPixel((int)currentPixel.x + 1, (int)currentPixel.y + 1);
-    }
-
-    Color checkBottomLeft(Vector2 currentPixel, Texture2D circleTexture)
-    {
-        if (currentPixel.x - 1 < 0 || currentPixel.y - 1 < 0)
-        {
-            return Color.clear;
-        }
-
-        return circleTexture.GetPixel((int)currentPixel.x - 1, (int)currentPixel.y - 1);
-    }
-
-    Color checkBottomRight(Vector2 currentPixel, Texture2D circleTexture)
-    {
-        if (currentPixel.x + 1 >= circleTexture.width || currentPixel.y - 1 < 0)
-        {
-            return Color.clear;
-        }
-
-        return circleTexture.GetPixel((int)currentPixel.x + 1, (int)currentPixel.y - 1);
-    }
-
-
-    Color getColor(CastingElements.Element element)
+    Color getColor(Element element)
     {
 
         switch(element)
         {
-            case CastingElements.Element.FIRE:
-                return Color.red;
+            case Element.FIRE:
+                return new Color(0.94f, 0.38f,0.38f);
 
-            case CastingElements.Element.NATURE:
+            case Element.NATURE:
               
-                return Color.green;
+                return new Color(0.2f, 0.85f, 0.5f);
 
-            case CastingElements.Element.WATER:
-                return Color.blue;
+            case Element.WATER:
+                return new Color(0.28f, 0.53f, 1f);
 
-            case CastingElements.Element.EARTH:
+            case Element.EARTH:
                 //brown
                 return new Color(204f/255f, 148f/255f, 115f/255f);
 
-            case CastingElements.Element.WIND:
+            case Element.WIND:
                 return Color.white;
         }
 
@@ -619,32 +287,71 @@ public class CastingUIController : MonoBehaviour
 
     void GetSurroundingElementsPixels()
     {
+       
+        DealWithElement(Element.FIRE, FireControllerScript.instance.GetNumberPixelsInCircle(this.transform.position, 25, reset));
+        DealWithElement(Element.NATURE, CrawlController.instance.GetNumberPixelsInCircle(this.transform.position, 25, reset));
 
-        DealWithElement(CastingElements.Element.NATURE, CrawlController.instance.GetNumberPixelsInCircle(this.transform.position, 25, reset));
+        circlesToInstantiate.Sort();
+        circlesToInstantiate.Reverse();
 
-        DealWithElement(CastingElements.Element.FIRE, FireControllerScript.instance.GetNumberPixelsInCircle(this.transform.position, 25, reset));
-        //DealWithElement(CastingElements.Element.EARTH, //TODO:::)
+        foreach((Element, int) c in circlesToInstantiate)
+        {
+            castingElementDict.Add(c.Item1, instantiateCastingCircleScript(c.Item2, castingElementDict.Count));
+            foreach (SpellTest spell in spells)
+            {
+                if (spell.getElement() == c.Item1)
+                {
+                    makeSpellIcon(spell, 30f);
+                }
+            }
+
+        }
+        circlesToInstantiate.Clear();
+        //DealWithElement(CastingElements.Element.EARTH, //TODO:::) 
         //DealWithElement(CastingElements.Element.WATER, //TODO:::)
         //DealWithElement(CastingElements.Element.WIND, //TODO:::)
 
-        if(reset == true)
-        {
-            Debug.Log("resetting!");
-        }
         reset = false;
 
     }
 
-    void DealWithElement(CastingElements.Element element, int pixels)
+    void DealWithElement(Element element, int pixels)
     {
         if(castingElementDict.ContainsKey(element))
         {
             castingElementDict[element].addTempAmount(pixels);
         } else if(pixels > 0)
         {
-            castingElementDict.Add(element, new CastingElements(element, pixels));
-            makeSpellIcon(element);
+
+            circlesToInstantiate.Add((element, pixels));
+            
         }
+
+    }
+
+    CastingCircleScript instantiateCastingCircleScript(int pixels, int sortingOrder)
+    {
+
+        Vector2 postion = new Vector2(transform.position.x, transform.position.y);
+
+        postion.y += castingElementDict.Count * 3;
+
+        GameObject castingCircle = Instantiate(CastingCirclePrefab, postion, Quaternion.identity);
+
+        CastingCircleScript castingCircleScript = castingCircle.GetComponent<CastingCircleScript>();
+
+        castingCircleScript.sortingOrder = sortingOrder;
+
+        castingCircleScript.updateAmount = pixels;
+
+        if(castingElementDict.Count == 0)
+        {
+            castingCircleScript.isFirst = true;
+        }
+
+        //castingCircleScript.spriteRenderer.sortingOrder = castingElementDict.Count;
+
+        return castingCircleScript;
 
     }
 
@@ -743,13 +450,14 @@ public class CastingUIController : MonoBehaviour
     //    }
     //}
 
-    void makeSpellIcon(CastingElements.Element element)
+    void makeSpellIcon(SpellTest spell, float distance)
     {
 
         //TODO: i am assuming an icon has a radius of 4
 
         Vector3 position;
-        float distance = finalTexture.width/2;
+        //TODO: fix this, broke so i could work on separating casing circles
+        // finalTexture.width/2;
 
         switch (spellIcons.Count) {
 
@@ -776,19 +484,13 @@ public class CastingUIController : MonoBehaviour
 
         }
 
-        GameObject obj = Instantiate(spellIconPrefab, this.transform);
-
-        obj.transform.position = position;
+        GameObject obj = Instantiate(spellIconPrefab, position, Quaternion.identity);
 
         //GameObject obj = Instantiate(spellIconPrefab, position, Quaternion.identity);
 
         Spell_Icon_Script icon = obj.GetComponent<Spell_Icon_Script>();
 
-        float[] overChargeList = new float[2];
-        overChargeList[0] = 20;
-        overChargeList[1] = 20;
-
-        icon.Initialize(new TempSpell(element, 40, overChargeList), getColor(element));
+        icon.Initialize(spell, getColor(spell.getElement()));
 
         spellIcons.Add(icon);
 
@@ -796,19 +498,35 @@ public class CastingUIController : MonoBehaviour
 
     }
 
-    public List<Vector2> GetPixelList(int index)
+    void OnValidate()
     {
-        return pixelList[index];
-    }
+        if (firstDeserialization)
+        {
+            // This is the first time the editor properties have been deserialized in the object.
+            // We take the actual array size.
 
-    public int GetHalfWidth()
-    {
-        return finalTexture.width/2;
-    }
+            numberSpells = spells.Length;
+            firstDeserialization = false;
+        }
+        else
+        {
+            // Something have changed in the object's properties. Verify whether the array size
+            // has changed. If it has been expanded, initialize the new elements.
+            //
+            // Without this, new elements would be initialized to zero / null (first new element)
+            // or to the value of the last element.
 
-    public int GetHalfHeight()
-    {
-        return finalTexture.height/2;
+            if (spells.Length != numberSpells)
+            {
+                if (spells.Length > numberSpells)
+                {
+                    for (int i = numberSpells; i < spells.Length; i++)
+                        spells[i] = new SpellTest();
+                }
+
+                numberSpells = spells.Length;
+            }
+        }
     }
 
 }

@@ -62,12 +62,14 @@ public class UICanvasScript : MonoBehaviour
 
                 float angle = GetAngle(middleScreen, endPoint);
 
-                List<Vector2> pixelList = castingUI.GetPixelList(0);
+                //TODO: fix this, just trying to get seperate casting circle to work
 
-                Vector2 startPoint = pixelList[(int)((angle / 360) * pixelList.Count)] + middleScreen;
+                //List<Vector2> pixelList = castingUI.GetPixelList(0);
 
-                startPoint.x -= castingUI.GetHalfWidth();
-                startPoint.y -= castingUI.GetHalfHeight();
+                //Vector2 startPoint = pixelList[(int)((angle / 360) * pixelList.Count)] + middleScreen;
+
+                //startPoint.x -= castingUI.GetHalfWidth();
+                //startPoint.y -= castingUI.GetHalfHeight();
 
                 //Vector2 direction = endPoint - middleScreen;
 
@@ -79,8 +81,8 @@ public class UICanvasScript : MonoBehaviour
                 }
                 else
                 {
-
-                    DrawLine(UITexture, (int)startPoint.x, (int)startPoint.y, (int)endPoint.x, (int)endPoint.y, Color.black);
+                    //TODO: fix this to draw line
+                    //DrawLine(UITexture, (int)startPoint.x, (int)startPoint.y, (int)endPoint.x, (int)endPoint.y, Color.black);
 
                 }
 

@@ -123,10 +123,10 @@ public class Crawl
     public void GrowByPosition(Vector2 pixelPos)
     {
 
-        if (crawlController.GetPixel((int)pixelPos.x, (int)pixelPos.y) != Color.green)
+        if (crawlController.CrawlHere((int)pixelPos.x, (int)pixelPos.y))
         {
 
-            crawlController.SetPixel((int)pixelPos.x, (int)pixelPos.y, Color.green);
+            crawlController.SetPixel((int)pixelPos.x, (int)pixelPos.y);
 
             for (int i = -1; i < 2; i++)
             {
@@ -235,7 +235,7 @@ public class Crawl
                     Vector2 final = pixelPos + v;
 
                     PixelList.Add(final);
-                    crawlController.SetPixel((int)final.x, (int)final.y, Color.green);
+                    crawlController.SetPixel((int)final.x, (int)final.y);
 
                     return true;
                 }
@@ -326,7 +326,7 @@ public class Crawl
 
             PixelList.Add(selection[0]);
 
-            crawlController.SetPixel((int)selection[0].x, (int)selection[0].y, Color.green);
+            crawlController.SetPixel((int)selection[0].x, (int)selection[0].y);
 
             return true;
 
@@ -344,7 +344,7 @@ public class Crawl
                 {
                     PixelList.Add(selection[i]);
 
-                    crawlController.SetPixel((int)selection[i].x, (int)selection[i].y, Color.green);
+                    crawlController.SetPixel((int)selection[i].x, (int)selection[i].y);
 
                     return true;
                 }
@@ -449,10 +449,10 @@ public class Crawl
     public void GrowByPositionTest(Vector2 pixelPos)
     {
 
-        if (crawlController.GetPixel((int)pixelPos.x, (int)pixelPos.y) != Color.green)
+        if (!crawlController.CrawlHere((int)pixelPos.x, (int)pixelPos.y))
         {
 
-            crawlController.SetPixel((int)pixelPos.x, (int)pixelPos.y, Color.green);
+            crawlController.SetPixel((int)pixelPos.x, (int)pixelPos.y);
 
             for (int i = -1; i < 2; i++)
             {
