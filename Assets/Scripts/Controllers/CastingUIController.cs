@@ -22,6 +22,8 @@ public class CastingUIController : MonoBehaviour
     [SerializeField]
     SpellTest[] spells;
 
+    CastingCircleScript firstCircle;
+
     int numberSpells;
     bool firstDeserialization = true;
 
@@ -46,6 +48,8 @@ public class CastingUIController : MonoBehaviour
 
     Dictionary<Element, CastingCircleScript> castingElementDict = new Dictionary<Element, CastingCircleScript>();
 
+    HashSet<Element> SpellTypes = new HashSet<Element>();
+
     public List<Spell_Icon_Script> spellIcons = new List<Spell_Icon_Script>();
 
     public Spell_Icon_Script selectedSpell;
@@ -55,6 +59,10 @@ public class CastingUIController : MonoBehaviour
     {
 
         screenCenter = new Vector2(Screen.width / 2, Screen.height / 2);
+        foreach(SpellTest spell in spells) {
+            SpellTypes.Add(spell.getElement());
+            spell.color = getColor(spell.getElement());
+        }
 
     }
 
@@ -174,6 +182,11 @@ public class CastingUIController : MonoBehaviour
 
             castingElementDict.Clear();
 
+            firstCircle = null;
+
+            SpellUnSelectedEvent unselected = new SpellUnSelectedEvent();
+            unselected.FireEvent();
+
         }
 
        
@@ -287,9 +300,15 @@ public class CastingUIController : MonoBehaviour
 
     void GetSurroundingElementsPixels()
     {
-       
-        DealWithElement(Element.FIRE, FireControllerScript.instance.GetNumberPixelsInCircle(this.transform.position, 25, reset));
-        DealWithElement(Element.NATURE, CrawlController.instance.GetNumberPixelsInCircle(this.transform.position, 25, reset));
+
+        if (SpellTypes.Contains(Element.FIRE))
+        {
+            DealWithElement(Element.FIRE, FireControllerScript.instance.GetNumberPixelsInCircle(this.transform.position, 25, reset));
+        }
+        if (SpellTypes.Contains(Element.NATURE))
+        {
+            DealWithElement(Element.NATURE, CrawlController.instance.GetNumberPixelsInCircle(this.transform.position, 25, reset));
+        }
 
         circlesToInstantiate.Sort();
         circlesToInstantiate.Reverse();
@@ -301,7 +320,7 @@ public class CastingUIController : MonoBehaviour
             {
                 if (spell.getElement() == c.Item1)
                 {
-                    makeSpellIcon(spell, 30f);
+                    makeSpellIcon(spell, 25f);
                 }
             }
 
@@ -344,9 +363,11 @@ public class CastingUIController : MonoBehaviour
 
         castingCircleScript.updateAmount = pixels;
 
+
         if(castingElementDict.Count == 0)
         {
             castingCircleScript.isFirst = true;
+            firstCircle = castingCircleScript;
         }
 
         //castingCircleScript.spriteRenderer.sortingOrder = castingElementDict.Count;
@@ -527,6 +548,16 @@ public class CastingUIController : MonoBehaviour
                 numberSpells = spells.Length;
             }
         }
+    }
+
+    public List<Vector2> getPixelList()
+    {
+        if(firstCircle != null)
+        {
+            return firstCircle.getPixelList();
+        }
+
+        return null;
     }
 
 }

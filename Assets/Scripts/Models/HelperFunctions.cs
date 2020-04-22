@@ -101,6 +101,33 @@ public class HelperFunctions
 
     }
 
+    public static List<List<Vector2>> makeSpellIconMap(Texture2D tex)
+    {
+        List<List<Vector2>> iconMap = new List<List<Vector2>>();
+
+        for(int y = 2; y < tex.height - 2; y++)
+        {
+            List<Vector2> lineList = new List<Vector2>();
+
+            for(int x = 2; x < tex.width - 2; x++)
+            {
+                if (tex.GetPixel(x, y) != Color.clear)
+                {
+                    lineList.Add(new Vector2(x, y));
+                }
+
+            }
+
+            if(lineList.Count > 0)
+            {
+                iconMap.Add(lineList);
+            }
+        }
+
+        return iconMap;
+
+    }
+
     static Vector2 findNextPixel(Vector2 currentPixel, Texture2D circleTexture)
     {
         Quadrent quadrent = GetQuadrent(currentPixel, circleTexture);

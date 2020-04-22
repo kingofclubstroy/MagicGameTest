@@ -121,6 +121,86 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &279155067
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 279155069}
+  - component: {fileID: 279155068}
+  m_Layer: 0
+  m_Name: New Sprite Mask
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!331 &279155068
+SpriteMask:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 279155067}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 10758, guid: 0000000000000000f000000000000000, type: 0}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_Sprite: {fileID: 21300000, guid: 6efd4c5d1d7424fd6b0f83100306907f, type: 3}
+  m_MaskAlphaCutoff: 0.2
+  m_FrontSortingLayerID: 0
+  m_BackSortingLayerID: 0
+  m_FrontSortingLayer: 0
+  m_BackSortingLayer: 0
+  m_FrontSortingOrder: 0
+  m_BackSortingOrder: 0
+  m_IsCustomRangeActive: 0
+  m_SpriteSortPoint: 0
+--- !u!4 &279155069
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 279155067}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 680286484}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &508436678
 GameObject:
   m_ObjectHideFlags: 0
@@ -522,6 +602,8 @@ MonoBehaviour:
   speed: 85
   crawlController: {fileID: 1582204600}
   animator: {fileID: 680286486}
+  CastingCircleProjectionPrefab: {fileID: 7157635472893310671, guid: 1b10e0cecac760b4fafc481be4f09713,
+    type: 3}
 --- !u!212 &680286483
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -584,6 +666,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 2123587979}
+  - {fileID: 279155069}
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -747,7 +830,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &913348260
 Transform:
   m_ObjectHideFlags: 0
@@ -982,9 +1065,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   height: 1000
   width: 1000
-  maxCrawl: 5000
+  maxCrawl: 1000
   growthColor: {r: 0.22352941, g: 0.7019608, b: 0.34901962, a: 1}
   burntColor: {r: 0, g: 0, b: 0, a: 0.39215687}
+  lastColor: {r: 0.22352943, g: 0.7019608, b: 0.34901962, a: 1}
   growthMultiplier: 3
   growthDivisor: 100
 --- !u!4 &1582204601
@@ -1054,10 +1138,12 @@ MonoBehaviour:
     element: 0
     castingCost: 20
     spellTexture: {fileID: 2800000, guid: f0a2d5c5e36f44abd95dd53406166ec5, type: 3}
+    color: {r: 0, g: 0, b: 0, a: 0}
   - name: Healing Touch
     element: 1
     castingCost: 20
     spellTexture: {fileID: 2800000, guid: 25d94712150e246cb9c1d226833ffb1b, type: 3}
+    color: {r: 0, g: 0, b: 0, a: 0}
   spellIconPrefab: {fileID: 4759483009396332395, guid: 55c588fff22bfc74f89af73367724e68,
     type: 3}
   CastingCirclePrefab: {fileID: 7244039520523610650, guid: d89167e69e31e3c47909c794341f8fdb,

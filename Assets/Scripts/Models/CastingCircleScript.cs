@@ -27,7 +27,7 @@ public class CastingCircleScript : MonoBehaviour
     public bool isFirst = false;
 
     Color color;
-    Color circleColor = new Color(0, 0, 0, 120f / 255f);
+    Color circleColor = new Color(0, 0, 0, 70f / 255f);
 
     public void addTempAmount(float temp)
     {
@@ -204,6 +204,11 @@ public class CastingCircleScript : MonoBehaviour
         }
 
         lastIndex = index;
+    }
+
+    public List<Vector2> getPixelList()
+    {
+        return pixelList;
     }
 
 }

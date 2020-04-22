@@ -47,6 +47,8 @@ public class CharacterController : MonoBehaviour
             {
                 Spell_Icon_Script spellIcon = hi.transform.GetComponent<Spell_Icon_Script>();
 
+                Debug.Log("spell clicked");
+
                 if(spellIcon != selectedSpell)
                 {
                     if (selectedSpell != null)
@@ -56,7 +58,7 @@ public class CharacterController : MonoBehaviour
 
                     SpellSelectedEvent spellSelected = new SpellSelectedEvent();
 
-                    //spellSelected.spell = spellIcon.spell;
+                    spellSelected.spell = spellIcon.spell;
 
                     spellSelected.FireEvent();
 

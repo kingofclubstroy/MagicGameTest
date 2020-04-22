@@ -50,6 +50,10 @@ public class UnitDeathEvent : Event<UnitDeathEvent>
 
 public class SpellSelectedEvent : Event<SpellSelectedEvent>
 {
-    public TempSpell spell;
+    public SpellTest spell;
     public bool selected = true;
+}
+
+public class SpellUnSelectedEvent : Event<SpellUnSelectedEvent>
+{
 }

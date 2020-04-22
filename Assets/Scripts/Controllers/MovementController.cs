@@ -26,6 +26,10 @@ public class MovementController : MonoBehaviour
 
     bool casting = false;
 
+    [SerializeField]
+    GameObject CastingCircleProjectionPrefab;
+
+    GameObject CastingCircleProjection;
 
     #endregion
 
@@ -88,7 +92,26 @@ public class MovementController : MonoBehaviour
             tempVect = tempVect.normalized * speed * Time.deltaTime;
 
             this.transform.position += tempVect;
+        } else
+        {
+            // character is currently casting
+            float h = Input.GetAxis("Horizontal");
+            float v = Input.GetAxis("Vertical");
+
+            if(h != 0 || v != 0)
+            {
+                //We are wanting to move the casting projection, so lets see if we need to instantiate it
+                if(CastingCircleProjection == null)
+                {
+                    CastingCircleProjection = Instantiate(CastingCircleProjectionPrefab, this.transform.position, Quaternion.identity);
+                }
+
+                CastingCircleProjection.transform.position += new Vector3(h, v);
+            }
+
         }
+
+
 
         //TODO: remove
         if(Input.GetKeyDown("space"))
@@ -97,6 +120,8 @@ public class MovementController : MonoBehaviour
             animator.SetBool("Casting", true);
             casting = true;
             //crawlController.CreateCrawl(transform.position, 1000, 1000);
+
+
         }
 
         if(Input.GetKeyDown("p"))

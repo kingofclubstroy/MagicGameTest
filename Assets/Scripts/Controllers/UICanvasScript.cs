@@ -8,6 +8,8 @@ public class UICanvasScript : MonoBehaviour
     Texture2D UITexture;
     SpriteRenderer SpriteRenderer;
 
+    List<Vector2> lineMap = new List<Vector2>();
+
     [SerializeField]
     private GameObject player;
 
@@ -16,7 +18,7 @@ public class UICanvasScript : MonoBehaviour
 
     int lastX, lastY;
 
-    TempSpell selectedSpell;
+    SpellTest selectedSpell;
 
     [SerializeField] CastingUIController castingUI;
 
@@ -28,15 +30,15 @@ public class UICanvasScript : MonoBehaviour
         float height = 2f * 105.5f;
         float width = height * cam.aspect;
 
-        UITexture = new Texture2D((int) width, (int) height);
-        UITexture.filterMode = FilterMode.Point;
+        UITexture = TextureHelper.MakeTexture((int) width, (int) height, Color.clear);
+        //UITexture.filterMode = FilterMode.Point;
 
         SpriteRenderer = GetComponent<SpriteRenderer>();
-
-        DrawLine(UITexture, 0, 0, UITexture.width, UITexture.height, Color.black);
+        //DrawLine(UITexture, 0, 0, UITexture.width, UITexture.height, Color.black);
         TextureHelper.ApplyTexture(UITexture, SpriteRenderer, new Vector2(0.5f, 0.5f));
 
         SpellSelectedEvent.RegisterListener(spellSelected);
+        SpellUnSelectedEvent.RegisterListener(spellUnSelected);
     }
 
     // Update is called once per frame
@@ -64,29 +66,30 @@ public class UICanvasScript : MonoBehaviour
 
                 //TODO: fix this, just trying to get seperate casting circle to work
 
-                //List<Vector2> pixelList = castingUI.GetPixelList(0);
+                //List<Vector2> pixelList = castingUI.getPixelList();
 
                 //Vector2 startPoint = pixelList[(int)((angle / 360) * pixelList.Count)] + middleScreen;
 
                 //startPoint.x -= castingUI.GetHalfWidth();
                 //startPoint.y -= castingUI.GetHalfHeight();
 
-                //Vector2 direction = endPoint - middleScreen;
+                Vector2 direction = endPoint - middleScreen;
 
-                //Vector2 startPoint = (direction.normalized * radius) + middleScreen;
+                Vector2 startPoint = (direction.normalized * radius) + middleScreen;
 
                 if ((endPoint - middleScreen).magnitude < radius)
                 {
-                    clearTexture(UITexture);
+                    //clearTexture(UITexture);
+                    clearLine();
                 }
                 else
                 {
-                    //TODO: fix this to draw line
-                    //DrawLine(UITexture, (int)startPoint.x, (int)startPoint.y, (int)endPoint.x, (int)endPoint.y, Color.black);
+                    
+                    DrawLine(UITexture, (int)startPoint.x, (int)startPoint.y, (int)endPoint.x, (int)endPoint.y, selectedSpell.color);
 
                 }
 
-                TextureHelper.ApplyTexture(UITexture, SpriteRenderer, new Vector2(0.5f, 0.5f));
+                
             }
 
         }
@@ -96,9 +99,12 @@ public class UICanvasScript : MonoBehaviour
     void DrawLine(Texture2D tex, int x0, int y0, int x1, int y1, Color col)
     {
 
-        clearTexture(tex);
+        clearLine();
 
-        Line(x0, y0, x1, y1);
+        //clearTexture(tex);
+
+        Line(x0, y0, x1, y1, col);
+        tex.Apply();
         
     }
 
@@ -106,10 +112,22 @@ public class UICanvasScript : MonoBehaviour
 
     private static void Swap<T>(ref T lhs, ref T rhs) { T temp; temp = lhs; lhs = rhs; rhs = temp; }
 
+    void clearLine()
+    {
+        foreach(Vector2 position in lineMap)
+        {
+            UITexture.SetPixel((int)position.x, (int)position.y, Color.clear);
+        }
+
+        lineMap.Clear();
+
+
+    }
+
    
 
    
-    public void Line(int x0, int y0, int x1, int y1)
+    public void Line(int x0, int y0, int x1, int y1, Color c)
     {
         bool steep = Mathf.Abs(y1 - y0) > Mathf.Abs(x1 - x0);
         if (steep) { Swap<int>(ref x0, ref y0); Swap<int>(ref x1, ref y1); }
@@ -118,16 +136,17 @@ public class UICanvasScript : MonoBehaviour
 
         for (int x = x0; x <= x1; ++x)
         {
-            if (!(steep ? plot(y, x) : plot(x, y))) return;
+            if (!(steep ? plot(y, x, c) : plot(x, y, c))) return;
             err = err - dY;
             if (err < 0) { y += ystep; err += dX; }
         }
     }
 
 
-    bool plot(int x, int y)
+    bool plot(int x, int y, Color c)
     {
-        UITexture.SetPixel(x, y, Color.black);
+        UITexture.SetPixel(x, y, c);
+        lineMap.Add(new Vector2(x, y));
         return true;
     }
 
@@ -142,19 +161,25 @@ public class UICanvasScript : MonoBehaviour
 
             }
         }
+
+        tex.Apply();
     }
 
     void spellSelected(SpellSelectedEvent selectedSpell) {
 
+        Debug.Log("UI canvas spell selected");
+
         if (selectedSpell.selected)
         {
 
-            if (selectedSpell.spell.spellType == TempSpell.SpellType.PROJECTILE)
-            {
+
+
+            //if (selectedSpell.spell.spellType == TempSpell.SpellType.PROJECTILE)
+            //{
 
                 this.selectedSpell = selectedSpell.spell;
 
-            }
+            //}
 
         } else
         {
@@ -163,6 +188,14 @@ public class UICanvasScript : MonoBehaviour
             TextureHelper.ApplyTexture(UITexture, SpriteRenderer, new Vector2(0.5f, 0.5f));
         }
 
+    }
+
+    void spellUnSelected(SpellUnSelectedEvent unSelected)
+    {
+        selectedSpell = null;
+        //clearTexture(UITexture);
+        clearLine();
+        UITexture.Apply();
     }
 
 

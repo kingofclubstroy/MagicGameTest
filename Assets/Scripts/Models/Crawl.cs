@@ -8,6 +8,8 @@ public class Crawl
 
     public int number;
 
+    bool last = false;
+
     System.Random Random;
 
     #region growth variables
@@ -90,6 +92,11 @@ public class Crawl
         if (GrowthList.Count > 0 && pixelsGrown < maxGrowth)
         {
 
+            if(!last && pixelsGrown >= (maxGrowth * 0.95f))
+            {
+                last = true;
+            }
+
             int growthToDraw = 1 + Mathf.FloorToInt(GrowthList.Count / 100);
 
             for (int i = 0; i < growthToDraw; i++)
@@ -126,7 +133,7 @@ public class Crawl
         if (crawlController.CrawlHere((int)pixelPos.x, (int)pixelPos.y))
         {
 
-            crawlController.SetPixel((int)pixelPos.x, (int)pixelPos.y);
+            crawlController.SetPixel((int)pixelPos.x, (int)pixelPos.y, last);
 
             for (int i = -1; i < 2; i++)
             {
@@ -235,7 +242,7 @@ public class Crawl
                     Vector2 final = pixelPos + v;
 
                     PixelList.Add(final);
-                    crawlController.SetPixel((int)final.x, (int)final.y);
+                    crawlController.SetPixel((int)final.x, (int)final.y, last);
 
                     return true;
                 }
@@ -326,7 +333,7 @@ public class Crawl
 
             PixelList.Add(selection[0]);
 
-            crawlController.SetPixel((int)selection[0].x, (int)selection[0].y);
+            crawlController.SetPixel((int)selection[0].x, (int)selection[0].y, last);
 
             return true;
 
@@ -344,7 +351,7 @@ public class Crawl
                 {
                     PixelList.Add(selection[i]);
 
-                    crawlController.SetPixel((int)selection[i].x, (int)selection[i].y);
+                    crawlController.SetPixel((int)selection[i].x, (int)selection[i].y, last);
 
                     return true;
                 }
@@ -383,6 +390,11 @@ public class Crawl
 
         if (GrowthList.Count > 0 && pixelsGrown < maxGrowth)
         {
+            if (!last && pixelsGrown >= (maxGrowth * 0.5f))
+            {
+                last = true;
+            }
+
             if (pixelsGrown < 100)
             {
                 growthToDrawTest += ((GrowthList.Count / growthDivisor) * (growthMultiplierTest * 15));
@@ -452,7 +464,7 @@ public class Crawl
         if (!crawlController.CrawlHere((int)pixelPos.x, (int)pixelPos.y))
         {
 
-            crawlController.SetPixel((int)pixelPos.x, (int)pixelPos.y);
+            crawlController.SetPixel((int)pixelPos.x, (int)pixelPos.y, last);
 
             for (int i = -1; i < 2; i++)
             {

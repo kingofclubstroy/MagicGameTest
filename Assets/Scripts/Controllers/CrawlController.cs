@@ -26,7 +26,7 @@ public class CrawlController : MonoBehaviour
     public HashSet<Vector2> BurntSpaces;
 
     [SerializeField]
-    Color growthColor, burntColor;
+    Color growthColor, burntColor, lastColor;
 
     #region growth variables
 
@@ -110,7 +110,7 @@ public class CrawlController : MonoBehaviour
         return texture.GetPixel(x, y);
     }
 
-    public void SetPixel(int x, int y)
+    public void SetPixel(int x, int y, bool last)
     {
         
         if (castingList != null && castingList.Contains(new Vector2(x, y)))
@@ -118,7 +118,16 @@ public class CrawlController : MonoBehaviour
             totalGrowth += 1;
         }
 
-        texture.SetPixel((int)x, (int)y, growthColor);
+        if (last)
+        {
+            Debug.Log("last == true");
+            texture.SetPixel((int)x, (int)y, lastColor);
+        }
+        else
+        {
+
+            texture.SetPixel((int)x, (int)y, growthColor);
+        }
     }
 
     public void SetOnFire(int x, int y)
@@ -134,7 +143,7 @@ public class CrawlController : MonoBehaviour
 
     public bool CrawlHere(int x, int y)
     {
-        return texture.GetPixel(x, y) == growthColor;
+        return texture.GetPixel(x, y) == growthColor || texture.GetPixel(x, y) == lastColor;
     }
 
     public int GetHeight()
