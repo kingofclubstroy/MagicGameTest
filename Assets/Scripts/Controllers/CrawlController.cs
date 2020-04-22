@@ -120,7 +120,7 @@ public class CrawlController : MonoBehaviour
 
         if (last)
         {
-            Debug.Log("last == true");
+            
             texture.SetPixel((int)x, (int)y, lastColor);
         }
         else
