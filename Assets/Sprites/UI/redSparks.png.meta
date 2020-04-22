@@ -1,52 +1,52 @@
 fileFormatVersion: 2
-guid: 10215025bdd72409880363df53f40547
+guid: 938e7ed998e0648c5b94e6545e279e98
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 2305855354855534192
-    second: selectionSparks_0
+      213: 1030861877195619728
+    second: redSparks_0
   - first:
-      213: 289426280710682173
-    second: selectionSparks_1
+      213: 3932235656023271760
+    second: redSparks_1
   - first:
-      213: -3820106015086215768
-    second: selectionSparks_2
+      213: 3796629481581937385
+    second: redSparks_2
   - first:
-      213: 3427630967183901215
-    second: selectionSparks_3
+      213: 1687092785209880916
+    second: redSparks_3
   - first:
-      213: -7721717667393439024
-    second: selectionSparks_4
+      213: -4496507300392504447
+    second: redSparks_4
   - first:
-      213: -2483785498028407370
-    second: selectionSparks_5
+      213: 4112507491275267194
+    second: redSparks_5
   - first:
-      213: -7071836504786748685
-    second: selectionSparks_6
+      213: 3297789056069830120
+    second: redSparks_6
   - first:
-      213: 6845394646856730412
-    second: selectionSparks_7
+      213: -1323955177504648133
+    second: redSparks_7
   - first:
-      213: -565774199373742338
-    second: selectionSparks_8
+      213: 1804652374636144815
+    second: redSparks_8
   - first:
-      213: -6205261607873399032
-    second: selectionSparks_9
+      213: -295026995605408075
+    second: redSparks_9
   - first:
-      213: 1441287004376160864
-    second: selectionSparks_10
+      213: -7093395385906646785
+    second: redSparks_10
   - first:
-      213: -2493766391322783180
-    second: selectionSparks_11
+      213: -7293542223217397612
+    second: redSparks_11
   - first:
-      213: 2953383890432373563
-    second: selectionSparks_12
+      213: 2430147828404306600
+    second: redSparks_12
   - first:
-      213: -5414850259152354506
-    second: selectionSparks_13
+      213: 4126674206842672103
+    second: redSparks_13
   - first:
-      213: 1252750411043533100
-    second: selectionSparks_14
+      213: 7772718157363194782
+    second: redSparks_14
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -76,7 +76,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: -1
     aniso: -1
     mipBias: -100
     wrapU: 1
@@ -132,7 +132,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: selectionSparks_0
+      name: redSparks_0
       rect:
         serializedVersion: 2
         x: 0
@@ -146,14 +146,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 07ea8917a3b000020800000000000000
-      internalID: 2305855354855534192
+      spriteID: 09dbcb26a6b5e4e00800000000000000
+      internalID: 1030861877195619728
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: selectionSparks_1
+      name: redSparks_1
       rect:
         serializedVersion: 2
         x: 13
@@ -167,14 +167,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d363c6a3baf340400800000000000000
-      internalID: 289426280710682173
+      spriteID: 059646ace7b129630800000000000000
+      internalID: 3932235656023271760
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: selectionSparks_2
+      name: redSparks_2
       rect:
         serializedVersion: 2
         x: 26
@@ -188,14 +188,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8adf37ea1d14cfac0800000000000000
-      internalID: -3820106015086215768
+      spriteID: 9e28779e56650b430800000000000000
+      internalID: 3796629481581937385
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: selectionSparks_3
+      name: redSparks_3
       rect:
         serializedVersion: 2
         x: 39
@@ -209,14 +209,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f12002c4434619f20800000000000000
-      internalID: 3427630967183901215
+      spriteID: 4513f8513f1c96710800000000000000
+      internalID: 1687092785209880916
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: selectionSparks_4
+      name: redSparks_4
       rect:
         serializedVersion: 2
         x: 52
@@ -230,14 +230,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0daf72361b2f6d490800000000000000
-      internalID: -7721717667393439024
+      spriteID: 183772e0f623991c0800000000000000
+      internalID: -4496507300392504447
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: selectionSparks_5
+      name: redSparks_5
       rect:
         serializedVersion: 2
         x: 65
@@ -251,14 +251,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6b500cbcf32d78dd0800000000000000
-      internalID: -2483785498028407370
+      spriteID: a7c589936cf821930800000000000000
+      internalID: 4112507491275267194
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: selectionSparks_6
+      name: redSparks_6
       rect:
         serializedVersion: 2
         x: 78
@@ -272,14 +272,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 3fabb86ca2acbdd90800000000000000
-      internalID: -7071836504786748685
+      spriteID: 8e5863f8ca914cd20800000000000000
+      internalID: 3297789056069830120
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: selectionSparks_7
+      name: redSparks_7
       rect:
         serializedVersion: 2
         x: 91
@@ -293,14 +293,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c278141b92abffe50800000000000000
-      internalID: 6845394646856730412
+      spriteID: b34db4ad7cd50ade0800000000000000
+      internalID: -1323955177504648133
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: selectionSparks_8
+      name: redSparks_8
       rect:
         serializedVersion: 2
         x: 104
@@ -314,14 +314,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: efe3f3ffc57f528f0800000000000000
-      internalID: -565774199373742338
+      spriteID: fa8a045f5c96b0910800000000000000
+      internalID: 1804652374636144815
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: selectionSparks_9
+      name: redSparks_9
       rect:
         serializedVersion: 2
         x: 117
@@ -335,14 +335,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 807365cc17b72e9a0800000000000000
-      internalID: -6205261607873399032
+      spriteID: 5b6f9c7b28ad7ebf0800000000000000
+      internalID: -295026995605408075
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: selectionSparks_10
+      name: redSparks_10
       rect:
         serializedVersion: 2
         x: 130
@@ -356,14 +356,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 06a5a3be4ea700410800000000000000
-      internalID: 1441287004376160864
+      spriteID: ff0b3ab9a723f8d90800000000000000
+      internalID: -7093395385906646785
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: selectionSparks_11
+      name: redSparks_11
       rect:
         serializedVersion: 2
         x: 143
@@ -377,14 +377,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 432d56cfdac546dd0800000000000000
-      internalID: -2493766391322783180
+      spriteID: 49070d6adf128ca90800000000000000
+      internalID: -7293542223217397612
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: selectionSparks_12
+      name: redSparks_12
       rect:
         serializedVersion: 2
         x: 156
@@ -398,14 +398,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b33359a20078cf820800000000000000
-      internalID: 2953383890432373563
+      spriteID: 8a2c9bf039e99b120800000000000000
+      internalID: 2430147828404306600
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: selectionSparks_13
+      name: redSparks_13
       rect:
         serializedVersion: 2
         x: 169
@@ -419,14 +419,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 633ca4fd0669ad4b0800000000000000
-      internalID: -5414850259152354506
+      spriteID: 7e3df9ab354e44930800000000000000
+      internalID: 4126674206842672103
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: selectionSparks_14
+      name: redSparks_14
       rect:
         serializedVersion: 2
         x: 182
@@ -440,8 +440,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c21797a8cd9a26110800000000000000
-      internalID: 1252750411043533100
+      spriteID: e9bacd48bfd3edb60800000000000000
+      internalID: 7772718157363194782
       vertices: []
       indices: 
       edges: []
