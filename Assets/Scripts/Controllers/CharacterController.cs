@@ -53,7 +53,8 @@ public class CharacterController : MonoBehaviour
                 {
                     if (selectedSpell != null)
                     {
-                        selectedSpell.unselect();
+                        //set the previously selected spell to unselected
+                        selectedSpell.Selected = false;
                     }
 
                     SpellSelectedEvent spellSelected = new SpellSelectedEvent();
@@ -62,8 +63,9 @@ public class CharacterController : MonoBehaviour
 
                     spellSelected.FireEvent();
 
-                    spellIcon.select();
                     selectedSpell = spellIcon;
+
+                    spellIcon.Selected = true;
                 }
 
             }

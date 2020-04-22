@@ -28,6 +28,36 @@ public class Spell_Icon_Script : MonoBehaviour
 
     List<List<Vector2>> iconMap;
 
+    [SerializeField]
+    Animator animator;
+
+    bool _selected = false;
+    public bool Selected
+    {
+        get
+        {
+            return _selected;
+        }
+        set
+        {
+            _selected = value;
+            animator.SetBool("IsSelected", value);
+        }
+    }
+
+    bool _charged = false;
+    bool Charged
+    {
+        get
+        {
+            return _charged;
+        }
+        set
+        {
+            _charged = value;
+            animator.SetBool("IsCharged", value);
+        }
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -103,6 +133,15 @@ public class Spell_Icon_Script : MonoBehaviour
 
             if (index != lastIndex)
             {
+
+                if (index == pixelList.Count - 1)
+                {
+                    Charged = true;
+                }
+                else if (Charged)
+                {
+                    Charged = false;
+                }
 
                 pixelsChanged = true;
 
@@ -286,6 +325,11 @@ public class Spell_Icon_Script : MonoBehaviour
         //lastIndex = index;
 
 
+    }
+
+    public void SetElementNumber(int number)
+    {
+        animator.SetInteger("Element", number);
     }
 
 
@@ -771,26 +815,6 @@ public class Spell_Icon_Script : MonoBehaviour
 
     //    return pixelMap;
     //}
-
-    public void unselect()
-    {
-        texture.SetPixel((texture.width / 2) - 1, texture.height / 2, Color.clear);
-        texture.SetPixel(texture.width / 2, texture.height / 2, Color.clear);
-        texture.SetPixel((texture.width / 2) - 1, (texture.height / 2) - 1, Color.clear);
-        texture.SetPixel(texture.width / 2, (texture.height / 2) - 1, Color.clear);
-
-        applyTexture();
-    }
-
-    public void select()
-    {
-        texture.SetPixel((texture.width / 2) - 1, texture.height / 2, Color.white);
-        texture.SetPixel(texture.width / 2, texture.height / 2, Color.white);
-        texture.SetPixel((texture.width / 2) - 1, (texture.height / 2) - 1, Color.white);
-        texture.SetPixel(texture.width / 2, (texture.height / 2) - 1, Color.white);
-
-        applyTexture();
-    }
 
     void applyTexture()
     {

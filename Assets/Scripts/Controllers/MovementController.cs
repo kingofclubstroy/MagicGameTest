@@ -111,6 +111,11 @@ public class MovementController : MonoBehaviour
 
         }
 
+        if(Input.GetKeyDown("f"))
+        {
+
+        }
+
 
 
         //TODO: remove

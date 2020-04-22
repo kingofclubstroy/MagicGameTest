@@ -74,74 +74,6 @@ public class CastingUIController : MonoBehaviour
         updateCastingCircle();
     }
 
-    void selectSpell()
-    {
-
-        //Get the quadrent of the circle the mouse is in
-        Vector2 positionCentered = (Vector2) Input.mousePosition - screenCenter;
-        Vector2 quadrent = new Vector2(Mathf.Sign(positionCentered.x), Mathf.Sign(positionCentered.y));
-
-        Spell_Icon_Script currentSelectedSpell = null;
-
-        //Now find out what this means and update the selected spell
-        if(quadrent.x == -1)
-        {
-            if(quadrent.y == 1)
-            {
-                //TopLeft quadrent
-                if(spellIcons.Count >= 1)
-                {
-                    currentSelectedSpell = spellIcons[0];
-                }
-            } else
-            {
-                //BottomLeft quadrent
-                if(spellIcons.Count >= 4)
-                {
-                    currentSelectedSpell = spellIcons[3];
-                }
-            }
-        } else
-        {
-            if(quadrent.y == 1)
-            {
-                //TopRight quadrent
-                if(spellIcons.Count >= 2)
-                {
-                    currentSelectedSpell = spellIcons[1];
-                }
-            } else
-            {
-                //BottomRight quadrent
-                if(spellIcons.Count >= 3)
-                {
-                    currentSelectedSpell = spellIcons[2];
-                }
-            }
-        }
-
-        if(currentSelectedSpell != null)
-        {
-            if(currentSelectedSpell == selectedSpell)
-            {
-                //we already have this spell selected, so we can return
-                return;
-            }else
-            {
-                if(selectedSpell != null)
-                {
-                    selectedSpell.unselect();
-                }
-
-                currentSelectedSpell.select();
-                selectedSpell = currentSelectedSpell;
-            }
-
-
-        }
-
-    }
-
     void updateCastingCircle()
     {
 
@@ -511,12 +443,29 @@ public class CastingUIController : MonoBehaviour
 
         Spell_Icon_Script icon = obj.GetComponent<Spell_Icon_Script>();
 
+        icon.SetElementNumber(GetElementNumber(spell.getElement()));
+
         icon.Initialize(spell, getColor(spell.getElement()));
 
         spellIcons.Add(icon);
 
 
 
+    }
+
+    int GetElementNumber(Element element)
+    {
+        switch(element)
+        {
+            case Element.FIRE:
+                return 0;
+
+            case Element.NATURE:
+                return 1;
+
+            default:
+                return 0;
+        }
     }
 
     void OnValidate()
