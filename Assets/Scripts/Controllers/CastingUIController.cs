@@ -17,6 +17,11 @@ public class CastingUIController : MonoBehaviour
     [SerializeField]
     Texture2D spellTexture;
 
+    [SerializeField]
+    SpriteRenderer spriteRenderer;
+
+    Texture2D texture;
+
     Vector2 screenCenter;
 
     [SerializeField]
@@ -37,7 +42,8 @@ public class CastingUIController : MonoBehaviour
         NATURE,
         EARTH,
         WIND,
-        WATER
+        WATER,
+        NONE
     }
 
     [SerializeField]
@@ -50,15 +56,22 @@ public class CastingUIController : MonoBehaviour
 
     HashSet<Element> SpellTypes = new HashSet<Element>();
 
+    bool textureInitialized = false;
+
     public List<Spell_Icon_Script> spellIcons = new List<Spell_Icon_Script>();
 
     public Spell_Icon_Script selectedSpell;
 
+    Vector2 positionToCast;
+
+    bool casting = false;
+
     // Start is called before the first frame update
     void Start()
     {
-
+        initializeCallbacks();
         screenCenter = new Vector2(Screen.width / 2, Screen.height / 2);
+
         foreach(SpellTest spell in spells) {
             SpellTypes.Add(spell.getElement());
             spell.color = getColor(spell.getElement());
@@ -77,49 +90,16 @@ public class CastingUIController : MonoBehaviour
     void updateCastingCircle()
     {
 
-        float elementDifference = 0;
-
         //TODO: remove delta time dependence, may want to do a 30-60 fps limit, and may want to go with integers and not floats
-        if (Input.GetKey(KeyCode.Space))
+        if (casting)
         {
 
-            elementDifference = Time.deltaTime;
-
-            GetSurroundingElementsPixels();
-
-            updateElements();
+            UpdateCasting();
 
             //selectSpell();
 
         }
-        else if (Input.GetKeyUp(KeyCode.Space))
-        {
-            reset = true;
-            //TODO: need to group these actions together
-            CrawlController.instance.clearCasting();
-            FireControllerScript.instance.clearCasting();
-
-            foreach(CastingCircleScript element in castingElementDict.Values)
-            {
-                element.initializeDestruction();
-                
-            }
-
-            foreach (Spell_Icon_Script spell in spellIcons)
-            {
-                spell.initializeDestruction();
-            }
-
-            spellIcons.Clear();
-
-            castingElementDict.Clear();
-
-            firstCircle = null;
-
-            SpellUnSelectedEvent unselected = new SpellUnSelectedEvent();
-            unselected.FireEvent();
-
-        }
+        
 
        
     }
@@ -142,9 +122,16 @@ public class CastingUIController : MonoBehaviour
             // multiplied by the max cast speed im temporarly setting as 50 (maybe there are augments that improve this)
             tempElementDifference = ((castingElement.updateAmount / 900f) * 50f) * elementDifference;
 
+
+            //TODO: make some sort of element pixel conversion rates, may be a stat as well
             if (element == Element.FIRE)
             {
                 tempElementDifference *= 3;
+            }
+
+            if(element == Element.NATURE)
+            {
+                tempElementDifference /= 5;
             }
 
             
@@ -202,6 +189,12 @@ public class CastingUIController : MonoBehaviour
         
     }
 
+    void SpellSelectedTextureUpdate(SpellSelectedEvent spellSelected)
+    {
+        Debug.Log("spell selected texture update");
+        firstCircle.UpdateSpellSelectedLine(spellSelected.spell.direction, spellSelected.spell.elementColor); 
+    }
+
     Color getColor(Element element)
     {
 
@@ -235,11 +228,15 @@ public class CastingUIController : MonoBehaviour
 
         if (SpellTypes.Contains(Element.FIRE))
         {
-            DealWithElement(Element.FIRE, FireControllerScript.instance.GetNumberPixelsInCircle(this.transform.position, 25, reset));
+            DealWithElement(Element.FIRE, FireControllerScript.instance.GetNumberPixelsInCircle(positionToCast, 25, reset));
         }
         if (SpellTypes.Contains(Element.NATURE))
         {
-            DealWithElement(Element.NATURE, CrawlController.instance.GetNumberPixelsInCircle(this.transform.position, 25, reset));
+            DealWithElement(Element.NATURE, CrawlController.instance.GetNumberPixelsInCircle(positionToCast, 25, reset));
+        }
+        if(SpellTypes.Contains(Element.WATER))
+        {
+            DealWithElement(Element.WATER, WaterControllerScript.instance.GetNumberPixelsInCircle(positionToCast, 25, reset));
         }
 
         circlesToInstantiate.Sort();
@@ -247,7 +244,17 @@ public class CastingUIController : MonoBehaviour
 
         foreach((Element, int) c in circlesToInstantiate)
         {
-            castingElementDict.Add(c.Item1, instantiateCastingCircleScript(c.Item2, castingElementDict.Count));
+            if (castingElementDict.ContainsKey(Element.NONE))
+            {
+                CastingCircleScript castingCircleScript = castingElementDict[Element.NONE];
+                castingElementDict.Remove(Element.NONE);
+                castingCircleScript.amount = c.Item2;
+                castingElementDict.Add(c.Item1, castingCircleScript);
+            }
+            else
+            {
+                castingElementDict.Add(c.Item1, instantiateCastingCircleScript(c.Item2, castingElementDict.Count));
+            }
             foreach (SpellTest spell in spells)
             {
                 if (spell.getElement() == c.Item1)
@@ -257,6 +264,13 @@ public class CastingUIController : MonoBehaviour
             }
 
         }
+
+        if (castingElementDict.Count == 0)
+        {
+            castingElementDict.Add(Element.NONE, instantiateCastingCircleScript(0, 0));
+        }
+
+
         circlesToInstantiate.Clear();
         //DealWithElement(CastingElements.Element.EARTH, //TODO:::) 
         //DealWithElement(CastingElements.Element.WATER, //TODO:::)
@@ -283,7 +297,7 @@ public class CastingUIController : MonoBehaviour
     CastingCircleScript instantiateCastingCircleScript(int pixels, int sortingOrder)
     {
 
-        Vector2 postion = new Vector2(transform.position.x, transform.position.y);
+        Vector2 postion = new Vector2(positionToCast.x, positionToCast.y);
 
         postion.y += castingElementDict.Count * 3;
 
@@ -305,7 +319,7 @@ public class CastingUIController : MonoBehaviour
         //castingCircleScript.spriteRenderer.sortingOrder = castingElementDict.Count;
 
         return castingCircleScript;
-
+        
     }
 
 
@@ -415,23 +429,23 @@ public class CastingUIController : MonoBehaviour
         switch (spellIcons.Count) {
 
             case 0:
-                position = new Vector3(this.transform.position.x + (-1 * distance), this.transform.position.y + distance);
+                position = new Vector3(positionToCast.x + (-1 * distance), positionToCast.y + distance);
                 break;
 
             case 1:
-                position = new Vector3(this.transform.position.x + distance, this.transform.position.y + distance);
+                position = new Vector3(positionToCast.x + distance, positionToCast.y + distance);
                 break;
 
             case 2:
-                position = new Vector3(this.transform.position.x + distance, this.transform.position.y + (-1 * distance));
+                position = new Vector3(positionToCast.x + distance, positionToCast.y + (-1 * distance));
                 break;
 
             case 3:
-                position = new Vector3(this.transform.position.x + (-1 * distance), this.transform.position.y + (-1 * distance));
+                position = new Vector3(positionToCast.x + (-1 * distance), positionToCast.y + (-1 * distance));
                 break;
 
             default:
-                position = new Vector3(this.transform.position.x + (-1 * distance), this.transform.position.y + distance);
+                position = new Vector3(positionToCast.x + (-1 * distance), positionToCast.y + distance);
                 break;
 
 
@@ -442,6 +456,8 @@ public class CastingUIController : MonoBehaviour
         //GameObject obj = Instantiate(spellIconPrefab, position, Quaternion.identity);
 
         Spell_Icon_Script icon = obj.GetComponent<Spell_Icon_Script>();
+
+        icon.direction = spellIcons.Count;
 
         icon.SetElementNumber(GetElementNumber(spell.getElement()));
 
@@ -462,6 +478,9 @@ public class CastingUIController : MonoBehaviour
 
             case Element.NATURE:
                 return 1;
+
+            case Element.WATER:
+                return 2;
 
             default:
                 return 0;
@@ -508,5 +527,73 @@ public class CastingUIController : MonoBehaviour
 
         return null;
     }
+
+    #region callback functions
+
+    void initializeCallbacks()
+    {
+        SpellSelectedEvent.RegisterListener(SpellSelectedTextureUpdate);
+        CastingLocationChangedEvent.RegisterListener(CastingLocationChanged);
+        StoppedCastingEvent.RegisterListener(CastingStopped);
+    }
+
+    
+
+    void CastingLocationChanged(CastingLocationChangedEvent changedLocation)
+    {
+        StopCasting();
+        positionToCast = changedLocation.go.transform.position;
+        casting = true;
+
+
+    }
+
+    void CastingStopped(StoppedCastingEvent e)
+    {
+        StopCasting();
+    }
+
+    void StopCasting()
+    {
+        reset = true;
+        //TODO: need to group these actions together
+        CrawlController.instance.clearCasting();
+        FireControllerScript.instance.clearCasting();
+
+        foreach (CastingCircleScript element in castingElementDict.Values)
+        {
+            element.initializeDestruction();
+
+        }
+
+        foreach (Spell_Icon_Script spell in spellIcons)
+        {
+            spell.initializeDestruction();
+        }
+
+        spellIcons.Clear();
+
+        castingElementDict.Clear();
+
+        firstCircle = null;
+
+        SpellUnSelectedEvent unselected = new SpellUnSelectedEvent();
+        unselected.Description = "Spell unselected callback firing";
+        unselected.FireEvent();
+
+        casting = false;
+    }
+
+    void UpdateCasting()
+    {
+        float elementDifference = 0;
+        elementDifference = Time.deltaTime;
+
+        GetSurroundingElementsPixels();
+
+        updateElements();
+    }
+
+    #endregion
 
 }

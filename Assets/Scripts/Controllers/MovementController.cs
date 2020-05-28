@@ -7,6 +7,12 @@ public class MovementController : MonoBehaviour
 
     #region Private Fields
 
+    [SerializeField]
+    int consumePixelsPerFrame;
+
+    [SerializeField]
+    int consumeAmount;
+
 
     [Tooltip("Character's speed, used to move around the map")]
     [SerializeField]
@@ -31,6 +37,8 @@ public class MovementController : MonoBehaviour
 
     GameObject CastingCircleProjection;
 
+    bool castingLocationChanged = false;
+
     #endregion
 
     #region MonoBehaviour Callbacks
@@ -38,21 +46,27 @@ public class MovementController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-       
+        initializeCallbacks();
     }
 
     // Update is called once per frame
     void Update()
     {
 
-        if(casting && (Input.GetKeyUp("space") || Input.GetKeyUp("r")))
+        if(casting && Input.GetKeyUp("space"))
         {
-            animator.SetBool("Casting", false);
-            casting = false;
+            StopCasting();
+        }
+
+        if (Input.GetKeyDown("space"))
+        {
+
+            StartCasting();
+
         }
 
         //TODO: dont want to be doing this, but i must for now, means when holding space (casting) you cant move
-        if(Input.GetKey(KeyCode.Space) == false)
+        if (Input.GetKey(KeyCode.Space) == false)
         {
            
             float h = Input.GetAxis("Horizontal");
@@ -92,7 +106,7 @@ public class MovementController : MonoBehaviour
             tempVect = tempVect.normalized * speed * Time.deltaTime;
 
             this.transform.position += tempVect;
-        } else
+        } else if (casting)
         {
             // character is currently casting
             float h = Input.GetAxis("Horizontal");
@@ -100,36 +114,46 @@ public class MovementController : MonoBehaviour
 
             if(h != 0 || v != 0)
             {
-                //We are wanting to move the casting projection, so lets see if we need to instantiate it
-                if(CastingCircleProjection == null)
-                {
-                    CastingCircleProjection = Instantiate(CastingCircleProjectionPrefab, this.transform.position, Quaternion.identity);
-                }
 
-                CastingCircleProjection.transform.position += new Vector3(h, v);
+                if (castingLocationChanged == false)
+                {
+                    //We are wanting to move the casting projection, so lets see if we need to instantiate it
+                    if (CastingCircleProjection == null)
+                    {
+                        CastingCircleProjection = Instantiate(CastingCircleProjectionPrefab, this.transform.position, Quaternion.identity);
+                        CastingProjectionCreatedEvent e = new CastingProjectionCreatedEvent();
+                        e.castingProjection = CastingCircleProjection;
+                        e.FireEvent();
+
+                    }
+
+                    CastingCircleProjection.transform.position += new Vector3(h, v);
+                }
             }
 
         }
 
         if(Input.GetKeyDown("f"))
         {
-
+            if(CastingCircleProjection != null)
+            {
+                CastingLocationChangedEvent e = new CastingLocationChangedEvent();
+                e.go = CastingCircleProjection;
+                e.FireEvent();
+                castingLocationChanged = true;
+                Destroy(CastingCircleProjection);
+                CastingCircleProjection = null;
+                
+            }
         }
 
-
-
-        //TODO: remove
-        if(Input.GetKeyDown("space"))
+        if (Input.GetKeyDown("j"))
         {
-           
-            animator.SetBool("Casting", true);
-            casting = true;
-            //crawlController.CreateCrawl(transform.position, 1000, 1000);
-
-
+            SpellCastCall e = new SpellCastCall();
+            e.FireEvent();
+            //CrawlController.instance.ConsumeCrawl(transform.position, consumeAmount, consumePixelsPerFrame);
         }
-
-        if(Input.GetKeyDown("p"))
+            if (Input.GetKeyDown("p"))
         {
             Vector2 bottom = transform.position;
             crawlController.CreateCrawl(bottom);
@@ -139,8 +163,7 @@ public class MovementController : MonoBehaviour
         {
             Vector2 bottom = transform.position;
             crawlController.AddFire(bottom);
-            animator.SetBool("Casting", true);
-            casting = true;
+            //animator.SetBool("Casting", true);
 
         }
 
@@ -203,10 +226,47 @@ public class MovementController : MonoBehaviour
             theScale.x *= -1;
             transform.localScale = theScale;
         }
+    }
 
+    void StopCasting()
+    {
+        animator.SetBool("Casting", false);
+        casting = false;
+        Destroy(CastingCircleProjection);
+        CastingCircleProjection = null;
+        CastingProjectionDestroyedEvent e = new CastingProjectionDestroyedEvent();
+        e.FireEvent();
+        castingLocationChanged = false;
 
+        StoppedCastingEvent ev = new StoppedCastingEvent();
+        ev.FireEvent();
+    }
 
+    void StartCasting()
+    {
+        CastingLocationChangedEvent e = new CastingLocationChangedEvent();
+        e.go = gameObject;
+        e.FireEvent();
 
+        StartedCastingEvent ev = new StartedCastingEvent();
+        ev.FireEvent();
+
+        animator.SetBool("Casting", true);
+        casting = true;
+    }
+
+    #endregion
+
+    #region Callback functions
+
+    void initializeCallbacks()
+    {
+        StopCastingCall.RegisterListener(StopCastingCallback);
+    }
+
+    void StopCastingCallback(StopCastingCall e)
+    {
+        StopCasting();
     }
 
     #endregion

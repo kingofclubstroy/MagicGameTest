@@ -57,6 +57,8 @@ public class CrawlController : MonoBehaviour
 
         BurntSpaces = new HashSet<Vector2>();
 
+        initializedCallbacks();
+
     }
 
     void updateCrawlObjects()
@@ -184,5 +186,110 @@ public class CrawlController : MonoBehaviour
         castingList = null;
     }
 
+    public void ConsumeCrawl(Vector2 position, int amountConsumed, int pixelsPerFrame)
+    {
+        Debug.Log("consumeing crawl");
+        List<Vector2> SurfaceAreaMap = new List<Vector2>();
+        Queue<Vector2> consumeQueue = new Queue<Vector2>();
+        HashSet<Vector2> triedPositions = new HashSet<Vector2>();
+
+        //adjust position to map to crawl controller texture
+        position = position + new Vector2(width / 2, height / 2);
+
+        Debug.Log("position = " + position);
+        Vector2 newpos = new Vector2((int)position.x, (int)position.y);
+        Debug.Log("newpos = " + newpos);
+        SurfaceAreaMap.Add(newpos);
+
+        int completed = 0;
+        
+        while(completed < amountConsumed && SurfaceAreaMap.Count > 0)
+        {
+            
+            int index = Random.Range(0, SurfaceAreaMap.Count);
+            Vector2 p = SurfaceAreaMap[index];
+            SurfaceAreaMap.RemoveAt(index);
+
+            if (triedPositions.Contains(p))
+            {
+                continue;
+            }
+
+            triedPositions.Add(p);
+            
+            if(CrawlHere((int)p.x, (int)p.y))
+            {
+                consumeQueue.Enqueue(p);
+                completed++;
+            } 
+
+            SurfaceAreaMap.Add(new Vector2(p.x + 1, p.y));
+            SurfaceAreaMap.Add(new Vector2(p.x - 1, p.y));
+            SurfaceAreaMap.Add(new Vector2(p.x, p.y + 1));
+            SurfaceAreaMap.Add(new Vector2(p.x, p.y - 1));
+
+        }
+
+        StartCoroutine(consumeRoutine(consumeQueue, pixelsPerFrame));
+
+    }
+
+    IEnumerator consumeRoutine(Queue<Vector2> consumeQueue, int pixelsPerFrame)
+    {
+        Debug.Log("Consume routine");
+        Debug.Log(consumeQueue.Count);
+        int count = 0;
+        int consumeSize = consumeQueue.Count;
+        for(int i = 0; i < consumeSize; i++)
+        {
+
+            //TODO: want to remove the crawl, not set it on fire
+            Vector2 p = consumeQueue.Dequeue();
+            SetOnFire((int)p.x, (int)p.y);
+            count++;
+
+            if(count == pixelsPerFrame)
+            {
+                count = 0;
+                texture.Apply();
+                yield return new WaitForSeconds(0.01f);
+            }
+            
+
+        }
+        
+    }
+
+    #region Callback functions
+
+    void initializedCallbacks()
+    {
+        WaterCreatedEvent.RegisterListener(WaterAdded);
+        WaterRemovedEvent.RegisterListener(WaterRemoved);
+    }
+
+    void WaterAdded(WaterCreatedEvent e)
+    {
+        if(CrawlHere((int) e.waterPosition.x, (int) e.waterPosition.y))
+        {
+            foreach(Crawl crawl in crawls)
+            {
+                crawl.waterAdded(e.waterPosition);
+            }
+        }
+    }
+
+    void WaterRemoved(WaterRemovedEvent e)
+    {
+        if (CrawlHere((int)e.waterPosition.x, (int)e.waterPosition.y))
+        {
+            foreach (Crawl crawl in crawls)
+            {
+                crawl.waterRemoved(e.waterPosition);
+            }
+        }
+    }
+
+    #endregion
 
 }

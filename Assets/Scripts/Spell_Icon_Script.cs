@@ -10,7 +10,7 @@ public class Spell_Icon_Script : MonoBehaviour
     SpriteRenderer spriteRenderer;
 
     Color alphaColor;
-    Color elementColor;
+    public Color elementColor;
 
     Texture2D texture;
 
@@ -31,6 +31,8 @@ public class Spell_Icon_Script : MonoBehaviour
     [SerializeField]
     Animator animator;
 
+    public int direction;
+
     bool _selected = false;
     public bool Selected
     {
@@ -46,7 +48,7 @@ public class Spell_Icon_Script : MonoBehaviour
     }
 
     bool _charged = false;
-    bool Charged
+    public bool Charged
     {
         get
         {
@@ -298,7 +300,7 @@ public class Spell_Icon_Script : MonoBehaviour
         updateCirclePixels(index, true);
         updateIconPixels(iconIndex, true);
 
-        Debug.Log("index = " + index);
+        
 
         //for (int i = 0; i < pixelList.Count; i++)
         //{

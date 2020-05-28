@@ -22,6 +22,8 @@ public class UICanvasScript : MonoBehaviour
 
     [SerializeField] CastingUIController castingUI;
 
+    Vector2 castingLocation = Vector2.negativeInfinity;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -37,8 +39,8 @@ public class UICanvasScript : MonoBehaviour
         //DrawLine(UITexture, 0, 0, UITexture.width, UITexture.height, Color.black);
         TextureHelper.ApplyTexture(UITexture, SpriteRenderer, new Vector2(0.5f, 0.5f));
 
-        SpellSelectedEvent.RegisterListener(spellSelected);
-        SpellUnSelectedEvent.RegisterListener(spellUnSelected);
+        initializeEventCallbacks();
+
     }
 
     // Update is called once per frame
@@ -60,7 +62,14 @@ public class UICanvasScript : MonoBehaviour
                 lastX = (int)endPoint.x;
                 lastY = (int)endPoint.y;
 
-                Vector2 middleScreen = new Vector2(UITexture.width / 2, UITexture.height / 2);
+                Vector2 middleScreen;
+                if (castingLocation == Vector2.negativeInfinity)
+                {
+                    middleScreen = new Vector2(UITexture.width / 2, UITexture.height / 2);
+                } else
+                {
+                    middleScreen = castingLocation;
+                }
 
                 float angle = GetAngle(middleScreen, endPoint);
 
@@ -165,41 +174,6 @@ public class UICanvasScript : MonoBehaviour
         tex.Apply();
     }
 
-    void spellSelected(SpellSelectedEvent selectedSpell) {
-
-        Debug.Log("UI canvas spell selected");
-
-        if (selectedSpell.selected)
-        {
-
-
-
-            //if (selectedSpell.spell.spellType == TempSpell.SpellType.PROJECTILE)
-            //{
-
-                this.selectedSpell = selectedSpell.spell;
-
-            //}
-
-        } else
-        {
-            this.selectedSpell = null;
-            clearTexture(UITexture);
-            TextureHelper.ApplyTexture(UITexture, SpriteRenderer, new Vector2(0.5f, 0.5f));
-        }
-
-    }
-
-    void spellUnSelected(SpellUnSelectedEvent unSelected)
-    {
-        selectedSpell = null;
-        //clearTexture(UITexture);
-        clearLine();
-        UITexture.Apply();
-    }
-
-
-
     float GetAngle(Vector2 center, Vector2 endPoint)
     {
 
@@ -218,5 +192,67 @@ public class UICanvasScript : MonoBehaviour
 
     }
 
-   
+    #region eventCallback functions
+
+    void initializeEventCallbacks()
+    {
+
+        SpellSelectedEvent.RegisterListener(spellSelected);
+        SpellUnSelectedEvent.RegisterListener(spellUnSelected);
+
+        CastingLocationChangedEvent.RegisterListener(castingLocationChanged);
+        StoppedCastingEvent.RegisterListener(stoppedCasting);
+
+    }
+
+    void spellSelected(SpellSelectedEvent selectedSpell)
+    {
+
+        Debug.Log("UI canvas spell selected");
+
+        if (selectedSpell.selected)
+        {
+
+
+
+            //if (selectedSpell.spell.spellType == TempSpell.SpellType.PROJECTILE)
+            //{
+
+            this.selectedSpell = selectedSpell.spell.spell;
+
+            //}
+
+        }
+        else
+        {
+            this.selectedSpell = null;
+            clearTexture(UITexture);
+            TextureHelper.ApplyTexture(UITexture, SpriteRenderer, new Vector2(0.5f, 0.5f));
+        }
+
+    }
+
+    void spellUnSelected(SpellUnSelectedEvent unSelected)
+    {
+        selectedSpell = null;
+        //clearTexture(UITexture);
+        clearLine();
+        UITexture.Apply();
+    }
+
+    void castingLocationChanged(CastingLocationChangedEvent e)
+    {
+        castingLocation = e.go.transform.position;
+    }
+
+    void stoppedCasting(StoppedCastingEvent e)
+    {
+        castingLocation = Vector2.negativeInfinity;
+    }
+
+    
+
+    #endregion
+
+
 }

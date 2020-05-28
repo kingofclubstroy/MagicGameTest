@@ -26,6 +26,8 @@ public class CastingCircleScript : MonoBehaviour
 
     public bool isFirst = false;
 
+    List<Vector2> lineList, previousLine;
+
     Color color;
     Color circleColor = new Color(0, 0, 0, 70f / 255f);
 
@@ -42,25 +44,48 @@ public class CastingCircleScript : MonoBehaviour
         if (pixelList == null)
         {
             //if (isFirst) { 
-                texture = new Texture2D(initialTexture.width, initialTexture.height);
-                texture.SetPixels(initialTexture.GetPixels());
-                texture.filterMode = FilterMode.Point;
+            //texture = new Texture2D(initialTexture.width, initialTexture.height);
+            //texture.SetPixels(initialTexture.GetPixels());
+
             //} else
             //{
-               //texture = TextureHelper.MakeTexture(initialTexture.width, initialTexture.height, Color.clear);
-            //    texture.filterMode = FilterMode.Point;
+            texture = TextureHelper.MakeTexture(initialTexture.width, initialTexture.height, new Color(0,0,0,0.01f));
+            //texture = new Texture2D(initialTexture.width, initialTexture.height);
+            texture.filterMode = FilterMode.Point;
             //}
             pixelList = HelperFunctions.makePixelMap(initialTexture);
+            //pixelList = new List<Vector2>();
             pixelsChanged = true;
+
+           
+
+            Color c = circleColor;
 
             if(!isFirst)
             {
-                foreach(Vector2 position in pixelList)
-                {
-                    texture.SetPixel((int)position.x, (int)position.y, Color.clear);
-                }
+                c = new Color(0, 0, 0, 0.01f);
             }
+
+            //for(int i = 0; i < texture.width; i++)
+            //{
+            //    for(int j = 0; j < texture.height; j++)
+            //    {
+            //        texture.SetPixel(i, j, new Color(0, 0, 0));
+            //    }
+            //}
+
             
+
+            foreach (Vector2 position in pixelList)
+            {
+                texture.SetPixel((int)position.x, (int)position.y, c);
+            }
+
+            texture.Apply();
+            TextureHelper.initializeTexture(texture, spriteRenderer, new Vector2(0.5f, 0.5f));
+            //spriteRenderer.sortingOrder = sortingOrder;
+            textureInitialized = true;
+
         }
 
         int index = Mathf.FloorToInt(percent * pixelList.Count);
@@ -113,7 +138,7 @@ public class CastingCircleScript : MonoBehaviour
             if (!textureInitialized)
             {
                 TextureHelper.initializeTexture(texture, spriteRenderer, new Vector2(0.5f, 0.5f));
-                spriteRenderer.sortingOrder = sortingOrder;
+                //spriteRenderer.sortingOrder = sortingOrder;
                 textureInitialized = true;
             }
 
@@ -128,6 +153,10 @@ public class CastingCircleScript : MonoBehaviour
     {
 
         StartCoroutine(Fade());
+        if(lineList != null)
+        {
+            StartCoroutine(RemoveLine(new List<Vector2>(lineList)));
+        }
 
     }
 
@@ -146,7 +175,6 @@ public class CastingCircleScript : MonoBehaviour
 
         Destroy(gameObject);
 
-       
     }
 
     /// <summary>
@@ -209,6 +237,119 @@ public class CastingCircleScript : MonoBehaviour
     public List<Vector2> getPixelList()
     {
         return pixelList;
+    }
+
+    public void UpdateSpellSelectedLine(int direction, Color color)
+    {
+        //if(previousLine != null)
+        //{
+        //    StartCoroutine(RemoveLine(previousLine));
+        //}
+
+        StartCoroutine(DrawLine(color, direction));
+        //setCenter();
+    }
+
+    IEnumerator DrawLine(Color c, int direction)
+    {
+
+        lineList = MakeLine(direction);
+
+        Debug.Log("Drawing line");
+
+        for (int i = 0; i < lineList.Count; i++)
+        {
+
+            if(previousLine != null)
+            {
+                Vector2 p = previousLine[previousLine.Count - i];
+                texture.SetPixel((int)p.x, (int)p.y, new Color(0, 0,0,0.01f));
+            }
+
+            Debug.Log(i);
+            Vector2 pos = lineList[i];
+            texture.SetPixel((int)pos.x, (int)pos.y, c);
+            
+            texture.Apply();
+            yield return new WaitForSeconds(.01f);
+        }
+
+        previousLine = lineList;
+
+    }
+
+    void setCenter()
+    {
+        for(int i = 0; i < texture.width; i++)
+        {
+            for(int j = 0; j < texture.height; j++)
+            {
+                try
+                {
+                    texture.SetPixel(i, j, Color.black);
+                }
+                catch
+                {
+                    Debug.Log("error pixel");
+                }
+            }
+        }
+       
+        texture.Apply();
+    }
+
+    IEnumerator RemoveLine(List<Vector2> lineList)
+    {
+
+        for (int i = lineList.Count - 1; i >= 0; i--)
+        {
+            Vector2 pos = lineList[i];
+            texture.SetPixel((int)pos.x, (int)pos.y, Color.clear);
+
+            texture.Apply();
+            yield return new WaitForSeconds(.01f);
+        }
+    }
+
+    List<Vector2> MakeLine(int direction)
+    {
+        List<Vector2> l = new List<Vector2>();
+        int x_dir = 0, y_dir = 0;
+
+        Debug.Log("direction = " + direction);
+
+        switch(direction)
+        {
+            case 0:
+                x_dir = -1;
+                y_dir = 1;
+                break;
+            case 1:
+                x_dir = 1;
+                y_dir = 1;
+                break;
+            case 2:
+                x_dir = 1;
+                y_dir = -1;
+                break;
+            case 3:
+                x_dir = -1;
+                y_dir = -1;
+                break;
+        }
+
+        int current_X = (texture.width) / 2, current_Y = (texture.height) / 2;
+        while(texture.GetPixel(current_X, current_Y).a <= 0.1f && l.Count < 17)
+        {
+            l.Add(new Vector2(current_X, current_Y));
+            current_X += x_dir;
+            current_Y += y_dir;
+        }
+
+        Debug.Log("count = " + l.Count);
+
+        return l;
+
     }
 
 }

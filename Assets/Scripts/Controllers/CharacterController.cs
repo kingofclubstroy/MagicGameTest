@@ -27,6 +27,7 @@ public class CharacterController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        initializeCallbacks();
         character = new Character(gameObject, 100f);
         CastingUIController = GetComponentInChildren<CastingUIController>();
         
@@ -59,7 +60,9 @@ public class CharacterController : MonoBehaviour
 
                     SpellSelectedEvent spellSelected = new SpellSelectedEvent();
 
-                    spellSelected.spell = spellIcon.spell;
+                    spellSelected.spell = spellIcon;
+
+                    spellSelected.Description = "Spell selected callback firing";
 
                     spellSelected.FireEvent();
 
@@ -74,4 +77,36 @@ public class CharacterController : MonoBehaviour
         }
 
     }
+
+    #region callback functions
+    void initializeCallbacks()
+    {
+        //TODO: might not want to cast the spell from here, but will work for now
+        SpellCastCall.RegisterListener(CastSpell);
+    }
+
+    void CastSpell(SpellCastCall e)
+    {
+        if (selectedSpell == null || !selectedSpell.Charged)
+        {
+            Debug.Log("selected spell = " + selectedSpell);
+            return;
+        }
+
+        switch (selectedSpell.spell.getElement())
+        {
+            case CastingUIController.Element.NATURE:
+                CrawlController.instance.ConsumeCrawl(transform.position, selectedSpell.spell.getCastingCost() * 10, selectedSpell.spell.getCastingCost());
+                break;
+
+            //TODO: make one for each element
+            default:
+                return;
+        }
+
+        StopCastingCall ev = new StopCastingCall();
+        ev.FireEvent();
+    }
+
+    #endregion
 }

@@ -8,7 +8,7 @@ public class Spell
 {
 
     [SerializeField]
-    string name;
+    public string name;
 
     [SerializeField]
     Sprite spellSprite;
@@ -20,14 +20,17 @@ public class Spell
     int elementCost;
 
     [SerializeReference]
-    CastingAbility ICast;
+    public ICast castingBehaviour;
 
     [SerializeField]
     CastingUIController.Element element;
 
+    [SerializeField]
+    public SpellParameters spellParams;
+
     public void Cast()
     {
-        ICast.Cast();
+        castingBehaviour.Cast(spellParams);
     }
 
 }

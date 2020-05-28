@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ICastObject : ICastBehaviour
+public class ICastObject : ICast
 {
-    public void Cast()
+    public override void Cast(SpellParameters spellParameters)
     {
         throw new System.NotImplementedException();
     }
