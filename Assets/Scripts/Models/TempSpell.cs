@@ -5,7 +5,7 @@ using UnityEngine;
 public class TempSpell
 {
 
-    public CastingUIController.Element element;
+    public Element element;
 
     public float castingCost;
 
@@ -15,7 +15,7 @@ public class TempSpell
 
     public float[] OverCharge { get => overCharge; set => overCharge = value; }
 
-    public TempSpell(CastingUIController.Element element, float castingCost, float[] overCharge = null, SpellType spellType = SpellType.PROJECTILE)
+    public TempSpell(Element element, float castingCost, float[] overCharge = null, SpellType spellType = SpellType.PROJECTILE)
     {
         this.castingCost = castingCost;
         this.element = element;

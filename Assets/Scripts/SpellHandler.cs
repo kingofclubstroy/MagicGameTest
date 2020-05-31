@@ -9,5 +9,18 @@ public class SpellHandler : MonoBehaviour
     [SerializeField]
     public List<Spell> spells = new List<Spell>();
 
+    public Spell GetSpell(string spellName)
+    {
+        foreach(Spell spell in spells)
+        {
+            if(spell.name == spellName)
+            {
+                return spell;
+            }
+        }
+
+        return null;
+    }
+
     //public SpellParameters spellParams;
 }

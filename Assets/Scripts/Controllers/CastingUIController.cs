@@ -25,7 +25,9 @@ public class CastingUIController : MonoBehaviour
     Vector2 screenCenter;
 
     [SerializeField]
-    SpellTest[] spells;
+    string[] SpellNames;
+
+    Spell[] spells;
 
     CastingCircleScript firstCircle;
 
@@ -35,16 +37,6 @@ public class CastingUIController : MonoBehaviour
     bool reset = true;
 
     List<(Element, int)> circlesToInstantiate = new List<(Element, int)>();
-
-    public enum Element
-    {
-        FIRE,
-        NATURE,
-        EARTH,
-        WIND,
-        WATER,
-        NONE
-    }
 
     [SerializeField]
     GameObject spellIconPrefab;
@@ -62,7 +54,7 @@ public class CastingUIController : MonoBehaviour
 
     public Spell_Icon_Script selectedSpell;
 
-    Vector2 positionToCast;
+    public Vector2 positionToCast;
 
     bool casting = false;
 
@@ -72,9 +64,20 @@ public class CastingUIController : MonoBehaviour
         initializeCallbacks();
         screenCenter = new Vector2(Screen.width / 2, Screen.height / 2);
 
-        foreach(SpellTest spell in spells) {
-            SpellTypes.Add(spell.getElement());
-            spell.color = getColor(spell.getElement());
+        SpellHandler spellHandler = FindObjectOfType<SpellHandler>();
+
+        spells = new Spell[SpellNames.Length];
+
+        int index = 0;
+        foreach(string s in SpellNames)
+        {
+            spells[index] = spellHandler.GetSpell(s);
+            index++;
+        }
+
+        foreach(Spell spell in spells) {
+            SpellTypes.Add(spell.spellParams.element);
+            spell.color = getColor(spell.spellParams.element);
         }
 
     }
@@ -145,7 +148,7 @@ public class CastingUIController : MonoBehaviour
 
             foreach (Spell_Icon_Script icon in spellIcons)
             {
-                if (element == icon.spell.getElement())
+                if (element == icon.spell.spellParams.element)
                 {
                     icon.updateSpellIcon(elementCasted);
                 }
@@ -255,9 +258,9 @@ public class CastingUIController : MonoBehaviour
             {
                 castingElementDict.Add(c.Item1, instantiateCastingCircleScript(c.Item2, castingElementDict.Count));
             }
-            foreach (SpellTest spell in spells)
+            foreach (Spell spell in spells)
             {
-                if (spell.getElement() == c.Item1)
+                if (spell.spellParams.element == c.Item1)
                 {
                     makeSpellIcon(spell, 25f);
                 }
@@ -417,7 +420,7 @@ public class CastingUIController : MonoBehaviour
     //    }
     //}
 
-    void makeSpellIcon(SpellTest spell, float distance)
+    void makeSpellIcon(Spell spell, float distance)
     {
 
         //TODO: i am assuming an icon has a radius of 4
@@ -459,9 +462,9 @@ public class CastingUIController : MonoBehaviour
 
         icon.direction = spellIcons.Count;
 
-        icon.SetElementNumber(GetElementNumber(spell.getElement()));
+        icon.SetElementNumber(GetElementNumber(spell.spellParams.element));
 
-        icon.Initialize(spell, getColor(spell.getElement()));
+        icon.Initialize(spell, getColor(spell.spellParams.element));
 
         spellIcons.Add(icon);
 
@@ -487,36 +490,36 @@ public class CastingUIController : MonoBehaviour
         }
     }
 
-    void OnValidate()
-    {
-        if (firstDeserialization)
-        {
-            // This is the first time the editor properties have been deserialized in the object.
-            // We take the actual array size.
+    //void OnValidate()
+    //{
+    //    if (firstDeserialization)
+    //    {
+    //        // This is the first time the editor properties have been deserialized in the object.
+    //        // We take the actual array size.
 
-            numberSpells = spells.Length;
-            firstDeserialization = false;
-        }
-        else
-        {
-            // Something have changed in the object's properties. Verify whether the array size
-            // has changed. If it has been expanded, initialize the new elements.
-            //
-            // Without this, new elements would be initialized to zero / null (first new element)
-            // or to the value of the last element.
+    //        numberSpells = spells.Length;
+    //        firstDeserialization = false;
+    //    }
+    //    else
+    //    {
+    //        // Something have changed in the object's properties. Verify whether the array size
+    //        // has changed. If it has been expanded, initialize the new elements.
+    //        //
+    //        // Without this, new elements would be initialized to zero / null (first new element)
+    //        // or to the value of the last element.
 
-            if (spells.Length != numberSpells)
-            {
-                if (spells.Length > numberSpells)
-                {
-                    for (int i = numberSpells; i < spells.Length; i++)
-                        spells[i] = new SpellTest();
-                }
+    //        if (spells.Length != numberSpells)
+    //        {
+    //            if (spells.Length > numberSpells)
+    //            {
+    //                for (int i = numberSpells; i < spells.Length; i++)
+    //                    spells[i] = new Spell();
+    //            }
 
-                numberSpells = spells.Length;
-            }
-        }
-    }
+    //            numberSpells = spells.Length;
+    //        }
+    //    }
+    //}
 
     public List<Vector2> getPixelList()
     {

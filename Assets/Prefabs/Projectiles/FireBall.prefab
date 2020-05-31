@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 3744809890658582003}
   - component: {fileID: 857200422067941600}
   - component: {fileID: 8088634531820477662}
+  - component: {fileID: 3815875683500977980}
   m_Layer: 0
   m_Name: FireBall
   m_TagString: Untagged
@@ -71,7 +72,7 @@ SpriteRenderer:
   m_SortingLayerID: 670442673
   m_SortingLayer: 1
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 7cf819affc8274bd6986fe0e5dc949e0, type: 3}
+  m_Sprite: {fileID: 21300000, guid: f227afbd9fd854f37bac45bafe16823d, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -98,3 +99,38 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 24.353127
+--- !u!114 &3815875683500977980
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8829491922735272496}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5297271b7a0bc0541b6c048565317ffd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  projectileSpeed: 0
+  maxRange: 0
+  collisionBehaviour: {fileID: 0}
+  maxRangeBehaviour: {fileID: 0}
+  direction: {x: 0, y: 0}
+  damage: 0
+  spellParameters:
+    staminaCost: 0
+    elementCost: 0
+    castTime: 0
+    damage: 0
+    fireStrength: 0
+    waterStrength: 0
+    earthStrength: 0
+    natureStrength: 0
+    element: 0
+    castBehaviour: {fileID: 0}
+    projectileObject: {fileID: 0}
+    projectileSpeed: 0
+    maxRange: 0
+    collisionBehaviour: {fileID: 0}
+    maxRangeBehaviour: {fileID: 0}
+    character: {fileID: 0}

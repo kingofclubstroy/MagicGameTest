@@ -10,7 +10,7 @@ public class SpellTest
     String name;
 
     [SerializeField]
-    CastingUIController.Element element;
+    Element element;
 
     [SerializeField]
     int castingCost;
@@ -25,7 +25,7 @@ public class SpellTest
 
     }
 
-    public CastingUIController.Element getElement()
+    public Element getElement()
     {
         return element;
     }

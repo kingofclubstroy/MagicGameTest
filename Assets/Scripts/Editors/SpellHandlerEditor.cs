@@ -12,6 +12,8 @@ public class SpellHandlerEditor : Editor
 
     private SerializedObject TestSO;
     private SpellHandler myTestData;
+
+    [SerializeField]
     private List<bool> showSpellData = new List<bool>();
 
     void OnEnable()
@@ -44,25 +46,35 @@ public class SpellHandlerEditor : Editor
 
                 spell.name = EditorGUILayout.TextField("Name:", spell.name);
 
+                spell.spellType = (SpellTypes)EditorGUILayout.EnumPopup("Spell Type:", spell.spellType);
+
+                sp.element = (Element)EditorGUILayout.EnumPopup("Element:", sp.element);
+
+                sp.elementCost = EditorGUILayout.IntField("Element Cost:", sp.elementCost);
+
+                sp.staminaCost = EditorGUILayout.IntField("Stamina Cost:", sp.staminaCost);
+
+                sp.castTime = EditorGUILayout.FloatField("Cast Time:", sp.castTime);
+
                 sp.damage = EditorGUILayout.IntField("Damage:", sp.damage);
 
-                sp.element = (CastingUIController.Element) EditorGUILayout.EnumPopup("Element:", sp.element);
+               
 
                 switch(sp.element)
                 {
-                    case CastingUIController.Element.FIRE:
+                    case Element.FIRE:
                         sp.fireStrength = EditorGUILayout.IntField("Fire Strength:", sp.fireStrength);
                         break;
 
-                    case CastingUIController.Element.EARTH:
+                    case Element.EARTH:
                         sp.earthStrength = EditorGUILayout.IntField("Earth Strength:", sp.earthStrength);
                         break;
 
-                    case CastingUIController.Element.NATURE:
+                    case Element.NATURE:
                         sp.natureStrength = EditorGUILayout.IntField("Nature Strength:", sp.natureStrength);
                         break;
 
-                    case CastingUIController.Element.WATER:
+                    case Element.WATER:
                         sp.waterStrength = EditorGUILayout.IntField("Water Strength:", sp.waterStrength);
                         break;
                 }
@@ -80,7 +92,9 @@ public class SpellHandlerEditor : Editor
 
                             sp.projectileObject = (GameObject)EditorGUILayout.ObjectField("Projectile Object:", sp.projectileObject, typeof(GameObject), true);
                             sp.collisionBehaviour = (ICast)EditorGUILayout.ObjectField("Collision Behaviour:", sp.collisionBehaviour, typeof(ICast), true);
-                            sp.maxRangeBehaviour = (ICast)EditorGUILayout.ObjectField("Max Range Behaviour:", sp.collisionBehaviour, typeof(ICast), true);
+                            sp.maxRangeBehaviour = (ICast)EditorGUILayout.ObjectField("Max Range Behaviour:", sp.maxRangeBehaviour, typeof(ICast), true);
+                            sp.projectileSpeed = EditorGUILayout.IntField("Projectile Speed:", sp.projectileSpeed);
+                            sp.maxRange = EditorGUILayout.IntField("Max Range:", sp.maxRange);
 
                             break;
 

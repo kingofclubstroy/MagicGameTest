@@ -7,6 +7,12 @@ using System;
 [Serializable]
 public class SpellParameters
 {
+    public int staminaCost;
+
+    public int elementCost;
+
+    public float castTime;
+
     public int damage;
 
     public int fireStrength;
@@ -17,14 +23,22 @@ public class SpellParameters
 
     public int natureStrength;
 
-    public CastingUIController.Element element;
+    public Element element;
 
     public ICast castBehaviour;
 
     public GameObject projectileObject;
 
+    public int projectileSpeed;
+
+    public int maxRange;
+
     public ICast collisionBehaviour;
 
     public ICast maxRangeBehaviour;
-   
+
+    public Vector2 positionToCast;
+
+    public ITakeDamage targetHit;
+
 }

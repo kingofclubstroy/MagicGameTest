@@ -18,7 +18,7 @@ public class UICanvasScript : MonoBehaviour
 
     int lastX, lastY;
 
-    SpellTest selectedSpell;
+    Spell selectedSpell;
 
     [SerializeField] CastingUIController castingUI;
 
@@ -28,16 +28,7 @@ public class UICanvasScript : MonoBehaviour
     void Start()
     {
 
-        Camera cam = Camera.main;
-        float height = 2f * 105.5f;
-        float width = height * cam.aspect;
-
-        UITexture = TextureHelper.MakeTexture((int) width, (int) height, Color.clear);
-        //UITexture.filterMode = FilterMode.Point;
-
-        SpriteRenderer = GetComponent<SpriteRenderer>();
-        //DrawLine(UITexture, 0, 0, UITexture.width, UITexture.height, Color.black);
-        TextureHelper.ApplyTexture(UITexture, SpriteRenderer, new Vector2(0.5f, 0.5f));
+        
 
         initializeEventCallbacks();
 
@@ -47,14 +38,33 @@ public class UICanvasScript : MonoBehaviour
     void Update()
     {
 
+       
+
         //TODO: move this to an interaction controller or something, it doesnt need to be here, but it will do for now
 
         if (selectedSpell != null)
         {
+            if (UITexture == null)
+            {
+                Camera cam = Camera.main;
+                double height = (Camera.main.orthographicSize * 2.0);
+                double width = height * Screen.width / Screen.height;
+
+                UITexture = TextureHelper.MakeTexture((int)width, (int)height, Color.clear);
+                //UITexture.filterMode = FilterMode.Point;
+
+                SpriteRenderer = GetComponent<SpriteRenderer>();
+                //DrawLine(UITexture, 0, 0, UITexture.width, UITexture.height, Color.black);
+                TextureHelper.ApplyTexture(UITexture, SpriteRenderer, new Vector2(0.5f, 0.5f));
+            }
+
 
             Vector2 mousePosition = Input.mousePosition;
 
-            Vector2 endPoint = new Vector2(Mathf.Clamp(Mathf.FloorToInt((mousePosition.x / Screen.width) * UITexture.width), 0, UITexture.width), Mathf.Clamp(Mathf.FloorToInt((mousePosition.y / Screen.height) * UITexture.height), 0, UITexture.height));
+            Vector2 endPoint = mousePosition;
+
+            endPoint.x /= 3f;
+            endPoint.y /= 3f;
 
             if ((int)endPoint.x != lastX || (int)endPoint.y != lastY)
             {
@@ -68,8 +78,10 @@ public class UICanvasScript : MonoBehaviour
                     middleScreen = new Vector2(UITexture.width / 2, UITexture.height / 2);
                 } else
                 {
-                    middleScreen = castingLocation;
+                    middleScreen = Camera.main.WorldToScreenPoint(castingLocation)/3f;
                 }
+
+                //middleScreen = new Vector2(UITexture.width / 2, UITexture.height / 2);
 
                 float angle = GetAngle(middleScreen, endPoint);
 
@@ -84,19 +96,14 @@ public class UICanvasScript : MonoBehaviour
 
                 Vector2 direction = endPoint - middleScreen;
 
-                Vector2 startPoint = (direction.normalized * radius) + middleScreen;
+                Vector2 startPoint = middleScreen;
+                    //(direction.normalized * radius) + middleScreen;
 
-                if ((endPoint - middleScreen).magnitude < radius)
-                {
-                    //clearTexture(UITexture);
-                    clearLine();
-                }
-                else
-                {
+               
                     
                     DrawLine(UITexture, (int)startPoint.x, (int)startPoint.y, (int)endPoint.x, (int)endPoint.y, selectedSpell.color);
 
-                }
+                
 
                 
             }
@@ -236,8 +243,12 @@ public class UICanvasScript : MonoBehaviour
     {
         selectedSpell = null;
         //clearTexture(UITexture);
-        clearLine();
-        UITexture.Apply();
+
+        if (UITexture != null)
+        {
+            clearLine();
+            UITexture.Apply();
+        }
     }
 
     void castingLocationChanged(CastingLocationChangedEvent e)

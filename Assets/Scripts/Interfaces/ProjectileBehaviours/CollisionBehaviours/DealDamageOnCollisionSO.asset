@@ -9,6 +9,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1db82a45125f7de41893242de940d55a, type: 3}
-  m_Name: CastFireBall
+  m_Script: {fileID: 11500000, guid: 40fcdf2ccecc5ed4f94118aa4b5c6c42, type: 3}
+  m_Name: DealDamageOnCollisionSO
   m_EditorClassIdentifier: 

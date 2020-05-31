@@ -121,6 +121,64 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &152471194
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 152471196}
+  - component: {fileID: 152471195}
+  m_Layer: 0
+  m_Name: SpriteHandler
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &152471195
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 152471194}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c532c997dcfdce642a7ebac87f688980, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spellIcons:
+  - type: 0
+    spellIcon: {fileID: 2800000, guid: 3be0a7a9e2fc340fcaaba8049e569ec4, type: 3}
+  - type: 2
+    spellIcon: {fileID: 2800000, guid: 5a0a05b4584cc42cbbd795a9a0dbdd7b, type: 3}
+  - type: 3
+    spellIcon: {fileID: 2800000, guid: f227afbd9fd854f37bac45bafe16823d, type: 3}
+  - type: 4
+    spellIcon: {fileID: 2800000, guid: e72616ec8efb340f1b80118f01d2d7d5, type: 3}
+  - type: 5
+    spellIcon: {fileID: 2800000, guid: 20af9d5fad8ed4f42bcf20770f976aff, type: 3}
+  - type: 6
+    spellIcon: {fileID: 2800000, guid: 2124226d4b93249efa38ee1524a80b7b, type: 3}
+  - type: 7
+    spellIcon: {fileID: 2800000, guid: 5569b34df2ca94606a3ac0cec384155c, type: 3}
+--- !u!4 &152471196
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 152471194}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 9
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &508436678
 GameObject:
   m_ObjectHideFlags: 0
@@ -781,7 +839,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 680286481}
-  radius: 40
+  radius: 35
   castingUI: {fileID: 2123587980}
 --- !u!212 &913348262
 SpriteRenderer:
@@ -831,7 +889,7 @@ SpriteRenderer:
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 0
-  m_MaskInteraction: 0
+  m_MaskInteraction: 2
   m_SpriteSortPoint: 0
 --- !u!1 &941342025
 GameObject:
@@ -881,8 +939,8 @@ MonoBehaviour:
   maxStamina: 100
   fillColor: {r: 1, g: 1, b: 1, a: 1}
   emptyColor: {r: 0.52156866, g: 0.52156866, b: 0.52156866, a: 0.52156866}
-  castingDrain: 0.5
-  regenRate: 0.1
+  castingDrain: 0.05
+  regenRate: 0.05
 --- !u!212 &941342028
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -963,23 +1021,31 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spells:
-  - name: 
+  - name: Nature's Blast
     spellSprite: {fileID: 0}
-    staminaCost: 0
-    elementCost: 0
-    castingBehaviour: {fileID: 0}
+    castingBehaviour: {fileID: 11400000, guid: 453644c21f95ffb4392fb040fa9f5417, type: 2}
     element: 0
     spellParams:
-      damage: 0
+      staminaCost: 10
+      elementCost: 60
+      castTime: 2
+      damage: 20
       fireStrength: 0
       waterStrength: 0
       earthStrength: 0
-      natureStrength: 0
-      element: 0
+      natureStrength: 5
+      element: 1
       castBehaviour: {fileID: 0}
-      projectileObject: {fileID: 0}
-      collisionBehaviour: {fileID: 0}
+      projectileObject: {fileID: 8829491922735272496, guid: 50396baf4abdf7e428a702621d7a263a,
+        type: 3}
+      projectileSpeed: 120
+      maxRange: 200
+      collisionBehaviour: {fileID: 11400000, guid: 2ef784e9431af4d45918bf907d24c33b,
+        type: 2}
       maxRangeBehaviour: {fileID: 0}
+      positionToCast: {x: 0, y: 0}
+    spellType: 0
+    color: {r: 0, g: 0, b: 0, a: 0}
 --- !u!4 &1220007987
 Transform:
   m_ObjectHideFlags: 0
@@ -1180,7 +1246,6 @@ GameObject:
   - component: {fileID: 2123587979}
   - component: {fileID: 2123587981}
   - component: {fileID: 2123587980}
-  - component: {fileID: 2123587982}
   m_Layer: 0
   m_Name: CastingUI
   m_TagString: Untagged
@@ -1219,33 +1284,15 @@ MonoBehaviour:
   maxCastRate: 30
   spellTexture: {fileID: 2800000, guid: ab03ebd66547845b99798bf87a3813fa, type: 3}
   spriteRenderer: {fileID: 2123587981}
-  spells:
-  - name: FireBall
-    element: 0
-    castingCost: 20
-    spellTexture: {fileID: 2800000, guid: f0a2d5c5e36f44abd95dd53406166ec5, type: 3}
-    color: {r: 0, g: 0, b: 0, a: 0}
-  - name: Healing Touch
-    element: 1
-    castingCost: 20
-    spellTexture: {fileID: 2800000, guid: 25d94712150e246cb9c1d226833ffb1b, type: 3}
-    color: {r: 0, g: 0, b: 0, a: 0}
-  - name: Grasping Roots
-    element: 1
-    castingCost: 60
-    spellTexture: {fileID: 2800000, guid: 3be0a7a9e2fc340fcaaba8049e569ec4, type: 3}
-    color: {r: 0, g: 0, b: 0, a: 0}
-  - name: Water Gun
-    element: 4
-    castingCost: 20
-    spellTexture: {fileID: 2800000, guid: 90a97a62f0bc04abbb30bc22605644e1, type: 3}
-    color: {r: 0, g: 0, b: 0, a: 0}
+  SpellNames:
+  - Nature's Blast
   spellIconPrefab: {fileID: 4759483009396332395, guid: 55c588fff22bfc74f89af73367724e68,
     type: 3}
   CastingCirclePrefab: {fileID: 7244039520523610650, guid: d89167e69e31e3c47909c794341f8fdb,
     type: 3}
   spellIcons: []
   selectedSpell: {fileID: 0}
+  positionToCast: {x: 0, y: 0}
 --- !u!212 &2123587981
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1296,52 +1343,3 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 1
---- !u!331 &2123587982
-SpriteMask:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2123587978}
-  m_Enabled: 1
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_DynamicOccludee: 1
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 0
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 10758, guid: 0000000000000000f000000000000000, type: 0}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 3
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 7cf819affc8274bd6986fe0e5dc949e0, type: 3}
-  m_MaskAlphaCutoff: 0.2
-  m_FrontSortingLayerID: 0
-  m_BackSortingLayerID: 0
-  m_FrontSortingLayer: 0
-  m_BackSortingLayer: 0
-  m_FrontSortingOrder: 0
-  m_BackSortingOrder: 0
-  m_IsCustomRangeActive: 0
-  m_SpriteSortPoint: 0

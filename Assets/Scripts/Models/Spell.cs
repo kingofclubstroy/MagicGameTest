@@ -13,20 +13,19 @@ public class Spell
     [SerializeField]
     Sprite spellSprite;
 
-    [SerializeField]
-    int staminaCost;
-
-    [SerializeField]
-    int elementCost;
-
     [SerializeReference]
     public ICast castingBehaviour;
 
     [SerializeField]
-    CastingUIController.Element element;
+    Element element;
 
     [SerializeField]
     public SpellParameters spellParams;
+
+    [SerializeField]
+    public SpellTypes spellType;
+
+    public Color color;
 
     public void Cast()
     {

@@ -92,16 +92,23 @@ public class CharacterController : MonoBehaviour
             Debug.Log("selected spell = " + selectedSpell);
             return;
         }
-
-        switch (selectedSpell.spell.getElement())
+        bool resourcesSpent = false;
+        switch (selectedSpell.spell.spellParams.element)
         {
-            case CastingUIController.Element.NATURE:
-                CrawlController.instance.ConsumeCrawl(transform.position, selectedSpell.spell.getCastingCost() * 10, selectedSpell.spell.getCastingCost());
+            case Element.NATURE:
+                CrawlController.instance.ConsumeCrawl(CastingUIController.positionToCast, selectedSpell.spell.spellParams. elementCost * 10, selectedSpell.spell.spellParams.elementCost);
+                resourcesSpent = true;
                 break;
 
             //TODO: make one for each element
             default:
                 return;
+        }
+
+        if(resourcesSpent)
+        {
+            selectedSpell.spell.spellParams.positionToCast = CastingUIController.positionToCast;
+            selectedSpell.spell.Cast();
         }
 
         StopCastingCall ev = new StopCastingCall();

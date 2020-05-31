@@ -5,9 +5,11 @@ using UnityEngine;
 public class Spell_Icon_Script : MonoBehaviour
 {
 
-    public SpellTest spell;
+    public Spell spell;
 
     SpriteRenderer spriteRenderer;
+
+    SpriteHandler spriteHandler;
 
     Color alphaColor;
     public Color elementColor;
@@ -65,11 +67,11 @@ public class Spell_Icon_Script : MonoBehaviour
     void Start()
     {
 
-        GetComponent<BoxCollider2D>().size = new Vector2(spell.getTexture().width, spell.getTexture().height);
+        spriteHandler = FindObjectOfType<SpriteHandler>();
         
     }
 
-    public void Initialize(SpellTest spell, Color elementColor)
+    public void Initialize(Spell spell, Color elementColor)
     {
 
         //this.spell = spell;
@@ -94,17 +96,38 @@ public class Spell_Icon_Script : MonoBehaviour
 
         if (pixelList == null)
         {
+
+            if (spell == null)
+            {
+                Debug.Log("spell is null");
+            } else if (spell.spellType == null)
+            {
+                Debug.Log("no spell type");
+            } else if (spriteHandler == null)
+            {
+                Debug.Log("SpriteHandler is null");
+            }
+
+            if(spriteHandler == null)
+            {
+                spriteHandler = FindObjectOfType<SpriteHandler>();
+            }
+
+            Texture2D tex = spriteHandler.GetTexture(spell.spellType);
+
             
-            texture = new Texture2D(spell.getTexture().width, spell.getTexture().height);
-            texture.SetPixels(spell.getTexture().GetPixels());
+
+            texture = new Texture2D(tex.width, tex.height);
+            texture.SetPixels(tex.GetPixels());
             texture.filterMode = FilterMode.Point;
-            pixelList = HelperFunctions.makePixelMap(spell.getTexture());
-            iconMap = HelperFunctions.makeSpellIconMap(spell.getTexture());
+            pixelList = HelperFunctions.makePixelMap(tex);
+            iconMap = HelperFunctions.makeSpellIconMap(tex);
             pixelsChanged = true;
+            GetComponent<BoxCollider2D>().size = new Vector2(tex.width, tex.height);
 
         }
 
-        float percent = Mathf.Clamp(charge / spell.getCastingCost(), 0, 1);
+        float percent = Mathf.Clamp(charge / spell.spellParams.elementCost , 0, 1);
         int index = Mathf.FloorToInt(percent * pixelList.Count - 1);
 
         int iconIndex = (iconMap.Count - 1) - (pixelList.Count - 1 - index);
