@@ -24,6 +24,12 @@ public class UICanvasScript : MonoBehaviour
 
     Vector2 castingLocation = Vector2.negativeInfinity;
 
+    [SerializeField]
+    int lineLength;
+
+    [SerializeField]
+    bool fixedLineLength;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -51,7 +57,10 @@ public class UICanvasScript : MonoBehaviour
                 double width = height * Screen.width / Screen.height;
 
                 UITexture = TextureHelper.MakeTexture((int)width, (int)height, Color.clear);
-                //UITexture.filterMode = FilterMode.Point;
+
+                UITexture.filterMode = FilterMode.Point;
+
+                UITexture.wrapMode = TextureWrapMode.Clamp;
 
                 SpriteRenderer = GetComponent<SpriteRenderer>();
                 //DrawLine(UITexture, 0, 0, UITexture.width, UITexture.height, Color.black);
@@ -94,14 +103,19 @@ public class UICanvasScript : MonoBehaviour
                 //startPoint.x -= castingUI.GetHalfWidth();
                 //startPoint.y -= castingUI.GetHalfHeight();
 
-                Vector2 direction = endPoint - middleScreen;
+                Vector2 direction = (endPoint - middleScreen);
 
                 Vector2 startPoint = middleScreen;
+
+                if (fixedLineLength && direction.magnitude > lineLength)
+                {
+                    endPoint = startPoint + (direction.normalized * lineLength);
+                }
                     //(direction.normalized * radius) + middleScreen;
 
                
                     
-                    DrawLine(UITexture, (int)startPoint.x, (int)startPoint.y, (int)endPoint.x, (int)endPoint.y, selectedSpell.color);
+                DrawLine(UITexture, (int)startPoint.x, (int)startPoint.y, (int)endPoint.x, (int)endPoint.y, selectedSpell.color);
 
                 
 

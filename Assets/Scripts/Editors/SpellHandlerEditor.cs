@@ -95,6 +95,17 @@ public class SpellHandlerEditor : Editor
                             sp.maxRangeBehaviour = (ICast)EditorGUILayout.ObjectField("Max Range Behaviour:", sp.maxRangeBehaviour, typeof(ICast), true);
                             sp.projectileSpeed = EditorGUILayout.IntField("Projectile Speed:", sp.projectileSpeed);
                             sp.maxRange = EditorGUILayout.IntField("Max Range:", sp.maxRange);
+                            sp.updateBehaviour = (ICast)EditorGUILayout.ObjectField("Update Behaviour:", sp.updateBehaviour, typeof(ICast), true);
+
+                            sp.elementAmount = EditorGUILayout.IntField("Element amount:", sp.elementAmount);
+
+                            switch(sp.element)
+                            {
+                                case Element.NATURE:
+                                    sp.maxCrawl = EditorGUILayout.IntField("Max crawl:", sp.maxCrawl);
+                                    sp.growthRate = EditorGUILayout.FloatField("Growth Rate:", sp.growthRate);
+                                    break;
+                            }
 
                             break;
 

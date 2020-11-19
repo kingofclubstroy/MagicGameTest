@@ -98,6 +98,24 @@ public class CrawlController : MonoBehaviour
 
     }
 
+    public Crawl CreateCrawl(Vector3 position, int maxCrawl, float growthMultiplier)
+    {
+        if (crawls.Count == 0)
+        {
+            //texture.Apply();
+            TextureHelper.initializeTexture(texture, spriteRenderer, new Vector2(0.5f, 0.5f));
+        }
+
+        Vector2 adjustedPosition = new Vector2(width / 2, height / 2);
+
+        Crawl crawlScript = new Crawl(this, maxCrawl, adjustedPosition + (Vector2)position, growthMultiplier, growthDivisor);
+
+        crawls.Add(crawlScript);
+
+        return crawlScript;
+
+    }
+
     public void AddFire(Vector2 position)
     {
         Vector2 adjustedPosition = new Vector2(width / 2, height / 2);
@@ -170,7 +188,7 @@ public class CrawlController : MonoBehaviour
         {
             origin.x = (int)origin.x;
             origin.y = (int)origin.y;
-            (HashSet<Vector2>, int) values = HelperFunctions.MakeCircleHashSet(origin, width, height, r, texture, growthColor);
+            (HashSet<Vector2>, int, List<Vector2>) values = HelperFunctions.MakeCircleHashSet(origin, width, height, r, texture, growthColor);
 
             totalGrowth = values.Item2;
             castingList = values.Item1;

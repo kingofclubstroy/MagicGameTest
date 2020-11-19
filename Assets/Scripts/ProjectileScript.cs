@@ -50,6 +50,11 @@ public class ProjectileScript : MonoBehaviour
 
         }
 
+        if(spellParameters.updateBehaviour != null)
+        {
+            spellParameters.updateBehaviour.Cast(spellParameters);
+        }
+
 
     }
 
@@ -77,6 +82,11 @@ public class ProjectileScript : MonoBehaviour
         {
             Destroy(this);
         }
+    }
+
+    private void OnDestroy()
+    {
+        spellParameters.activeProjectile = null;
     }
 
 }

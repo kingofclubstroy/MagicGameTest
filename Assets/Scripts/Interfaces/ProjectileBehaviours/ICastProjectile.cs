@@ -15,6 +15,8 @@ class ICastProjectile : ICast
 
         ProjectileScript projectileScript = projectile.GetComponent<ProjectileScript>();
 
+        spellParameters.activeProjectile = projectile;
+
         projectileScript.spellParameters = spellParameters;
 
         projectileScript.collisionBehaviour = spellParameters.collisionBehaviour;

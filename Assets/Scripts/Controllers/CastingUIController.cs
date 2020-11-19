@@ -58,11 +58,15 @@ public class CastingUIController : MonoBehaviour
 
     bool casting = false;
 
+    public CharacterController character;
+
     // Start is called before the first frame update
     void Start()
     {
         initializeCallbacks();
         screenCenter = new Vector2(Screen.width / 2, Screen.height / 2);
+        character = FindObjectOfType<CharacterController>();
+        //character = GetComponent<CharacterController>();
 
         SpellHandler spellHandler = FindObjectOfType<SpellHandler>();
 
@@ -118,33 +122,7 @@ public class CastingUIController : MonoBehaviour
 
             CastingCircleScript castingElement = castingElementDict[element];
 
-            float tempElementDifference = 0;
-          
-            //TODO: may want to change these numbers, but they will work for now
-            //Setting the amount casted to be related to the ratio amount of element present and the theiritical max amount that could be,
-            // multiplied by the max cast speed im temporarly setting as 50 (maybe there are augments that improve this)
-            tempElementDifference = ((castingElement.updateAmount / 900f) * 50f) * elementDifference;
-
-
-            //TODO: make some sort of element pixel conversion rates, may be a stat as well
-            if (element == Element.FIRE)
-            {
-                tempElementDifference *= 3;
-            }
-
-            if(element == Element.NATURE)
-            {
-                tempElementDifference /= 5;
-            }
-
-            
-            float elementCasted = Mathf.Clamp(castingElement.amount + tempElementDifference, 0, 100);
-
-            if (elementCasted > castingElement.updateAmount && elementDifference > 0)
-            {
-                //The amount of the element casted is more than the amount of element surrounding the player, so lets set tot he amount around
-                elementCasted -= Mathf.Clamp(elementCasted - castingElement.updateAmount, 0, 1);
-            }
+            float elementCasted = Mathf.Clamp(castingElement.amount, 0, 100);
 
             foreach (Spell_Icon_Script icon in spellIcons)
             {
@@ -194,7 +172,6 @@ public class CastingUIController : MonoBehaviour
 
     void SpellSelectedTextureUpdate(SpellSelectedEvent spellSelected)
     {
-        Debug.Log("spell selected texture update");
         firstCircle.UpdateSpellSelectedLine(spellSelected.spell.direction, spellSelected.spell.elementColor); 
     }
 
@@ -258,6 +235,10 @@ public class CastingUIController : MonoBehaviour
             {
                 castingElementDict.Add(c.Item1, instantiateCastingCircleScript(c.Item2, castingElementDict.Count));
             }
+
+            
+
+
             foreach (Spell spell in spells)
             {
                 if (spell.spellParams.element == c.Item1)
@@ -285,6 +266,7 @@ public class CastingUIController : MonoBehaviour
 
     void DealWithElement(Element element, int pixels)
     {
+
         if(castingElementDict.ContainsKey(element))
         {
             castingElementDict[element].addTempAmount(pixels);
@@ -464,7 +446,7 @@ public class CastingUIController : MonoBehaviour
 
         icon.SetElementNumber(GetElementNumber(spell.spellParams.element));
 
-        icon.Initialize(spell, getColor(spell.spellParams.element));
+        icon.Initialize(spell, getColor(spell.spellParams.element), character);
 
         spellIcons.Add(icon);
 

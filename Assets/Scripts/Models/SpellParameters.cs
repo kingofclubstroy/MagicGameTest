@@ -37,8 +37,18 @@ public class SpellParameters
 
     public ICast maxRangeBehaviour;
 
+    public GameObject activeProjectile;
+
+    public ICast updateBehaviour;
+
     public Vector2 positionToCast;
 
     public ITakeDamage targetHit;
+
+    public int maxCrawl;
+
+    public float growthRate;
+
+    public int elementAmount;
 
 }

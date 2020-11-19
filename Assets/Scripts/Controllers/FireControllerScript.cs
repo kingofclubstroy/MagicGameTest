@@ -159,8 +159,8 @@ public class FireControllerScript : MonoBehaviour
 
 
     public void AddFire(Vector2 position)
-    {
-
+    { 
+  
         if (CrawlController.instance.CrawlHere((int)position.x, (int)position.y) && !firePositions.ContainsKey(position))
         {
             if (WaterControllerScript.instance.waterHere(position))
@@ -175,6 +175,10 @@ public class FireControllerScript : MonoBehaviour
             {
 
                 Fire newFire = new Fire(position);
+
+                //Tells the obstacle controller that fire isnt something people want ot walk through
+                //TODO: a resistance of 10 is arbatrary and should be changed, also what if the character has fire resistance/immunity/fearless/stupid?
+                ObstacleController.instance.SetObstacleMap(position, 10000);
                 firePositions[position] = newFire;
                 fireQueue.Enqueue(newFire);
                 CrawlController.instance.SetOnFire((int)position.x, (int)position.y);
@@ -196,6 +200,7 @@ public class FireControllerScript : MonoBehaviour
     {
 
         texture.SetPixel((int)fire.GetPosition().x, (int)fire.GetPosition().y, Color.clear);
+        ObstacleController.instance.SetObstacleMap(fire.GetPosition(), 0);
         if (castingList != null && castingList.Contains(fire.GetPosition()))
         {
             totalGrowth -= 1;
@@ -223,7 +228,7 @@ public class FireControllerScript : MonoBehaviour
     {
         if (reset || castingList == null)
         {
-            (HashSet<Vector2>, int) values = HelperFunctions.MakeCircleHashSet(origin, width, height, r, texture, Color.red);
+            (HashSet<Vector2>, int, List<Vector2>) values = HelperFunctions.MakeCircleHashSet(origin, width, height, r, texture, Color.red);
 
             totalGrowth = values.Item2;
             castingList = values.Item1;

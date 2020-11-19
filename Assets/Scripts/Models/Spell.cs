@@ -29,7 +29,15 @@ public class Spell
 
     public void Cast()
     {
+        SpellCastEvent e = new SpellCastEvent();
+        e.FireEvent();
         castingBehaviour.Cast(spellParams);
     }
+
+    public Spell Copy()
+    {
+        return (Spell) this.MemberwiseClone();
+    }
+    
 
 }

@@ -6,14 +6,6 @@ public class MovementController : MonoBehaviour
 {
 
     #region Private Fields
-
-    [SerializeField]
-    int consumePixelsPerFrame;
-
-    [SerializeField]
-    int consumeAmount;
-
-
     [Tooltip("Character's speed, used to move around the map")]
     [SerializeField]
     float speed;
@@ -23,7 +15,6 @@ public class MovementController : MonoBehaviour
 
     Crawl runningCrawl;
     Vector2 runningStartPosition;
-    float runningStartTime;
 
     [SerializeField]
     Animator animator;
@@ -127,7 +118,7 @@ public class MovementController : MonoBehaviour
 
                     }
 
-                    CastingCircleProjection.transform.position += new Vector3(h, v);
+                    CastingCircleProjection.transform.position += new Vector3(h, v).normalized * speed * Time.deltaTime;
                 }
             }
 
@@ -143,6 +134,7 @@ public class MovementController : MonoBehaviour
                 castingLocationChanged = true;
                 Destroy(CastingCircleProjection);
                 CastingCircleProjection = null;
+                
                 
             }
         }
@@ -172,18 +164,7 @@ public class MovementController : MonoBehaviour
 
             Vector2 bottom = transform.position;
 
-            for(int x = -3; x <= 3; x++)
-            {
-                for(int y = -3; y <= 3; y++)
-                {
-                   
-                        Vector2 pos = new Vector2(bottom.x + x, bottom.y + y);
-                        WaterControllerScript.instance.AddWater(pos, 100);
-                    
-                }
-            }
-
-            WaterControllerScript.instance.applyTexture();
+            WaterControllerScript.instance.AddWater(bottom, 100);
 
         }
 
@@ -253,6 +234,13 @@ public class MovementController : MonoBehaviour
 
         animator.SetBool("Casting", true);
         casting = true;
+
+        animator.SetBool("Walking_Up", false);
+        animator.SetBool("Walking_Down", false);
+        animator.SetBool("Walking_Left", false);
+        animator.SetBool("Walking_Right", false);
+
+
     }
 
     #endregion

@@ -26,11 +26,11 @@ public abstract class Event<T> where T : Event<T>
 
     public void FireEvent()
     {
-        Debug.Log(Description);
-        if(listeners == null)
-        {
-            Debug.Log("noone cares about this event");
-        }
+        //Debug.Log(Description);
+        //if(listeners == null)
+        //{
+        //    Debug.Log("noone cares about this event");
+        //}
         listeners?.Invoke(this as T);
     }
 }
@@ -161,4 +161,9 @@ public class SpellCastCall : Event<SpellCastCall>
     {
         Description = "Wanting to cast a spell now";
     }
+}
+
+public class SpellCastEvent : Event<SpellCastEvent>
+{
+
 }

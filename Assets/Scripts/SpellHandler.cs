@@ -15,12 +15,10 @@ public class SpellHandler : MonoBehaviour
         {
             if(spell.name == spellName)
             {
-                return spell;
+                return spell.Copy();
             }
         }
 
         return null;
     }
-
-    //public SpellParameters spellParams;
 }

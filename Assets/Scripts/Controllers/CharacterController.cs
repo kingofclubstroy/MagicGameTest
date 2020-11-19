@@ -16,6 +16,8 @@ public class CharacterController : MonoBehaviour
     bool mainCamFound { get { return mainCam != null; } }
 
     Spell_Icon_Script selectedSpell;
+
+    public StaminaController staminaController;
    
 
 
@@ -30,6 +32,7 @@ public class CharacterController : MonoBehaviour
         initializeCallbacks();
         character = new Character(gameObject, 100f);
         CastingUIController = GetComponentInChildren<CastingUIController>();
+        staminaController = GetComponentInChildren<StaminaController>();
         
 
     }
@@ -83,13 +86,13 @@ public class CharacterController : MonoBehaviour
     {
         //TODO: might not want to cast the spell from here, but will work for now
         SpellCastCall.RegisterListener(CastSpell);
+
     }
 
     void CastSpell(SpellCastCall e)
     {
-        if (selectedSpell == null || !selectedSpell.Charged)
+        if (selectedSpell == null || !selectedSpell.Charged || !staminaController.EnoughStamina())
         {
-            Debug.Log("selected spell = " + selectedSpell);
             return;
         }
         bool resourcesSpent = false;
@@ -98,6 +101,11 @@ public class CharacterController : MonoBehaviour
             case Element.NATURE:
                 CrawlController.instance.ConsumeCrawl(CastingUIController.positionToCast, selectedSpell.spell.spellParams. elementCost * 10, selectedSpell.spell.spellParams.elementCost);
                 resourcesSpent = true;
+                break;
+
+            case Element.WATER:
+                resourcesSpent = true;
+                WaterControllerScript.instance.ConsumeWater(CastingUIController.positionToCast, selectedSpell.spell.spellParams.elementCost * 10, selectedSpell.spell.spellParams.elementCost);
                 break;
 
             //TODO: make one for each element

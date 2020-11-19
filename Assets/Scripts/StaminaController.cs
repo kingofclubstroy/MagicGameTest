@@ -15,7 +15,7 @@ public class StaminaController : MonoBehaviour
     float stamina;
 
     [SerializeField]
-    Color fillColor, emptyColor;
+    Color fillColor, emptyColor, afterColor;
 
     List<Vector2> pixelList;
 
@@ -27,7 +27,7 @@ public class StaminaController : MonoBehaviour
 
     bool isCasting = false;
 
-    int lastIndex;
+    //int lastIndex;
 
     bool fadingOut = false;
 
@@ -36,6 +36,12 @@ public class StaminaController : MonoBehaviour
     SpriteRenderer spriteRenderer;
 
     bool texInitialized = false;
+
+    int staminaCost = -1;
+
+    bool changed = true;
+
+    bool castingProjectionActive = false;
 
     // Start is called before the first frame update
     void Start()
@@ -47,13 +53,11 @@ public class StaminaController : MonoBehaviour
 
         spriteRenderer = GetComponent<SpriteRenderer>();
 
-       
-
         staminaTex = TextureHelper.MakeTexture(initialTex.width, initialTex.height, Color.clear);  //new Color(0, 0, 0, 0.01f)
 
         pixelList = HelperFunctions.makePixelMap(initialTex);
 
-        lastIndex = 0;
+        //lastIndex = 0;
 
        
         staminaTex.filterMode = FilterMode.Point;
@@ -81,7 +85,10 @@ public class StaminaController : MonoBehaviour
         
         if(isCasting)
         {
-            drainStamina(castingDrain);
+            if (castingProjectionActive || changed)
+            {
+                drainStamina(castingDrain);
+            }
         } else
         {
             regenStamina(regenRate);
@@ -91,11 +98,14 @@ public class StaminaController : MonoBehaviour
 
     void drainStamina(float amount)
     {
+        
         if (stamina > 0)
         {
-
+            
             stamina = Mathf.Clamp(stamina - amount, 0, maxStamina);
             updateStaminaBar();
+            changed = false;
+            
 
         } else if(isCasting)
         {
@@ -117,64 +127,68 @@ public class StaminaController : MonoBehaviour
 
     void updateStaminaBar()
     {
+
         float percent = (float) stamina / maxStamina;
 
-        int index = pixelList.Count - (int) (percent * pixelList.Count);
+        int index = (int) (percent * pixelList.Count);
 
-        if(index == lastIndex)
+        //if (index != lastIndex)
+        //{
+
+            //if (index < lastIndex)
+            //{
+        for (int i = 0; i <= pixelList.Count; i++)
         {
-            return;
+            if (i < pixelList.Count)
+            {
+                if (i <= index)
+                {
+                    Vector2 position = pixelList[i];
+                    staminaTex.SetPixel((int)position.x, (int)position.y, fillColor);
+                }
+                    
+                else
+                {
+                    Vector2 position = pixelList[i];
+                    staminaTex.SetPixel((int)position.x, (int)position.y, emptyColor);
+                }
+            }
+            
+        }
+        
+        if (staminaCost != -1)
+        {
+            
+            float afterPercent = (float)(stamina - staminaCost) / maxStamina;
+
+            int afterIndex = Mathf.Clamp((int)(afterPercent * pixelList.Count), 0, (int) maxStamina);
+
+            for(int i = afterIndex; i <= index; i++)
+            {
+                if (i < pixelList.Count)
+                {
+                    Vector2 position = pixelList[i];
+                    staminaTex.SetPixel((int)position.x, (int)position.y, afterColor);
+                }
+            }
+
+
         }
 
-        if(index < lastIndex)
-        {
-            for(int i = index; i < lastIndex; i++)
-            {
-                Vector2 position = pixelList[i];
-                staminaTex.SetPixel((int)position.x, (int)position.y, fillColor);
-            }
-        } else
-        {
-            for(int i = lastIndex; i < index; i++)
-            {
-                Vector2 position = pixelList[i];
-                staminaTex.SetPixel((int)position.x, (int)position.y, emptyColor);
-            }
-        }
-
-        lastIndex = index;
+        //lastIndex = index;
         staminaTex.Apply();
 
     }
 
-    void initializeEventCallbacks()
+    void clearTexture()
     {
-        StartedCastingEvent.RegisterListener(castingStarted);
-        StoppedCastingEvent.RegisterListener(castingStopped);
-    }
-
-    void castingStarted(StartedCastingEvent e)
-    {
-        isCasting = true;
-        if (fadingOut)
+        foreach(Vector2 pos in pixelList)
         {
-            StopCoroutine(FadeOut());
-            fadingOut = false;
+            staminaTex.SetPixel((int) pos.x, (int) pos.y, emptyColor);
         }
-        StartCoroutine(FadeIn());
-    }
 
-    void castingStopped(StoppedCastingEvent e)
-    {
-        isCasting = false;
-        if(fadingIn)
-        {
-            StopCoroutine(FadeIn());
-            fadingIn = false;
-        }
-        StartCoroutine(FadeOut());
+        staminaTex.Apply();
     }
-
 
     IEnumerator FadeOut()
     {
@@ -210,4 +224,112 @@ public class StaminaController : MonoBehaviour
 
         fadingIn = false;
     }
+
+    public bool EnoughStamina()
+    {
+        if(staminaCost == -1 || stamina - staminaCost < 0)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    public bool EnoughStamina(int cost)
+    {
+        return stamina >= cost;
+    }
+
+    #region Callback functions
+
+    void initializeEventCallbacks()
+    {
+        StartedCastingEvent.RegisterListener(castingStarted);
+        StoppedCastingEvent.RegisterListener(castingStopped);
+        SpellSelectedEvent.RegisterListener(SpellSelected);
+        SpellCastEvent.RegisterListener(SpellCast);
+        SpellUnSelectedEvent.RegisterListener(SpellUnselected);
+        CastingProjectionDestroyedEvent.RegisterListener(CastingProjectionDestroyed);
+        CastingProjectionCreatedEvent.RegisterListener(CastingProjectionCreated);
+        CastingLocationChangedEvent.RegisterListener(CastingLocationChanged);
+    }
+
+    void castingStarted(StartedCastingEvent e)
+    {
+        isCasting = true;
+        if (fadingOut)
+        {
+            StopCoroutine(FadeOut());
+            fadingOut = false;
+        }
+        StartCoroutine(FadeIn());
+    }
+
+    void castingStopped(StoppedCastingEvent e)
+    {
+        isCasting = false;
+        if (fadingIn)
+        {
+            StopCoroutine(FadeIn());
+            fadingIn = false;
+        }
+
+        //if(staminaCost != - 1)
+        //{
+        //    float percent = (float)stamina / maxStamina;
+        //    int index = pixelList.Count - (int)(percent * pixelList.Count);
+        //    for(int i = 0; i <= index; i++)
+        //    {
+        //        if(i < pixelList.Count)
+        //        {
+        //            Vector2 position = pixelList[i];
+        //            staminaTex.SetPixel((int)position.x, (int)position.y, fillColor);
+        //        }
+        //    }
+
+        //}
+
+        StartCoroutine(FadeOut());
+    }
+
+    void SpellSelected(SpellSelectedEvent e)
+    {
+        staminaCost = e.spell.spell.spellParams.staminaCost;
+        changed = true;
+
+    }
+
+    void SpellCast(SpellCastEvent e)
+    {
+        stamina -= staminaCost;
+        staminaCost = -1;
+        float percent = (float)stamina / maxStamina;
+        //lastIndex = pixelList.Count - (int)(percent * pixelList.Count);
+        changed = true;
+        //clearTexture();
+    }
+
+    void SpellUnselected(SpellUnSelectedEvent e)
+    {
+        staminaCost = -1;
+        changed = true;
+    }
+
+    void CastingProjectionCreated(CastingProjectionCreatedEvent e)
+    {
+        castingProjectionActive = true;
+    }
+
+    void CastingProjectionDestroyed(CastingProjectionDestroyedEvent e)
+    {
+        castingProjectionActive = false;
+    }
+
+    void CastingLocationChanged(CastingLocationChangedEvent e)
+    {
+        castingProjectionActive = false;
+    }
+
+
+    #endregion
 }

@@ -14,7 +14,7 @@ public class HelperFunctions
         BottomRight
     }
 
-    public static (HashSet<Vector2>, int) MakeCircleHashSet(Vector2 startOrigin, int width, int height, int r, Texture2D texture, Color c)
+    public static (HashSet<Vector2>, int, List<Vector2>) MakeCircleHashSet(Vector2 startOrigin, int width, int height, int r, Texture2D texture, Color c)
     {
         HashSet<Vector2> castingList = new HashSet<Vector2>();
 
@@ -42,15 +42,25 @@ public class HelperFunctions
         foreach (Vector2 v in tmpList)
         {
             Vector2 vMirr = new Vector2((int)v.x, (int) -1 * v.y);
+           
             list.Add(origin + v);
-            list.Add(origin + new Vector2((int)v.x * -1, (int) v.y * -1));
+            
+           
+            list.Add(origin + new Vector2((int)v.x * -1, (int)v.y * -1));
+            
+           
             list.Add(origin + vMirr);
-            list.Add(origin + new Vector2((int)vMirr.x * -1, (int) vMirr.y * -1));
+            
+          
+            list.Add(origin + new Vector2((int)vMirr.x * -1, (int)vMirr.y * -1));
+            
         }
 
 
 
         int totalGrowth = 0;
+
+        List<Vector2> consumeList = new List<Vector2>();
 
         foreach (Vector2 location in list)
         {
@@ -59,6 +69,7 @@ public class HelperFunctions
 
             if (!castingList.Contains(location))
             {
+                consumeList.Add(location);
                 castingList.Add(location);
                 if (texture.GetPixel((int)location.x, (int)location.y) == c)
                 {
@@ -67,7 +78,7 @@ public class HelperFunctions
             }
         }
 
-        return (castingList, totalGrowth);
+        return (castingList, totalGrowth, consumeList);
     }
 
     public static List<Vector2> makePixelMap(Texture2D circleTexture)

@@ -33,7 +33,7 @@ public class CastingCircleScript : MonoBehaviour
 
     public void addTempAmount(float temp)
     {
-        updateAmount = temp;
+        amount = temp;
     }
 
     public void updateCastingCircleTexture(float percent, Color colorToChange)
@@ -255,8 +255,6 @@ public class CastingCircleScript : MonoBehaviour
 
         lineList = MakeLine(direction);
 
-        Debug.Log("Drawing line");
-
         for (int i = 0; i < lineList.Count; i++)
         {
 
@@ -266,7 +264,7 @@ public class CastingCircleScript : MonoBehaviour
                 texture.SetPixel((int)p.x, (int)p.y, new Color(0, 0,0,0.01f));
             }
 
-            Debug.Log(i);
+           
             Vector2 pos = lineList[i];
             texture.SetPixel((int)pos.x, (int)pos.y, c);
             

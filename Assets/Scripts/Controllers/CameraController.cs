@@ -49,19 +49,19 @@ public class CameraController : MonoBehaviour
 
     void castingProjectionCreated(CastingProjectionCreatedEvent e)
     {
-        Debug.Log("Camera Controller: castingProjectionCreated");
+       
         currentObject = e.castingProjection;
     }
 
     void castingProjectionDestroyed(CastingProjectionDestroyedEvent e)
     {
-        Debug.Log("Camera Controller: castingProjectionDestroyed");
+        
         currentObject = player;
     }
 
     void castingLocationChanged(CastingLocationChangedEvent e)
     {
-        Debug.Log("Camera Controller: castingLocationChanged");
+       
         currentObject = e.go;
     }
 

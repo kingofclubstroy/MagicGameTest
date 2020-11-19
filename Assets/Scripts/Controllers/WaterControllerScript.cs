@@ -20,6 +20,8 @@ public class WaterControllerScript : MonoBehaviour
 
     int totalWater = 0;
 
+    List<Vector2> consumeOrder;
+
 
     // Start is called before the first frame update
     void Start()
@@ -54,25 +56,53 @@ public class WaterControllerScript : MonoBehaviour
 
         position = position + pos;
 
-        if (waterPositions.ContainsKey(position))
+        List<Vector2> areas = new List<Vector2>();
+        areas.Add(position);
+
+        for (int i = 0; i < amount; i++)
         {
 
-            waterPositions[position].addAmount(amount);
+            while (areas.Count > 0)
+            {
 
-        } else
-        {
+                int ran = Random.Range(0, areas.Count - 1);
+                Vector2 p = areas[ran];
 
-            Water water = new Water(amount);
-            waterPositions.Add(position, water);
+                areas.RemoveAt(ran);
 
-            texture.SetPixel((int)position.x, (int)position.y, Color.blue);
+                if (waterPositions.ContainsKey(p))
+                {
 
-            WaterCreatedEvent e = new WaterCreatedEvent();
-            e.waterPosition = position;
-            e.FireEvent();
+                    //waterPositions[position].addAmount(amount);
+
+                }
+                else
+                {
+
+                    Water water = new Water(amount);
+                    waterPositions.Add(p, water);
+
+                    texture.SetPixel((int)p.x, (int)p.y, Color.blue);
+
+                    WaterCreatedEvent e = new WaterCreatedEvent();
+                    e.waterPosition = p;
+                    e.FireEvent();
+
+                    areas.Add(new Vector2(p.x + 1, p.y));
+                    areas.Add(new Vector2(p.x - 1, p.y));
+                    areas.Add(new Vector2(p.x, p.y + 1));
+                    areas.Add(new Vector2(p.x, p.y - 1));
+
+                    break;
+                }
+
+                
+
+            }
+
         }
 
-        //texture.Apply();
+        texture.Apply();
 
     }
 
@@ -94,6 +124,61 @@ public class WaterControllerScript : MonoBehaviour
 
     }
 
+    public void ConsumeWater(Vector2 position, int amountConsumed, int pixelsPerFrame)
+    {
+        Queue<Vector2> consumeQueue = new Queue<Vector2>();
+        
+
+        int completed = 0;
+
+        for(int i = 0; i < consumeOrder.Count; i++)
+        {
+            if(completed == amountConsumed)
+            {
+                break;
+            }
+
+            if(waterHere(consumeOrder[i]))
+            {
+                completed++;
+                consumeQueue.Enqueue(consumeOrder[i]);
+            }
+
+        }
+
+        StartCoroutine(consumeRoutine(consumeQueue, pixelsPerFrame));
+
+    }
+
+    IEnumerator consumeRoutine(Queue<Vector2> consumeQueue, int pixelsPerFrame)
+    {
+        Debug.Log("Consume routine");
+        Debug.Log(consumeQueue.Count);
+        int count = 0;
+        int consumeSize = consumeQueue.Count;
+        for (int i = 0; i < consumeSize; i++)
+        {
+
+            //TODO: want to remove the crawl, not set it on fire
+            Vector2 p = consumeQueue.Dequeue();
+
+            subtractWater(p, 100);
+            
+            //SetOnFire((int)p.x, (int)p.y);
+            count++;
+
+            if (count == pixelsPerFrame)
+            {
+                count = 0;
+                texture.Apply();
+                yield return new WaitForSeconds(0.01f);
+            }
+
+
+        }
+
+    }
+
     public void applyTexture()
     {
         texture.Apply();
@@ -105,9 +190,10 @@ public class WaterControllerScript : MonoBehaviour
         {
             origin.x = (int)origin.x;
             origin.y = (int)origin.y;
-            (HashSet<Vector2>, int) values = HelperFunctions.MakeCircleHashSet(origin, width, height, r, texture, Color.blue);
+            (HashSet<Vector2>, int, List<Vector2>) values = HelperFunctions.MakeCircleHashSet(origin, width, height, r, texture, Color.blue);
 
             totalWater = values.Item2;
+            consumeOrder = values.Item3;
             
 
 
