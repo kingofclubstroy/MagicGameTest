@@ -7,6 +7,8 @@ public class StateController : MonoBehaviour
     public State currentState;
     public State remainState;
 
+
+
     [HideInInspector] float stateTimeElapsed;
 
     // Start is called before the first frame update
