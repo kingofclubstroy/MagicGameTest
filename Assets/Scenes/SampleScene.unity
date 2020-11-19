@@ -1329,8 +1329,8 @@ MonoBehaviour:
   height: 1000
   width: 1000
   maxCrawl: 1000
-  growthColor: {r: 0.22352941, g: 0.7019608, b: 0.34901962, a: 1}
-  burntColor: {r: 0, g: 0, b: 0, a: 0.39215687}
+  growthColor: {r: 0.16620687, g: 0.7830189, b: 0.26317787, a: 1}
+  burntColor: {r: 0, g: 0, b: 0, a: 0}
   lastColor: {r: 0.22352943, g: 0.7019608, b: 0.34901962, a: 1}
   growthMultiplier: 3
   growthDivisor: 100
@@ -1599,15 +1599,14 @@ MonoBehaviour:
   decayRate: 100
   maxElement: 1200
   maxCastRate: 30
-  spellTexture: {fileID: 2800000, guid: ab03ebd66547845b99798bf87a3813fa, type: 3}
+  spellTexture: {fileID: 0}
   spriteRenderer: {fileID: 2123587981}
   SpellNames:
   - Grow Projectile
   - Nature's Blast
   spellIconPrefab: {fileID: 4759483009396332395, guid: 55c588fff22bfc74f89af73367724e68,
     type: 3}
-  CastingCirclePrefab: {fileID: 7244039520523610650, guid: d89167e69e31e3c47909c794341f8fdb,
-    type: 3}
+  CastingCirclePrefab: {fileID: 0}
   spellIcons: []
   selectedSpell: {fileID: 0}
   positionToCast: {x: 0, y: 0}
