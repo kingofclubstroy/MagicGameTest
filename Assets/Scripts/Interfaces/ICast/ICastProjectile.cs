@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ICastProjectile : ICastBehaviour
+
+[CreateAssetMenu(menuName = "Custom/Casting/ICastProjectile")]
+class ICastProjectile : ICast
 {
-    public void Cast()
+    public override void Cast(SpellParameters spellParameters)
     {
         throw new System.NotImplementedException();
     }

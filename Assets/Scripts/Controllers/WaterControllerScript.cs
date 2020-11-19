@@ -18,6 +18,8 @@ public class WaterControllerScript : MonoBehaviour
 
     public static WaterControllerScript instance;
 
+    int totalWater = 0;
+
 
     // Start is called before the first frame update
     void Start()
@@ -64,6 +66,10 @@ public class WaterControllerScript : MonoBehaviour
             waterPositions.Add(position, water);
 
             texture.SetPixel((int)position.x, (int)position.y, Color.blue);
+
+            WaterCreatedEvent e = new WaterCreatedEvent();
+            e.waterPosition = position;
+            e.FireEvent();
         }
 
         //texture.Apply();
@@ -81,6 +87,9 @@ public class WaterControllerScript : MonoBehaviour
         {
             waterPositions.Remove(position);
             texture.SetPixel((int)position.x, (int)position.y, Color.clear);
+            WaterRemovedEvent e = new WaterRemovedEvent();
+            e.waterPosition = position;
+            e.FireEvent();
         }
 
     }
@@ -89,4 +98,22 @@ public class WaterControllerScript : MonoBehaviour
     {
         texture.Apply();
     }
+
+    public int GetNumberPixelsInCircle(Vector2 origin, int r, bool reset)
+    {
+        if (reset)
+        {
+            origin.x = (int)origin.x;
+            origin.y = (int)origin.y;
+            (HashSet<Vector2>, int) values = HelperFunctions.MakeCircleHashSet(origin, width, height, r, texture, Color.blue);
+
+            totalWater = values.Item2;
+            
+
+
+        }
+
+        return totalWater;
+    }
+
 }

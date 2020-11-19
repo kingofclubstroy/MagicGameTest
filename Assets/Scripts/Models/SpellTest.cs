@@ -17,6 +17,8 @@ public class SpellTest
 
     [SerializeField]
     Texture2D spellTexture;
+
+    public Color color;
    
     public SpellTest()
     {

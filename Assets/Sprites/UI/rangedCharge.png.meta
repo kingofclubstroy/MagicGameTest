@@ -17,6 +17,15 @@ TextureImporter:
   - first:
       213: -6083704640098438988
     second: rangedCharge_4
+  - first:
+      213: 6317151630619436719
+    second: rangedCharge_5
+  - first:
+      213: -715070581479522066
+    second: rangedCharge_6
+  - first:
+      213: 3705056512948447491
+    second: rangedCharge_7
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -46,7 +55,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: -1
+    filterMode: 0
     aniso: -1
     mipBias: -100
     wrapU: 1

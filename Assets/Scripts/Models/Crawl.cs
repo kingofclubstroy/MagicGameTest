@@ -8,6 +8,8 @@ public class Crawl
 
     public int number;
 
+    bool last = false;
+
     System.Random Random;
 
     #region growth variables
@@ -39,11 +41,28 @@ public class Crawl
     #region test variables
     Dictionary<Vector2, List<Vector2>> neighbourDictionary;
 
+    int waterFirstRemoved = -1;
+
+    [SerializeField]
+    int waterConsumptionRate = 5;
+
+    int frameCount = 0;
+
+    [SerializeField]
+    int waterGrowthDuration = 30;
+
     #endregion
 
 
 
     #endregion
+
+    #region water variables
+
+    HashSet<Vector2> waterPositions = new HashSet<Vector2>();
+
+    #endregion
+
 
     public Crawl (CrawlController crawlController, int maxGrowth, Vector2 position, float growthMultiplier, float growthDivisor)
     {
@@ -90,6 +109,11 @@ public class Crawl
         if (GrowthList.Count > 0 && pixelsGrown < maxGrowth)
         {
 
+            if(!last && pixelsGrown >= (maxGrowth * 0.95f))
+            {
+                last = true;
+            }
+
             int growthToDraw = 1 + Mathf.FloorToInt(GrowthList.Count / 100);
 
             for (int i = 0; i < growthToDraw; i++)
@@ -126,7 +150,7 @@ public class Crawl
         if (crawlController.CrawlHere((int)pixelPos.x, (int)pixelPos.y))
         {
 
-            crawlController.SetPixel((int)pixelPos.x, (int)pixelPos.y);
+            crawlController.SetPixel((int)pixelPos.x, (int)pixelPos.y, last);
 
             for (int i = -1; i < 2; i++)
             {
@@ -163,6 +187,8 @@ public class Crawl
 
     public void GrowthUpdate2()
     {
+
+        WaterUpdate();
 
         if (PixelList.Count > 0 && pixelsGrown < maxGrowth)
         {
@@ -235,7 +261,7 @@ public class Crawl
                     Vector2 final = pixelPos + v;
 
                     PixelList.Add(final);
-                    crawlController.SetPixel((int)final.x, (int)final.y);
+                    crawlController.SetPixel((int)final.x, (int)final.y, last);
 
                     return true;
                 }
@@ -326,7 +352,7 @@ public class Crawl
 
             PixelList.Add(selection[0]);
 
-            crawlController.SetPixel((int)selection[0].x, (int)selection[0].y);
+            crawlController.SetPixel((int)selection[0].x, (int)selection[0].y, last);
 
             return true;
 
@@ -344,7 +370,7 @@ public class Crawl
                 {
                     PixelList.Add(selection[i]);
 
-                    crawlController.SetPixel((int)selection[i].x, (int)selection[i].y);
+                    crawlController.SetPixel((int)selection[i].x, (int)selection[i].y, last);
 
                     return true;
                 }
@@ -383,6 +409,11 @@ public class Crawl
 
         if (GrowthList.Count > 0 && pixelsGrown < maxGrowth)
         {
+            if (!last && pixelsGrown >= (maxGrowth * 0.5f))
+            {
+                last = true;
+            }
+
             if (pixelsGrown < 100)
             {
                 growthToDrawTest += ((GrowthList.Count / growthDivisor) * (growthMultiplierTest * 15));
@@ -452,7 +483,7 @@ public class Crawl
         if (!crawlController.CrawlHere((int)pixelPos.x, (int)pixelPos.y))
         {
 
-            crawlController.SetPixel((int)pixelPos.x, (int)pixelPos.y);
+            crawlController.SetPixel((int)pixelPos.x, (int)pixelPos.y, last);
 
             for (int i = -1; i < 2; i++)
             {
@@ -505,4 +536,75 @@ public class Crawl
 
         //texture.Apply();
     }
+
+    public void waterAdded(Vector2 position)
+    {
+        if (CrawlLocations.Contains(position) == false)
+        {
+            return;
+        }
+
+        waterPositions.Add(position);
+    }
+
+    public void waterRemoved(Vector2 position)
+    {
+        if (CrawlLocations.Contains(position) == false)
+        {
+            return;
+        }
+
+        waterPositions.Remove(position);
+    }
+
+    public void RemoveWater(Vector2 position)
+    {
+        waterPositions.Remove(position);
+        growthMultiplierTest += 1;
+        
+
+        RemoveWaterEvent e = new RemoveWaterEvent();
+        e.position = position;
+        e.FireEvent();
+    }
+
+    void WaterUpdate()
+    {
+        frameCount++;
+
+        if (frameCount % waterConsumptionRate == 0)
+        {
+            if (waterPositions.Count == 0)
+            {
+                if (growthMultiplierTest > 1 && (frameCount - waterFirstRemoved) > waterGrowthDuration)
+                {
+                    growthMultiplierTest--;
+                }
+                else
+                {
+
+                    waterFirstRemoved = -1;
+                    frameCount = 0;
+                }
+            }
+            else
+            {
+                foreach (Vector2 pos in waterPositions)
+                {
+                    waterPositions.Remove(pos);
+                    growthMultiplierTest += 1;
+
+                    if (waterFirstRemoved == -1)
+                    {
+                        waterFirstRemoved = frameCount;
+                    }
+
+                    break;
+                }
+
+            }
+
+        }
+    }
+
 }

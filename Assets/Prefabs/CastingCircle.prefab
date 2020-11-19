@@ -49,6 +49,7 @@ MonoBehaviour:
   amount: 0
   lastIndex: 0
   updateAmount: 0
+  sortingOrder: 0
   isFirst: 0
 --- !u!212 &8898377239961888339
 SpriteRenderer:

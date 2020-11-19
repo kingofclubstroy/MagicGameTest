@@ -10,20 +10,56 @@ public class Spell_Icon_Script : MonoBehaviour
     SpriteRenderer spriteRenderer;
 
     Color alphaColor;
-    Color elementColor;
+    public Color elementColor;
 
     Texture2D texture;
 
     int lastIndex = -1;
 
+    int lastIconIndex = -1;
+
     float currentElementCharge = 0;
 
     List<Vector2> pixelList;
 
-    Color circleColor = new Color(0, 0, 0, 120f / 255f);
+    Color circleColor = new Color(0, 0, 0, 70f / 255f);
 
     bool textureInitialized = false;
 
+    List<List<Vector2>> iconMap;
+
+    [SerializeField]
+    Animator animator;
+
+    public int direction;
+
+    bool _selected = false;
+    public bool Selected
+    {
+        get
+        {
+            return _selected;
+        }
+        set
+        {
+            _selected = value;
+            animator.SetBool("IsSelected", value);
+        }
+    }
+
+    bool _charged = false;
+    public bool Charged
+    {
+        get
+        {
+            return _charged;
+        }
+        set
+        {
+            _charged = value;
+            animator.SetBool("IsCharged", value);
+        }
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -63,6 +99,7 @@ public class Spell_Icon_Script : MonoBehaviour
             texture.SetPixels(spell.getTexture().GetPixels());
             texture.filterMode = FilterMode.Point;
             pixelList = HelperFunctions.makePixelMap(spell.getTexture());
+            iconMap = HelperFunctions.makeSpellIconMap(spell.getTexture());
             pixelsChanged = true;
 
         }
@@ -70,11 +107,43 @@ public class Spell_Icon_Script : MonoBehaviour
         float percent = Mathf.Clamp(charge / spell.getCastingCost(), 0, 1);
         int index = Mathf.FloorToInt(percent * pixelList.Count - 1);
 
+        int iconIndex = (iconMap.Count - 1) - (pixelList.Count - 1 - index);
+
+        pixelsChanged = updateCirclePixels(index, pixelsChanged);
+        pixelsChanged = updateIconPixels(iconIndex, pixelsChanged);
+
+
+        if (pixelsChanged)
+        {
+
+            texture.Apply();
+
+            if (!textureInitialized)
+            {
+                TextureHelper.initializeTexture(texture, spriteRenderer, new Vector2(0.5f, 0.5f));
+                textureInitialized = true;
+            }
+
+        }
+
+    }
+
+    public bool updateCirclePixels(int index, bool pixelsChanged)
+    {
         if (index >= 0 && index < pixelList.Count)
         {
 
             if (index != lastIndex)
             {
+
+                if (index == pixelList.Count - 1)
+                {
+                    Charged = true;
+                }
+                else if (Charged)
+                {
+                    Charged = false;
+                }
 
                 pixelsChanged = true;
 
@@ -85,21 +154,7 @@ public class Spell_Icon_Script : MonoBehaviour
                     for (int tempIndex = lastIndex + 1; tempIndex <= index; tempIndex++)
                     {
 
-                        try
-                        {
-
-                            texture.SetPixel((int)pixelList[tempIndex].x, (int)pixelList[tempIndex].y, elementColor);
-
-                        } catch
-                        {
-                            Debug.Log("error setting spells pixels");
-                            Debug.Log("index = " + index);
-                            Debug.Log("temp index = " + tempIndex);
-                            Debug.Log("last index = " + lastIndex);
-                            Debug.Log("count = " + pixelList.Count);
-                            Debug.LogError("percent = " + percent);
-
-                        }
+                        texture.SetPixel((int)pixelList[tempIndex].x, (int)pixelList[tempIndex].y, elementColor);
 
                     }
 
@@ -119,20 +174,82 @@ public class Spell_Icon_Script : MonoBehaviour
 
         }
 
+        return pixelsChanged;
+    }
 
-        if (pixelsChanged)
+    public bool updateIconPixels(int index, bool pixelsChanged)
+    {
+        if (index >= 0 && index < iconMap.Count)
         {
 
-            texture.Apply();
-
-            if (!textureInitialized)
+            if (index != lastIconIndex)
             {
-                TextureHelper.initializeTexture(texture, spriteRenderer, new Vector2(0.5f, 0.5f));
-                textureInitialized = true;
+
+                pixelsChanged = true;
+
+                if (index > lastIconIndex)
+                {
+
+
+                    for (int tempIndex = lastIconIndex; tempIndex <= index; tempIndex++)
+                    {
+                        if(tempIndex == -1)
+                        {
+                            continue;
+                        }
+
+                        foreach (Vector2 position in iconMap[tempIndex])
+                        {
+
+                            texture.SetPixel((int) position.x, (int)position.y, elementColor);
+                        }
+
+                    }
+
+                }
+                else
+                {
+                    for (int tempIndex = index; tempIndex <= lastIconIndex; tempIndex++)
+                    {
+                        if (tempIndex == -1)
+                        {
+                            continue;
+                        }
+                        try
+                        {
+                            foreach (Vector2 position in iconMap[tempIndex])
+                            {
+
+                                texture.SetPixel((int)position.x, (int)position.y, circleColor);
+                            }
+                        } catch
+                        {
+                            Debug.LogError("failed, temp index is " + tempIndex + " and size is " + iconMap.Count);
+                        }
+                        
+                    }
+                }
+
+                lastIconIndex = index;
+
+
             }
 
+        } else if(lastIconIndex >= 0)
+        {
+            for(int i = lastIconIndex; i >= 0; i--)
+            {
+                foreach (Vector2 position in iconMap[i])
+                {
+
+                    texture.SetPixel((int)position.x, (int)position.y, circleColor);
+                }
+            }
+
+            lastIconIndex = -1;
         }
 
+        return pixelsChanged;
     }
 
     public void initializeDestruction()
@@ -172,38 +289,49 @@ public class Spell_Icon_Script : MonoBehaviour
         matCol.a = ft;
         spriteRenderer.material.color = matCol;
 
-        Debug.Log("last index = " + lastIndex);
         int index = lastIndex - (int)(pixelList.Count / 30f);
         if (index < 0)
         {
             index = 0;
         }
 
-        Debug.Log("index = " + index);
+        int iconIndex = (iconMap.Count - 1) -  (pixelList.Count - 1 - index); 
 
-        for (int i = 0; i < pixelList.Count; i++)
-        {
+        updateCirclePixels(index, true);
+        updateIconPixels(iconIndex, true);
 
-            Vector2 position = pixelList[i];
-            Color c = texture.GetPixel((int)position.x, (int)position.y);
+        
 
-            if (c == Color.clear)
-            {
-                continue;
-            }
+        //for (int i = 0; i < pixelList.Count; i++)
+        //{
 
-            if (i <= lastIndex && index <= i)
-            {
-                c = circleColor;
-            }
+        //    Vector2 position = pixelList[i];
+        //    Color c = texture.GetPixel((int)position.x, (int)position.y);
 
-            //c.a = Mathf.Clamp(c.a - (Time.deltaTime / 2f), 0f, 1f);
+        //    if (c == Color.clear)
+        //    {
+        //        continue;
+        //    }
 
-            texture.SetPixel((int)position.x, (int)position.y, c);
+        //    if (i <= lastIndex && index <= i)
+        //    {
+        //        c = circleColor;
+        //    }
 
-        }
+        //    //c.a = Mathf.Clamp(c.a - (Time.deltaTime / 2f), 0f, 1f);
 
-        lastIndex = index;
+        //    texture.SetPixel((int)position.x, (int)position.y, c);
+
+        //}
+
+        //lastIndex = index;
+
+
+    }
+
+    public void SetElementNumber(int number)
+    {
+        animator.SetInteger("Element", number);
     }
 
 
@@ -689,26 +817,6 @@ public class Spell_Icon_Script : MonoBehaviour
 
     //    return pixelMap;
     //}
-
-    public void unselect()
-    {
-        texture.SetPixel((texture.width / 2) - 1, texture.height / 2, Color.clear);
-        texture.SetPixel(texture.width / 2, texture.height / 2, Color.clear);
-        texture.SetPixel((texture.width / 2) - 1, (texture.height / 2) - 1, Color.clear);
-        texture.SetPixel(texture.width / 2, (texture.height / 2) - 1, Color.clear);
-
-        applyTexture();
-    }
-
-    public void select()
-    {
-        texture.SetPixel((texture.width / 2) - 1, texture.height / 2, Color.white);
-        texture.SetPixel(texture.width / 2, texture.height / 2, Color.white);
-        texture.SetPixel((texture.width / 2) - 1, (texture.height / 2) - 1, Color.white);
-        texture.SetPixel(texture.width / 2, (texture.height / 2) - 1, Color.white);
-
-        applyTexture();
-    }
 
     void applyTexture()
     {

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public interface ICastBehaviour
+interface ICastBehaviour
 {
 
-    void Cast();
+    void Cast(SpellParameters spellParameters);
 
 }
