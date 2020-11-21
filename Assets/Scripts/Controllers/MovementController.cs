@@ -63,29 +63,38 @@ public class MovementController : MonoBehaviour
             float h = Input.GetAxis("Horizontal");
             float v = Input.GetAxis("Vertical");
 
-            if(v != 0 && h == 0)
+            if (v != 0 && h == 0)
             {
-                if(v > 0)
+                if (v > 0)
                 {
                     animator.SetBool("Walking_Up", true);
                     animator.SetBool("Walking_Down", false);
                     animator.SetBool("Walking_Left", false);
-                } else
+                }
+                else
                 {
                     animator.SetBool("Walking_Up", false);
                     animator.SetBool("Walking_Down", true);
                     animator.SetBool("Walking_Left", false);
                 }
-            } else if (h != 0)
+            }
+            else if (h != 0)
             {
                 animator.SetBool("Walking_Up", false);
                 animator.SetBool("Walking_Down", false);
-                animator.SetBool("Walking_Left", true);
 
-                if (h > 0 && !facingRight)
-                    Flip();
+
+                if (h > 0 && !facingRight) { 
+                    animator.SetBool("Walking_Left", false);
+                    animator.SetBool("Walking_Right", true);
+                    //Flip();
+                }
                 else if (h < 0 && facingRight)
-                    Flip();
+                {
+                    animator.SetBool("Walking_Left", true);
+                    animator.SetBool("Walking_Right", false);
+                    //Flip();
+                }
             } else
             {
                 animator.SetBool("Walking_Up", false);
