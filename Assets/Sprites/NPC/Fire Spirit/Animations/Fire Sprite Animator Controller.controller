@@ -198,25 +198,25 @@ AnimatorStateMachine:
     m_Position: {x: -300, y: -290, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -3242187465518614126}
-    m_Position: {x: -440, y: 60, z: 0}
+    m_Position: {x: -440, y: 10, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 811808923552656072}
-    m_Position: {x: -510, y: 290, z: 0}
+    m_Position: {x: -440, y: 150, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -6718813911817210427}
-    m_Position: {x: -310, y: -470, z: 0}
+    m_Position: {x: -300, y: -390, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 4927425144746225871}
-    m_Position: {x: -790, y: -110, z: 0}
+    m_Position: {x: -800, y: -110, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -141320280593145151}
-    m_Position: {x: 270, y: 20, z: 0}
+    m_Position: {x: 150, y: 0, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 4975651963540425826}
-    m_Position: {x: -120, y: 10, z: 0}
+    m_Position: {x: -130, y: -10, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 4288191411552339358}
-    m_Position: {x: -10, y: 250, z: 0}
+    m_Position: {x: -130, y: 150, z: 0}
   m_ChildStateMachines: []
   m_AnyStateTransitions:
   - {fileID: -3202212501737486450}
@@ -228,8 +228,8 @@ AnimatorStateMachine:
   m_StateMachineTransitions: {}
   m_StateMachineBehaviours: []
   m_AnyStatePosition: {x: -270, y: -140, z: 0}
-  m_EntryPosition: {x: -540, y: 450, z: 0}
-  m_ExitPosition: {x: 210, y: 730, z: 0}
+  m_EntryPosition: {x: -440, y: 350, z: 0}
+  m_ExitPosition: {x: -90, y: 320, z: 0}
   m_ParentStateMachinePosition: {x: 800, y: 20, z: 0}
   m_DefaultState: {fileID: 811808923552656072}
 --- !u!1101 &-1575080049437677763
@@ -289,36 +289,42 @@ AnimatorController:
   m_Name: Fire Sprite Animator Controller
   serializedVersion: 5
   m_AnimatorParameters:
-  - m_Name: Walking_Up
-    m_Type: 4
-    m_DefaultFloat: 0
-    m_DefaultInt: 0
-    m_DefaultBool: 0
-    m_Controller: {fileID: 9100000}
-  - m_Name: Walking_Down
-    m_Type: 4
-    m_DefaultFloat: 0
-    m_DefaultInt: 0
-    m_DefaultBool: 0
-    m_Controller: {fileID: 9100000}
-  - m_Name: Walking_Left
-    m_Type: 4
-    m_DefaultFloat: 0
-    m_DefaultInt: 0
-    m_DefaultBool: 1
-    m_Controller: {fileID: 9100000}
-  - m_Name: Walking_Right
-    m_Type: 4
-    m_DefaultFloat: 0
-    m_DefaultInt: 0
-    m_DefaultBool: 0
-    m_Controller: {fileID: 9100000}
   - m_Name: Casting
     m_Type: 4
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 9100000}
+    m_Controller: {fileID: 0}
+  - m_Name: Walking_Right
+    m_Type: 9
+    m_DefaultFloat: 0
+    m_DefaultInt: 0
+    m_DefaultBool: 0
+    m_Controller: {fileID: 0}
+  - m_Name: Walking_Left
+    m_Type: 9
+    m_DefaultFloat: 0
+    m_DefaultInt: 0
+    m_DefaultBool: 0
+    m_Controller: {fileID: 0}
+  - m_Name: Walking_Down
+    m_Type: 9
+    m_DefaultFloat: 0
+    m_DefaultInt: 0
+    m_DefaultBool: 0
+    m_Controller: {fileID: 0}
+  - m_Name: Walking_Up
+    m_Type: 9
+    m_DefaultFloat: 0
+    m_DefaultInt: 0
+    m_DefaultBool: 0
+    m_Controller: {fileID: 0}
+  - m_Name: Idle
+    m_Type: 9
+    m_DefaultFloat: 0
+    m_DefaultInt: 0
+    m_DefaultBool: 0
+    m_Controller: {fileID: 0}
   m_AnimatorLayers:
   - serializedVersion: 5
     m_Name: Base Layer
@@ -468,8 +474,8 @@ AnimatorStateTransition:
   m_PrefabAsset: {fileID: 0}
   m_Name: 
   m_Conditions:
-  - m_ConditionMode: 2
-    m_ConditionEvent: Walking_Left
+  - m_ConditionMode: 1
+    m_ConditionEvent: Idle
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 4288191411552339358}
@@ -515,8 +521,8 @@ AnimatorStateTransition:
   m_PrefabAsset: {fileID: 0}
   m_Name: 
   m_Conditions:
-  - m_ConditionMode: 2
-    m_ConditionEvent: Walking_Right
+  - m_ConditionMode: 1
+    m_ConditionEvent: Idle
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -141320280593145151}
@@ -620,8 +626,8 @@ AnimatorStateTransition:
   m_PrefabAsset: {fileID: 0}
   m_Name: 
   m_Conditions:
-  - m_ConditionMode: 2
-    m_ConditionEvent: Walking_Down
+  - m_ConditionMode: 1
+    m_ConditionEvent: Idle
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 811808923552656072}
@@ -645,8 +651,8 @@ AnimatorStateTransition:
   m_PrefabAsset: {fileID: 0}
   m_Name: 
   m_Conditions:
-  - m_ConditionMode: 2
-    m_ConditionEvent: Walking_Up
+  - m_ConditionMode: 1
+    m_ConditionEvent: Idle
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -6718813911817210427}

@@ -68,6 +68,8 @@ public class AIMovementHandler : MonoBehaviour
                 //so lets set is postion to target and set target to null
                 transform.position = targetPosition;
                 hasTarget = false;
+                animator.SetTrigger("Idle");
+
             }
             else
             {
@@ -88,10 +90,8 @@ public class AIMovementHandler : MonoBehaviour
             if (currentDirection != Direction.RIGHT)
             {
                 currentDirection = Direction.RIGHT;
-                animator.SetBool("Walking_Up", false);
-                animator.SetBool("Walking_Down", false);
-                animator.SetBool("Walking_Left", false);
-                animator.SetBool("Walking_Right", true);
+               
+                animator.SetTrigger("Walking_Right");
 
             }
         }
@@ -100,10 +100,9 @@ public class AIMovementHandler : MonoBehaviour
             if (currentDirection != Direction.LEFT)
             {
                 currentDirection = Direction.LEFT;
-                animator.SetBool("Walking_Up", false);
-                animator.SetBool("Walking_Down", false);
-                animator.SetBool("Walking_Left", true);
-                animator.SetBool("Walking_Right", false);
+                
+                animator.SetTrigger("Walking_Left");
+              
             }
         }
         else if (angle > 0)
@@ -111,10 +110,9 @@ public class AIMovementHandler : MonoBehaviour
             if (currentDirection != Direction.Down)
             {
                 currentDirection = Direction.Down;
-                animator.SetBool("Walking_Up", false);
-                animator.SetBool("Walking_Down", true);
-                animator.SetBool("Walking_Left", false);
-                animator.SetBool("Walking_Right", false);
+               
+                animator.SetTrigger("Walking_Down");
+               
             }
         }
         else
@@ -122,10 +120,8 @@ public class AIMovementHandler : MonoBehaviour
             if (currentDirection != Direction.UP)
             {
                 currentDirection = Direction.UP;
-                animator.SetBool("Walking_Up", true);
-                animator.SetBool("Walking_Down", false);
-                animator.SetBool("Walking_Left", false);
-                animator.SetBool("Walking_Right", false);
+                animator.SetTrigger("Walking_Up");
+               
             }
         }
     }
