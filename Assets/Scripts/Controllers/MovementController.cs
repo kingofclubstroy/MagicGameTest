@@ -67,42 +67,30 @@ public class MovementController : MonoBehaviour
             {
                 if (v > 0)
                 {
-                    animator.SetBool("Walking_Up", true);
-                    animator.SetBool("Walking_Down", false);
-                    animator.SetBool("Walking_Left", false);
-                    animator.SetBool("Walking_Right", false);
+                    animator.SetTrigger("Walking_Up");
                 }
                 else
                 {
-                    animator.SetBool("Walking_Up", false);
-                    animator.SetBool("Walking_Down", true);
-                    animator.SetBool("Walking_Left", false);
-                    animator.SetBool("Walking_Right", false);
+                    animator.SetTrigger("Walking_Down");           
                 }
             }
             else if (h != 0)
             {
-                animator.SetBool("Walking_Up", false);
-                animator.SetBool("Walking_Down", false);
-
-
+               
                 if (h > 0) { 
-                    animator.SetBool("Walking_Left", false);
-                    animator.SetBool("Walking_Right", true);
+                    
+                    animator.SetTrigger("Walking_Right");
                     //Flip();
                 }
                 else if (h < 0)
                 {
-                    animator.SetBool("Walking_Left", true);
-                    animator.SetBool("Walking_Right", false);
+                    animator.SetTrigger("Walking_Left");
+                   
                     //Flip();
                 }
             } else
             {
-                animator.SetBool("Walking_Up", false);
-                animator.SetBool("Walking_Down", false);
-                animator.SetBool("Walking_Left", false);
-                animator.SetBool("Walking_Right", false);
+                animator.SetTrigger("Idle");
             }
 
             Vector3 tempVect = new Vector3(h, v, 0);
