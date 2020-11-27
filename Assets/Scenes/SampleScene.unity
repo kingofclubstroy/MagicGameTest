@@ -5314,8 +5314,8 @@ GameObject:
   - component: {fileID: 680286482}
   - component: {fileID: 680286485}
   - component: {fileID: 680286486}
-  - component: {fileID: 680286487}
   - component: {fileID: 680286488}
+  - component: {fileID: 680286489}
   m_Layer: 0
   m_Name: Character
   m_TagString: Untagged
@@ -5330,7 +5330,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 680286481}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 43e1bf19e24c6cc468729af1ff34b524, type: 3}
   m_Name: 
@@ -5439,22 +5439,6 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!70 &680286487
-CapsuleCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 680286481}
-  m_Enabled: 0
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0.177495, y: 16}
-  m_Size: {x: 11.765608, y: 32}
-  m_Direction: 0
 --- !u!114 &680286488
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5462,7 +5446,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 680286481}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7491829c88b9f314688afb694bc07f3b, type: 3}
   m_Name: 
@@ -5471,6 +5455,22 @@ MonoBehaviour:
   rightAngle: 45
   speed: 85
   animator: {fileID: 680286486}
+--- !u!58 &680286489
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 680286481}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 7
 --- !u!1 &711936000
 GameObject:
   m_ObjectHideFlags: 0
@@ -5577,19 +5577,21 @@ GameObject:
   m_Component:
   - component: {fileID: 745445941}
   - component: {fileID: 745445940}
+  - component: {fileID: 745445942}
+  - component: {fileID: 745445943}
   - component: {fileID: 745445939}
   - component: {fileID: 745445938}
   - component: {fileID: 745445937}
   - component: {fileID: 745445936}
   - component: {fileID: 745445935}
   - component: {fileID: 745445934}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Character (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!58 &745445934
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -5600,7 +5602,7 @@ CircleCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
@@ -5754,6 +5756,36 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 14
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &745445942
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 745445933}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8dd1b6c032ff3a48b6192d4e0cd4566, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  AwarenessDeclineRate: 1
+  AwarnessIncreaseWhenTargetSpotted: 20
+  enemyTest: {fileID: 680286481}
+--- !u!114 &745445943
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 745445933}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f65a1cc4628d774da1bb3298b6e6d8e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentState: {fileID: 11400000, guid: fdac6b315e4d9e24d94a5add0fa13d67, type: 2}
+  remainState: {fileID: 11400000, guid: fdac6b315e4d9e24d94a5add0fa13d67, type: 2}
+  AIVariables: {fileID: 745445942}
 --- !u!1 &913348259
 GameObject:
   m_ObjectHideFlags: 0
@@ -6318,7 +6350,7 @@ GameObject:
   - component: {fileID: 1659345010}
   - component: {fileID: 1659345012}
   - component: {fileID: 1659345011}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Stamina
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6724,7 +6756,7 @@ GameObject:
   - component: {fileID: 2091911136}
   - component: {fileID: 2091911138}
   - component: {fileID: 2091911137}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: CastingUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}

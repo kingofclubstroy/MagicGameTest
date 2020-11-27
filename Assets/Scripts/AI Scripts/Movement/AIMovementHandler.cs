@@ -19,21 +19,14 @@ public class AIMovementHandler : MonoBehaviour
     [SerializeField]
     Animator animator;
 
-    public enum Direction {
-
-        RIGHT,
-        LEFT,
-        UP,
-        Down
-
-    }
+    CircleCollider2D circleCollider; 
 
     Direction currentDirection = Direction.Down;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        circleCollider = GetComponent<CircleCollider2D>();
     }
 
     // Update is called once per frame
@@ -68,7 +61,9 @@ public class AIMovementHandler : MonoBehaviour
                 //so lets set is postion to target and set target to null
                 transform.position = targetPosition;
                 hasTarget = false;
-                animator.SetTrigger("Idle");
+                //animator.SetTrigger("Idle");
+
+                Animate.ChangeAnimationState("Idle", animator, currentDirection);
 
             }
             else
@@ -81,6 +76,8 @@ public class AIMovementHandler : MonoBehaviour
        
     }
 
+    
+
     void SetAnimationDirection(Vector2 dir)
     {
         float angle = Vector2.SignedAngle(dir, new Vector2(1, 0));
@@ -90,8 +87,9 @@ public class AIMovementHandler : MonoBehaviour
             if (currentDirection != Direction.RIGHT)
             {
                 currentDirection = Direction.RIGHT;
-               
-                animator.SetTrigger("Walking_Right");
+
+                //animator.SetTrigger("Walking_Right");
+                Animate.ChangeAnimationState("WalkRight", animator, currentDirection);
 
             }
         }
@@ -100,9 +98,11 @@ public class AIMovementHandler : MonoBehaviour
             if (currentDirection != Direction.LEFT)
             {
                 currentDirection = Direction.LEFT;
-                
-                animator.SetTrigger("Walking_Left");
-              
+
+                //animator.SetTrigger("Walking_Left");
+                Animate.ChangeAnimationState("WalkLeft", animator, currentDirection);
+
+
             }
         }
         else if (angle > 0)
@@ -110,9 +110,10 @@ public class AIMovementHandler : MonoBehaviour
             if (currentDirection != Direction.Down)
             {
                 currentDirection = Direction.Down;
-               
-                animator.SetTrigger("Walking_Down");
-               
+
+                //animator.SetTrigger("Walking_Down");
+                Animate.ChangeAnimationState("WalkDown", animator, currentDirection);
+
             }
         }
         else
@@ -120,9 +121,36 @@ public class AIMovementHandler : MonoBehaviour
             if (currentDirection != Direction.UP)
             {
                 currentDirection = Direction.UP;
-                animator.SetTrigger("Walking_Up");
-               
+                Animate.ChangeAnimationState("WalkUp", animator, currentDirection);
+
             }
         }
     }
+
+    public Direction GetDirection()
+    {
+        return currentDirection;
+    }
+
+    
+
+
+    #region collision Handling
+
+
+    //private void OnTriggerEnter2D(Collider2D collision)
+    //{
+    //    Debug.Log("collision");
+    //    Debug.Log(collision.gameObject.name);
+    //}
+
+    //private void OnTriggerExit2D(Collider2D collision)
+    //{
+    //    Debug.Log("Collision exit");
+    //    Debug.Log(collision.gameObject.name);
+    //}
+
+    #endregion
+
+
 }
