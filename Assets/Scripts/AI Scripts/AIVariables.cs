@@ -20,6 +20,8 @@ public class AIVariables : MonoBehaviour
 
     AIMovementHandler AIMovementHandler;
 
+    GameObject FocusedEnemy;
+
     #region MonoBehaviour Functions
 
     // Start is called before the first frame update
@@ -62,6 +64,11 @@ public class AIVariables : MonoBehaviour
         //Target seen so lets add some awarness
         Awareness += AwarnessIncreaseWhenTargetSpotted * Time.deltaTime;
 
+    }
+
+    public void MoveThisDirection(Vector2 dir)
+    {
+        transform.position += (Vector3) (dir * Time.deltaTime);
     }
 
     #endregion

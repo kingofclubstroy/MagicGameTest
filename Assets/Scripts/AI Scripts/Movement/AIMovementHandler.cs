@@ -21,7 +21,11 @@ public class AIMovementHandler : MonoBehaviour
 
     CircleCollider2D circleCollider; 
 
-    Direction currentDirection = Direction.Down;
+    public Direction currentDirection = Direction.Down;
+
+    public bool isIdle = true;
+
+    public Vector2 targetDirection;
 
     // Start is called before the first frame update
     void Start()
@@ -40,9 +44,7 @@ public class AIMovementHandler : MonoBehaviour
             hasTarget = true;
             Vector2 testPos = Camera.main.ScreenToWorldPoint(transform.position);
             float angle = Vector2.SignedAngle(testPos, (Vector2) transform.position - targetPosition);
-           
-
-           
+            isIdle = false;
             
         }
 
@@ -64,11 +66,14 @@ public class AIMovementHandler : MonoBehaviour
                 //animator.SetTrigger("Idle");
 
                 Animate.ChangeAnimationState("Idle", animator, currentDirection);
+                isIdle = true;
 
             }
             else
             {
                 transform.position += (Vector3)  (dir * frameSpeed);
+               
+
             }
 
         }
@@ -130,6 +135,13 @@ public class AIMovementHandler : MonoBehaviour
     public Direction GetDirection()
     {
         return currentDirection;
+    }
+
+    public Vector2 GetTargetDirection()
+    {
+        if (hasTarget == false) return Vector2.zero;
+
+        return ((Vector2)transform.position - targetPosition).normalized;
     }
 
     
