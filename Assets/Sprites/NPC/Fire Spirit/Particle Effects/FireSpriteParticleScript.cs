@@ -38,13 +38,12 @@ public class FireSpriteParticleScript : MonoBehaviour
             if(dir.x <= 0)
             {
                 //x = Mathf.Lerp(6f, 8f, dir.x);
-                x = 6 + (2 * dir.x);
+                x = 6 + (3 *  -dir.x);
 
             } else
             {
-                x = 6 - (2 * dir.x);
+                x = -6 - (3 * dir.x);
             }
-
            
         }
 

@@ -141,7 +141,7 @@ public class AIMovementHandler : MonoBehaviour
     {
         if (hasTarget == false) return Vector2.zero;
 
-        return ((Vector2)transform.position - targetPosition).normalized;
+        return (targetPosition - (Vector2)transform.position).normalized;
     }
 
     
