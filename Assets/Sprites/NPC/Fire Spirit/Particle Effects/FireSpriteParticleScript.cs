@@ -10,6 +10,7 @@ public class FireSpriteParticleScript : MonoBehaviour
 
     AIMovementHandler AIMovementHandler;
     ParticleSystem.ForceOverLifetimeModule forceOverLifetimeModule;
+    
 
 
     // Start is called before the first frame update
@@ -26,10 +27,19 @@ public class FireSpriteParticleScript : MonoBehaviour
     {
 
         float x;
+        Vector3 pos;
+        pos.x = (float)3.7;
+        pos.y = (float)12.8;
+        pos.z = (float)1;
+
 
         if (AIMovementHandler.isIdle) {
 
             x = 6;
+
+            pos.x = (float) 3.7;
+
+            particleSystem.startSpeed = (float) 4.75;
 
         } else
         {
@@ -38,16 +48,27 @@ public class FireSpriteParticleScript : MonoBehaviour
             if(dir.x <= 0)
             {
                 //x = Mathf.Lerp(6f, 8f, dir.x);
-                x = 6 + (3 *  -dir.x);
+                x = 6 + (5 *  -dir.x);
+
+                pos.x = (float) 3.7;
+
+                particleSystem.startSpeed = (float)7;
 
             } else
             {
-                x = -6 - (3 * dir.x);
+                x = -6 - (5 * dir.x);
+
+                pos.x = (float) -3.7;
+
+                particleSystem.startSpeed = (float)7;
             }
            
         }
 
         forceOverLifetimeModule.x = x;
+
+        particleSystem.transform.localPosition = pos;
+
     }
 
     
