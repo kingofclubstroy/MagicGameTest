@@ -785,7 +785,7 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
     randomizeRotationDirection: 0
-    maxNumParticles: 2
+    maxNumParticles: 1
     size3D: 0
     rotation3D: 0
     gravityModifier:
@@ -5785,7 +5785,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   currentState: {fileID: 11400000, guid: fdac6b315e4d9e24d94a5add0fa13d67, type: 2}
   remainState: {fileID: 11400000, guid: fdac6b315e4d9e24d94a5add0fa13d67, type: 2}
-  AIVariables: {fileID: 745445942}
+  AIVariables: {fileID: 0}
 --- !u!1 &913348259
 GameObject:
   m_ObjectHideFlags: 0
