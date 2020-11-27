@@ -7,14 +7,14 @@ public class StateController : MonoBehaviour
     public State currentState;
     public State remainState;
 
-
+    public AIVariables AIVariables;
 
     [HideInInspector] float stateTimeElapsed;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        AIVariables = GetComponent<AIVariables>();
     }
 
     // Update is called once per frame
@@ -36,6 +36,7 @@ public class StateController : MonoBehaviour
 
     public void TransitionToState(State nextState)
     {
+        Debug.Log("transitioned states");
         if(nextState != remainState)
         {
             currentState = nextState;

@@ -10,7 +10,7 @@ public abstract class Transition : ScriptableObject
     public State trueState;
     public State falseState;
 
-    public abstract void DoTransition(StateController controller);
+    public abstract bool DoTransition(StateController controller);
 
 
 }

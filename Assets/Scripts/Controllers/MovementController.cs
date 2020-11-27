@@ -30,6 +30,8 @@ public class MovementController : MonoBehaviour
 
     bool castingLocationChanged = false;
 
+    Direction currentDirection;
+
     #endregion
 
     #region MonoBehaviour Callbacks
@@ -51,9 +53,7 @@ public class MovementController : MonoBehaviour
 
         if (Input.GetKeyDown("space"))
         {
-
             StartCasting();
-
         }
 
         //TODO: dont want to be doing this, but i must for now, means when holding space (casting) you cant move
@@ -67,30 +67,49 @@ public class MovementController : MonoBehaviour
             {
                 if (v > 0)
                 {
-                    animator.SetTrigger("Walking_Up");
+                    if (currentDirection != Direction.UP)
+                    {
+                        currentDirection = Direction.UP;
+                        Animate.ChangeAnimationState("WalkUp", animator, currentDirection);
+                    }
                 }
                 else
                 {
-                    animator.SetTrigger("Walking_Down");           
+                    if (currentDirection != Direction.Down)
+                    {
+                        currentDirection = Direction.Down;
+                        Animate.ChangeAnimationState("WalkDown", animator, currentDirection);
+                    }
                 }
             }
             else if (h != 0)
             {
                
-                if (h > 0) { 
-                    
-                    animator.SetTrigger("Walking_Right");
+                if (h > 0) {
+
+                    if (currentDirection != Direction.RIGHT)
+                    { 
+                        currentDirection = Direction.RIGHT;
+                        Animate.ChangeAnimationState("WalkRight", animator, currentDirection);
+                    }
                     //Flip();
                 }
                 else if (h < 0)
                 {
-                    animator.SetTrigger("Walking_Left");
+                    if (currentDirection != Direction.LEFT)
+                    {
+                        currentDirection = Direction.LEFT;
+                        Animate.ChangeAnimationState("WalkLeft", animator, currentDirection);
+                    }
                    
                     //Flip();
                 }
             } else
             {
-                animator.SetTrigger("Idle");
+                if (currentDirection != Direction.IDLE)
+                {
+                    Animate.ChangeAnimationState("Idle", animator, currentDirection);
+                }
             }
 
             Vector3 tempVect = new Vector3(h, v, 0);
@@ -200,18 +219,18 @@ public class MovementController : MonoBehaviour
         //}
 
 
-        void Flip()
-        {
-            facingRight = !facingRight;
-            Vector3 theScale = transform.localScale;
-            theScale.x *= -1;
-            transform.localScale = theScale;
-        }
+        //void Flip()
+        //{
+        //    facingRight = !facingRight;
+        //    Vector3 theScale = transform.localScale;
+        //    theScale.x *= -1;
+        //    transform.localScale = theScale;
+        //}
     }
 
     void StopCasting()
     {
-        animator.SetBool("Casting", false);
+        Animate.ChangeAnimationState("Idle", animator, currentDirection);
         casting = false;
         Destroy(CastingCircleProjection);
         CastingCircleProjection = null;
@@ -232,14 +251,8 @@ public class MovementController : MonoBehaviour
         StartedCastingEvent ev = new StartedCastingEvent();
         ev.FireEvent();
 
-        animator.SetBool("Casting", true);
+        Animate.ChangeAnimationState("Casting", animator, currentDirection);
         casting = true;
-
-        animator.SetBool("Walking_Up", false);
-        animator.SetBool("Walking_Down", false);
-        animator.SetBool("Walking_Left", false);
-        animator.SetBool("Walking_Right", false);
-
 
     }
 
