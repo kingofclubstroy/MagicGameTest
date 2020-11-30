@@ -9,10 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 238e944c7c2519741bd3824f5efd39c5, type: 3}
-  m_Name: CasualToAlertTransition
+  m_Script: {fileID: 11500000, guid: a19d770b2acc2734fa648a0b789714ce, type: 3}
+  m_Name: TransitionToAggressiveSO
   m_EditorClassIdentifier: 
   decision: {fileID: 0}
-  trueState: {fileID: 11400000, guid: e82d75bbb6ed9574980636ec7aba7990, type: 2}
-  falseState: {fileID: 11400000, guid: fdac6b315e4d9e24d94a5add0fa13d67, type: 2}
-  AwarenessTransition: 10
+  trueState: {fileID: 11400000, guid: 94baad4bf820bfe46b8cf97deb8d78ef, type: 2}
+  falseState: {fileID: 0}

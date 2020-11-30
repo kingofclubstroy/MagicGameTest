@@ -11,6 +11,11 @@ public class FireSpriteParticleScript : MonoBehaviour
     AIMovementHandler AIMovementHandler;
     ParticleSystem.ForceOverLifetimeModule forceOverLifetimeModule;
 
+    [SerializeField]
+    float particleTransform;
+
+    Direction LastDirection;
+
 
     // Start is called before the first frame update
     void Start()
@@ -37,12 +42,18 @@ public class FireSpriteParticleScript : MonoBehaviour
 
             if(dir.x <= 0)
             {
-                //x = Mathf.Lerp(6f, 8f, dir.x);
+               
                 x = 6 + (3 *  -dir.x);
+                Vector3 pos = transform.localPosition;
+                pos.x = particleTransform;
+                transform.localPosition = pos;
 
             } else
             {
                 x = -6 - (3 * dir.x);
+                Vector3 pos = transform.localPosition;
+                pos.x = - particleTransform;
+                transform.localPosition = pos;
             }
            
         }

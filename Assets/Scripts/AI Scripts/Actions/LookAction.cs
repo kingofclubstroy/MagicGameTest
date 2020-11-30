@@ -61,14 +61,14 @@ public class LookAction : Action
                 if(lookingToward)
                 {
 
-                    controller.AIVariables.TargetSeen();
+                    controller.AIVariables.TargetSeen(gameObject);
 
                     //TODO: need to fix this as it is currently not properly raycasting
                     
                     
                     RaycastHit2D raycastHit;
 
-                    raycastHit = Physics2D.Raycast(controller.gameObject.transform.position, (controller.gameObject.transform.position - gameObject.transform.position).normalized, 100);
+                    raycastHit = Physics2D.Raycast(controller.gameObject.transform.position, (controller.gameObject.transform.position - gameObject.transform.position).normalized);
                       
                     if(raycastHit.collider != null) { 
                         
@@ -80,7 +80,7 @@ public class LookAction : Action
                             Debug.Log("we see the target!!");
 
                             //Lets tell the AI we see a target
-                            controller.AIVariables.TargetSeen();
+                            controller.AIVariables.TargetSeen(gameObject);
                         }
 
                     }

@@ -7,8 +7,10 @@ public class CasualToAlertTransition : Transition
     public int AwarenessTransition;
     public override bool DoTransition(StateController controller)
     {
-        if(controller.AIVariables.GetAwareness() >= AwarenessTransition)
+
+        if(controller.AIVariables.FocusedEnemy != null)
         {
+            Debug.Log("transitioning to scared");
             controller.TransitionToState(trueState);
             return true;
         }

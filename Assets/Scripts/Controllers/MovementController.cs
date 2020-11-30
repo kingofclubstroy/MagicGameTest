@@ -46,7 +46,9 @@ public class MovementController : MonoBehaviour
     void Update()
     {
 
-        if(casting && Input.GetKeyUp("space"))
+
+
+        if (casting && Input.GetKeyUp("space"))
         {
             StopCasting();
         }
@@ -59,7 +61,7 @@ public class MovementController : MonoBehaviour
         //TODO: dont want to be doing this, but i must for now, means when holding space (casting) you cant move
         if (Input.GetKey(KeyCode.Space) == false)
         {
-           
+
             float h = Input.GetAxis("Horizontal");
             float v = Input.GetAxis("Vertical");
 
@@ -84,11 +86,12 @@ public class MovementController : MonoBehaviour
             }
             else if (h != 0)
             {
-               
-                if (h > 0) {
+
+                if (h > 0)
+                {
 
                     if (currentDirection != Direction.RIGHT)
-                    { 
+                    {
                         currentDirection = Direction.RIGHT;
                         Animate.ChangeAnimationState("WalkRight", animator, currentDirection);
                     }
@@ -101,10 +104,11 @@ public class MovementController : MonoBehaviour
                         currentDirection = Direction.LEFT;
                         Animate.ChangeAnimationState("WalkLeft", animator, currentDirection);
                     }
-                   
+
                     //Flip();
                 }
-            } else
+            }
+            else
             {
                 if (currentDirection != Direction.IDLE)
                 {
@@ -116,13 +120,14 @@ public class MovementController : MonoBehaviour
             tempVect = tempVect.normalized * speed * Time.deltaTime;
 
             this.transform.position += tempVect;
-        } else if (casting)
+        }
+        else if (casting)
         {
             // character is currently casting
             float h = Input.GetAxis("Horizontal");
             float v = Input.GetAxis("Vertical");
 
-            if(h != 0 || v != 0)
+            if (h != 0 || v != 0)
             {
 
                 if (castingLocationChanged == false)
@@ -143,9 +148,9 @@ public class MovementController : MonoBehaviour
 
         }
 
-        if(Input.GetKeyDown("f"))
+        if (Input.GetKeyDown("f"))
         {
-            if(CastingCircleProjection != null)
+            if (CastingCircleProjection != null)
             {
                 CastingLocationChangedEvent e = new CastingLocationChangedEvent();
                 e.go = CastingCircleProjection;
@@ -153,8 +158,8 @@ public class MovementController : MonoBehaviour
                 castingLocationChanged = true;
                 Destroy(CastingCircleProjection);
                 CastingCircleProjection = null;
-                
-                
+
+
             }
         }
 
@@ -164,13 +169,13 @@ public class MovementController : MonoBehaviour
             e.FireEvent();
             //CrawlController.instance.ConsumeCrawl(transform.position, consumeAmount, consumePixelsPerFrame);
         }
-            if (Input.GetKeyDown("p"))
+        if (Input.GetKeyDown("p"))
         {
             Vector2 bottom = transform.position;
             crawlController.CreateCrawl(bottom);
         }
 
-        if(Input.GetKeyDown("r"))
+        if (Input.GetKeyDown("r"))
         {
             Vector2 bottom = transform.position;
             crawlController.AddFire(bottom);
@@ -215,7 +220,7 @@ public class MovementController : MonoBehaviour
 
         //        runningCrawl.GrowByPosition(new Vector2(startX, startY));
         //    }
-            
+
         //}
 
 
@@ -271,4 +276,17 @@ public class MovementController : MonoBehaviour
     }
 
     #endregion
+
+    //void FixedUpdate()
+    //{
+    //    // Cast a ray straight down.
+    //    RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.up);
+
+    //    if (hit.collider != null)
+    //    {
+    //        Debug.LogError("hit something of name: " + hit.collider.name);
+    //    }
+
+    //}
+
 }

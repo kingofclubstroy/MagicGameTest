@@ -8,17 +8,33 @@ public class RunAction : Action
     public override void Act(StateController controller)
     {
         //For now we will just run away from the closest enemy
-        List<GameObject> enemies = controller.AIVariables.GetNearbyEnemies();
+        GameObject enemy = controller.AIVariables.FocusedEnemy;
 
-        if (enemies.Count == 0) return;
 
-        Vector2 dir;
-        float distance = 0;
-        
-        for (int i = 0; i < enemies.Count; i++)
+        if (enemy == null)
         {
 
-            //int tempDistance = Vector2.Distance(controller.gameObject.transform.position, )
+            //Debug.LogError("Focused enemy is null");
+            return;
+        }
+       
+        
+
+        Vector2 dir = Vector2.zero;
+        float distance = 0;
+
+        float tempDistance = Vector2.Distance(controller.gameObject.transform.position, enemy.transform.position);
+
+        if(distance == 0 || tempDistance < distance)
+        {
+            distance = tempDistance;
+            dir = (controller.gameObject.transform.position - enemy.transform.position).normalized;
+        }
+        
+
+        if (distance != 0)
+        {
+            controller.AIVariables.MoveThisDirection(dir);
         }
     }
 }

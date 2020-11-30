@@ -18,9 +18,12 @@ public class AIVariables : MonoBehaviour
     [SerializeField]
     GameObject enemyTest;
 
+    [SerializeField]
+    public bool IsAggressive;
+
     AIMovementHandler AIMovementHandler;
 
-    GameObject FocusedEnemy;
+    public GameObject FocusedEnemy;
 
     #region MonoBehaviour Functions
 
@@ -28,7 +31,7 @@ public class AIVariables : MonoBehaviour
     void Start()
     {
         AIMovementHandler = GetComponent<AIMovementHandler>();
-        NearbyEnemies.Add(enemyTest);
+        //NearbyEnemies.Add(enemyTest);
     }
 
     // Update is called once per frame
@@ -37,6 +40,7 @@ public class AIVariables : MonoBehaviour
         if(Awareness > 0)
         {
             Awareness = Mathf.Max(Awareness - AwarenessDeclineRate * Time.deltaTime, 0);
+            Debug.Log(Awareness);
         }
     }
 
@@ -59,16 +63,21 @@ public class AIVariables : MonoBehaviour
         return AIMovementHandler.GetDirection();
     }
 
-    public void TargetSeen()
+    public void TargetSeen(GameObject gameObject)
     {
         //Target seen so lets add some awarness
-        Awareness += AwarnessIncreaseWhenTargetSpotted * Time.deltaTime;
+        //Awareness += AwarnessIncreaseWhenTargetSpotted * Time.deltaTime;
+
+        Debug.LogError("TargetSeen, setting Focused enemy");
+
+        FocusedEnemy = gameObject;
 
     }
 
     public void MoveThisDirection(Vector2 dir)
     {
-        transform.position += (Vector3) (dir * Time.deltaTime);
+        AIMovementHandler.SetDirection(dir);
+        //transform.position += (Vector3) (dir * Time.deltaTime);
     }
 
     #endregion
@@ -77,21 +86,27 @@ public class AIVariables : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        Debug.Log("trigger enter");
         //TODO: Need to add a tag to things ai are interested about, is currently just adding anything other than itself
         if(collision.gameObject != transform.gameObject)
         {
             NearbyEnemies.Add(collision.gameObject);
             
         }
+
+        Debug.Log("Nearby count = " + NearbyEnemies.Count);
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
+        Debug.Log("trigger exit");
         if (collision.gameObject != transform.gameObject)
         {
             NearbyEnemies.Remove(collision.gameObject);
             
         }
+
+        Debug.Log("Nearby count = " + NearbyEnemies.Count);
     }
 
     #endregion

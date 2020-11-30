@@ -12,5 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc9b393a8566ee649aa812be52808a1d, type: 3}
   m_Name: ScaredState
   m_EditorClassIdentifier: 
-  actions: []
-  transitions: []
+  actions:
+  - {fileID: 11400000, guid: 2fcd66c633aec7047a9356ed70871ba7, type: 2}
+  transitions:
+  - {fileID: 11400000, guid: 7b4e5a0d1fcfa3540a9a1bc687e3c57c, type: 2}
+  - {fileID: 11400000, guid: 82fa9d5f5234b3548b201a18cd581804, type: 2}

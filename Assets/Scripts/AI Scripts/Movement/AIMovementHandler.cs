@@ -81,6 +81,13 @@ public class AIMovementHandler : MonoBehaviour
        
     }
 
+    public void SetDirection(Vector2 dir)
+    {
+        targetPosition = (Vector2) this.transform.position + dir;
+        hasTarget = true;
+        isIdle = false;
+    }
+
     
 
     void SetAnimationDirection(Vector2 dir)
@@ -144,7 +151,7 @@ public class AIMovementHandler : MonoBehaviour
         return (targetPosition - (Vector2)transform.position).normalized;
     }
 
-    
+
 
 
     #region collision Handling

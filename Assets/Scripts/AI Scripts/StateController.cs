@@ -5,7 +5,6 @@ using UnityEngine;
 public class StateController : MonoBehaviour
 {
     public State currentState;
-    public State remainState;
 
     public AIVariables AIVariables;
 
@@ -37,11 +36,10 @@ public class StateController : MonoBehaviour
     public void TransitionToState(State nextState)
     {
         Debug.Log("transitioned states");
-        if(nextState != remainState)
-        {
-            currentState = nextState;
-            OnExitState();
-        }
+        
+        currentState = nextState;
+        OnExitState();
+        
     }
 
     public bool CheckIfCountDownElapsed(float duration)
