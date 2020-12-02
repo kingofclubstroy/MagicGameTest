@@ -10,7 +10,6 @@
     --------------------------------------------------
  */
 
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Entities;
@@ -21,7 +20,6 @@ using Unity.Jobs;
 using Unity.Burst;
 
 
-[DisableAutoCreation]
 public class Pathfinding : JobComponentSystem
 {
 
@@ -30,17 +28,18 @@ public class Pathfinding : JobComponentSystem
     private const int itterationLimit = 1000;
 
     //This is our hardcoded grid parameters, need to make this flexible if we segment into various rooms
-    private int2 gridParams = new int2(100, 100);
+    private int2 gridParams { get {
+            return ObstacleController.instance.gridParams;
+        }
+
+    }
 
     //This is the number of threads we want working on pathfinding, may need to adjust as for each we will need to allocate memory proportional to the gridsize ^ 2
     private const int numberWorkerThreads = 4;
 
     EndSimulationEntityCommandBufferSystem entityCommandBufferSystem;
 
-    NativeQuadTree.NativeQuadTree QuadTree;
-
-
-
+    //NativeQuadTree.NativeQuadTree QuadTree;
 
     private NativeArray<int> Grid;
 
@@ -51,6 +50,8 @@ public class Pathfinding : JobComponentSystem
     List<jobCollection> jobCollections;
 
     NativeArray<ObstacleStruct> obstacleArray;
+
+    bool initialized = false;
 
 
     protected override void OnDestroy()
@@ -70,22 +71,13 @@ public class Pathfinding : JobComponentSystem
     protected override void OnCreate()
     {
         base.OnCreate();
-        initializePersistentArrays(numberWorkerThreads, gridParams);
+
+        
         entityCommandBufferSystem = World.GetOrCreateSystem<EndSimulationEntityCommandBufferSystem>();
 
         //initializing the quad tree with hardcoded boundries for testing
         //TODO: make the boundries and tree reactive to the current room/environment
-        QuadTree = new NativeQuadTree.NativeQuadTree(new NativeQuadTree.AABB2D(new float2(500, 500), new float2(1000, 1000)));
-
-        obstacleArray = new NativeArray<ObstacleStruct>(30, Allocator.Persistent);
-
-        int x = 30;
-        int y = 30;
-
-        for(int i = 0; i < 30; i++)
-        {
-            obstacleArray[i] = new ObstacleStruct { position = new float2(x + i, y), type = "testObstacle" };
-        }
+        //QuadTree = new NativeQuadTree.NativeQuadTree(new NativeQuadTree.AABB2D(new float2(500, 500), new float2(1000, 1000)));
 
 
     }
@@ -94,25 +86,34 @@ public class Pathfinding : JobComponentSystem
     protected override JobHandle OnUpdate(JobHandle jobHandle)
     {
 
-        QuadTree.ClearAndBulkInsert(obstacleArray);
+        if(!initialized)
+        {
+            initializePersistentArrays(numberWorkerThreads, gridParams);
+            initialized = true;
+        }
 
-        NativeList<ObstacleStruct> queryResult = new NativeList<ObstacleStruct>(Allocator.Temp);
+        //QuadTree.ClearAndBulkInsert(obstacleArray);
 
-        QuadTree.RangeQuery(new NativeQuadTree.AABB2D(new float2(500, 500), new float2(1000, 1000)), queryResult);
+        //NativeList<ObstacleStruct> queryResult = new NativeList<ObstacleStruct>(Allocator.Temp);
 
-        Debug.Log(queryResult);
+        //QuadTree.RangeQuery(new NativeQuadTree.AABB2D(new float2(500, 500), new float2(1000, 1000)), queryResult);
+
+        //Debug.Log(queryResult);
+
+       
 
 
-
-       EntityCommandBuffer concurrentCommandBuffer = entityCommandBufferSystem.CreateCommandBuffer();
+        EntityCommandBuffer concurrentCommandBuffer = entityCommandBufferSystem.CreateCommandBuffer();
 
         EntityQuery entityQuery = GetEntityQuery(ComponentType.ReadOnly<PathfindingParams>());
 
         NativeArray<PathfindingParams> pathFindingArray = entityQuery.ToComponentDataArray<PathfindingParams>(Allocator.TempJob);
         NativeArray<Entity> entityArray = entityQuery.ToEntityArray(Allocator.TempJob);
 
+       
+
         NativeArray<JobHandle> jobHandles = new NativeArray<JobHandle>(jobCollections.Count, Allocator.TempJob);
-        for(int index = 0; index < jobCollections.Count; index++)
+        for (int index = 0; index < jobCollections.Count; index++)
         {
             jobHandles[index] = jobHandle;
         }
@@ -131,7 +132,7 @@ public class Pathfinding : JobComponentSystem
                 startPosition = pathfindingParams.startPosition,
                 endPosition = pathfindingParams.endPosition,
                 itterationLimit = itterationLimit,
-                Grid = ObstacleController.getNativeMap(gridParams),
+                Grid = ObstacleController.getNativeMap(),
                 CostSoFar = data.CostSoFar,
                 CameFrom = data.CameFrom,
                 entity = entityArray[r],
@@ -140,6 +141,8 @@ public class Pathfinding : JobComponentSystem
             };
 
             JobHandle findPathHandle = findPathJob.Schedule(jobHandles[index]);
+
+
 
             ResetJob resetJob = new ResetJob
             {
@@ -153,7 +156,7 @@ public class Pathfinding : JobComponentSystem
                 pathPositionBufferFromEntity = GetBufferFromEntity<PathPosition>(),
                 startPosition = pathfindingParams.startPosition,
                 endPosition = pathfindingParams.endPosition,
-               
+
 
             };
 
@@ -201,7 +204,7 @@ public class Pathfinding : JobComponentSystem
 
         public void Execute()
         {
-            //WayPoints.clear() ??
+
             FindPath(startPosition, endPosition);
 
         }
@@ -210,19 +213,26 @@ public class Pathfinding : JobComponentSystem
         {
             if(startPosition.Equals(endPosition))
             {
+               
                 return;
             }
 
             MinHeapNode head = new MinHeapNode(startPosition, CalculateDistanceCost(startPosition, endPosition));
             OpenSet.Push(head);
 
+           
+
             while (itterationLimit > 0 && OpenSet.HasNext())
             {
                 int currentIndex = OpenSet.Pop();
                 MinHeapNode current = OpenSet[currentIndex];
 
+                
+
                 if(current.Position.Equals(endPosition))
                 {
+
+                    
                     //Found our destination, we will let the cleanup job handle the path reconstruction for now
                     //ReconstructPath(startPosition, endPosition);
                     return;
@@ -274,7 +284,7 @@ public class Pathfinding : JobComponentSystem
             if(OpenSet.HasNext())
             {
                 //We ran out of itterations
-                Debug.Log("ran out of itterations!");
+               
                 //We will just give out where we stapped at for now
                 //TODO: fix this
                 var currentIndex = OpenSet.Pop();
@@ -333,9 +343,11 @@ public class Pathfinding : JobComponentSystem
 
             PathfindingParams pathfindingParams = pathfindingParamsComponentDataFromEntity[entity];
 
+            
+
             CalculatePath(startPosition, endPosition, pathPositionBuffer);
 
-            pathFollowComponentDataFromEntity[entity] = new PathFollow { pathIndex = pathPositionBuffer.Length - 1 };
+            pathFollowComponentDataFromEntity[entity] = new PathFollow { pathIndex = pathPositionBuffer.Length - 1, NewPath = true };
 
 
             var buffer = CostSoFar.GetUnsafePtr();
@@ -348,8 +360,7 @@ public class Pathfinding : JobComponentSystem
 
         private void CalculatePath(int2 startPosition, int2 endPosition, DynamicBuffer<PathPosition> pathPositionBuffer)
         {
-           
-                
+                  
             pathPositionBuffer.Add(new PathPosition { position = new int2(endPosition.x, endPosition.y) });
 
             var current = endPosition;
@@ -360,6 +371,7 @@ public class Pathfinding : JobComponentSystem
                 pathPositionBuffer.Add(new PathPosition { position = current });
                
             } while (!current.Equals(startPosition));
+
             
         }
 

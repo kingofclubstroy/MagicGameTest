@@ -10,9 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cc9b393a8566ee649aa812be52808a1d, type: 3}
-  m_Name: AggressiveState
+  m_Name: PathFollowing
   m_EditorClassIdentifier: 
   actions:
-  - {fileID: 11400000, guid: 798dacd0da7caff4e99802eb2e2c6bad, type: 2}
+  - {fileID: 11400000, guid: f96cf374a8996eb4386059d07aa0fa57, type: 2}
+  - {fileID: 11400000, guid: ee55e1c1cd1697b4895dabe9c8b3b834, type: 2}
   transitions:
-  - {fileID: 11400000, guid: f2b6beb4448cba84892a34505bec962f, type: 2}
+  - {fileID: 11400000, guid: a085ce26477b84d48aef1421a2f4a76b, type: 2}
+  - {fileID: 11400000, guid: 7b4e5a0d1fcfa3540a9a1bc687e3c57c, type: 2}

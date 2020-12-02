@@ -9,10 +9,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cc9b393a8566ee649aa812be52808a1d, type: 3}
-  m_Name: AggressiveState
+  m_Script: {fileID: 11500000, guid: 75e936acb5ee3334989244139faa0209, type: 3}
+  m_Name: FollowPathActionSO
   m_EditorClassIdentifier: 
-  actions:
-  - {fileID: 11400000, guid: 798dacd0da7caff4e99802eb2e2c6bad, type: 2}
-  transitions:
-  - {fileID: 11400000, guid: f2b6beb4448cba84892a34505bec962f, type: 2}

@@ -27,6 +27,8 @@ public class AIMovementHandler : MonoBehaviour
 
     public Vector2 targetDirection;
 
+
+
     // Start is called before the first frame update
     void Start()
     {

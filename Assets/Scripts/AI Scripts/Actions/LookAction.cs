@@ -61,29 +61,82 @@ public class LookAction : Action
                 if(lookingToward)
                 {
 
-                    controller.AIVariables.TargetSeen(gameObject);
+                    Debug.Log("looking toward");
+
+                    //controller.AIVariables.TargetSeen(gameObject);
 
                     //TODO: need to fix this as it is currently not properly raycasting
-                    
-                    
-                    RaycastHit2D raycastHit;
 
-                    raycastHit = Physics2D.Raycast(controller.gameObject.transform.position, (controller.gameObject.transform.position - gameObject.transform.position).normalized);
-                      
-                    if(raycastHit.collider != null) { 
-                        
-                        Debug.Log("we hit something");
+                    //Vector2 targetPos = controller.AIVariables.FocusedEnemy.transform.position;
 
-                        if(raycastHit.collider.gameObject == gameObject)
+                    dir = (gameObject.transform.position - controller.gameObject.transform.position).normalized;
+
+                    // Cast a ray straight down.
+                    RaycastHit2D hit = Physics2D.Raycast(controller.transform.position, dir);
+
+                    if (hit.collider != null)
+                    {
+
+                        if (hit.collider.gameObject != gameObject)
                         {
-                            //we have vision of the target!!
-                            Debug.Log("we see the target!!");
+                            Debug.Log("Something is in the way");
 
-                            //Lets tell the AI we see a target
+                            //We now need to pathfind
+                            //controller.AIVariables.SetPathfindingParams(controller.AIVariables.FocusedEnemy.transform.position);
+                            return;
+
+
+
+                        }
+                        else
+                        {
+                            //controller.AIVariables.MoveThisDirection(dir);
                             controller.AIVariables.TargetSeen(gameObject);
                         }
-
+                    } else
+                    {
+                        Debug.Log("nothing hit");
                     }
+
+
+                //    RaycastHit2D[] raycastHit;
+
+                //    bool targetFound = false;
+
+                //    float distance = Vector2.Distance(controller.gameObject.transform.position, gameObject.transform.position);
+
+                //    raycastHit = Physics2D.RaycastAll(controller.gameObject.transform.position, (controller.gameObject.transform.position - gameObject.transform.position).normalized, distance);
+
+                   
+
+                //    foreach (RaycastHit2D hit in raycastHit)
+                //    {
+
+                //        if (hit.collider.gameObject == gameObject)
+                //        {
+                //            //we have vision of the target!!
+                //            Debug.Log("we see the target!!");
+                //            targetFound = true;
+                //            //Lets tell the AI we see a target
+                               
+                //        } else if (hit.collider.tag == "Obstacle")
+                //        {
+                //            //We have found an obstacle between the two points so we dont see the target
+                //            return;
+                //        }
+
+                        
+
+                //    }
+
+                //    if (targetFound)
+                //    {
+
+                //        controller.AIVariables.TargetSeen(gameObject);
+
+                //    }
+
+
                 }
 
 

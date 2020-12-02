@@ -10,6 +10,7 @@ public class FireSpriteParticleScript : MonoBehaviour
 
     AIMovementHandler AIMovementHandler;
     ParticleSystem.ForceOverLifetimeModule forceOverLifetimeModule;
+    
 
     [SerializeField]
     float particleTransform;
@@ -31,10 +32,19 @@ public class FireSpriteParticleScript : MonoBehaviour
     {
 
         float x;
+        Vector3 pos;
+        pos.x = 3.7f;
+        pos.y = 12.8f;
+        pos.z = 1f;
+
 
         if (AIMovementHandler.isIdle) {
 
             x = 6;
+
+            pos.x = 3.7f;
+
+            particleSystem.startSpeed = 4.75f;
 
         } else
         {
@@ -42,23 +52,29 @@ public class FireSpriteParticleScript : MonoBehaviour
 
             if(dir.x <= 0)
             {
-               
-                x = 6 + (3 *  -dir.x);
-                Vector3 pos = transform.localPosition;
-                pos.x = particleTransform;
-                transform.localPosition = pos;
+
+                x = 6 + (5 *  -dir.x);
+
+                pos.x = 3.7f;
+
+                particleSystem.startSpeed = 7f;
 
             } else
             {
-                x = -6 - (3 * dir.x);
-                Vector3 pos = transform.localPosition;
-                pos.x = - particleTransform;
-                transform.localPosition = pos;
+                x = -6 - (5 * dir.x);
+
+                pos.x = -3.7f;
+
+                particleSystem.startSpeed = 7f;
+
             }
            
         }
 
         forceOverLifetimeModule.x = x;
+
+        particleSystem.transform.localPosition = pos;
+
     }
 
     

@@ -7,9 +7,8 @@ public class MoveToTargetAction : Action
 {
     public override void Act(StateController controller)
     {
+        //TODO: may need to change this, as there may be cases were we are moving towards a target that isnt a object. Like a point in space
         if (controller.AIVariables.FocusedEnemy == null) return;
-
-        Debug.Log("MoveTOTargetAction");
 
         Vector2 targetPos = controller.AIVariables.FocusedEnemy.transform.position;
 
@@ -20,12 +19,16 @@ public class MoveToTargetAction : Action
 
         if (hit.collider != null)
         {
-            Debug.Log("hit something of name: " + hit.collider.name);
 
             if(hit.collider.gameObject != controller.AIVariables.FocusedEnemy)
             {
                 Debug.Log("Something is in the way");
-                //TODO: do something here
+
+                //We now need to pathfind
+                controller.AIVariables.SetPathfindingParams(controller.AIVariables.FocusedEnemy.transform.position);
+
+                
+
             } else
             {
                 controller.AIVariables.MoveThisDirection(dir);
@@ -34,6 +37,5 @@ public class MoveToTargetAction : Action
 
       
     }
-
 
 }

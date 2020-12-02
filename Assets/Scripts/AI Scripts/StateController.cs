@@ -6,7 +6,7 @@ public class StateController : MonoBehaviour
 {
     public State currentState;
 
-    public AIVariables AIVariables;
+    [HideInInspector ]public AIVariables AIVariables;
 
     [HideInInspector] float stateTimeElapsed;
 

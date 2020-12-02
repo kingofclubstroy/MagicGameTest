@@ -21,20 +21,25 @@ public class ObstacleController : MonoBehaviour
     public NativeArray<int2> neighbourOffsetArray;
 
     public static NativeArray<int> nativeObstacleMap;
-    static int2 gridParams;
+
+    [SerializeField]
+    public int2 gridParams;
+
+    [SerializeField]
+    int ChunkSize = 16;
 
     private void Awake()
     {
         instance = this;
+        initializeNativeObstacleMap(gridParams.x, gridParams.y);
     }
 
     // Start is called before the first frame update
     void Start()
     {
 
-       
-       
         
+       
 
     }
 
@@ -42,8 +47,9 @@ public class ObstacleController : MonoBehaviour
     {
         //pathNodeArray.Dispose();
         //neighbourOffsetArray.Dispose();
-        //nativeObstacleMap.Dispose();
+        nativeObstacleMap.Dispose();
     }
+
 
     public int GetObstacleResistance(Vector2 pos)
     {
@@ -219,19 +225,19 @@ public class ObstacleController : MonoBehaviour
             
     }
 
-    public static NativeArray<int> getNativeMap(int2 gridParams)
+    public static NativeArray<int> getNativeMap()
     {
-        if(!nativeObstacleMap.IsCreated)
-        {
-            return initializeNativeObstacleMap(gridParams.x, gridParams.y);
-        }
+        //if(!nativeObstacleMap.IsCreated)
+        //{
+        //    return initializeNativeObstacleMap(gridParams.x, gridParams.y);
+        //}
         return nativeObstacleMap;
     }
     
     public static NativeArray<int> initializeNativeObstacleMap(int gridWidth, int gridHeight)
     {
         nativeObstacleMap = new NativeArray<int>(gridWidth * gridHeight, Allocator.Persistent);
-        gridParams = new int2(gridWidth, gridHeight);
+        //gridParams = new int2(gridWidth, gridHeight);
 
         for(int x = 0; x < gridWidth; x++)
         {
@@ -246,6 +252,22 @@ public class ObstacleController : MonoBehaviour
     }
 
 
+    public void SetObstacle(Vector2 pos, int value)
+    {
+
+      
+
+        try
+        {
+            int2 arrayPos = WorldToIndex(pos);
+            nativeObstacleMap[GetIndex(arrayPos)] = value;
+        } catch (System.Exception error)
+        {
+            Debug.LogError("error setting obstacle, probably outside bounds: " + error);
+        }
+
+        
+    }
 
     public NativeArray<PathNode> GetPathNodeArray()
     {
@@ -255,6 +277,21 @@ public class ObstacleController : MonoBehaviour
     private int CalculateIndex(int x, int y, int gridWidth)
     {
         return x + y * gridWidth;
+    }
+
+    private int GetIndex(int2 pos) {
+        return pos.x + (pos.y * gridParams.y);
+    }
+
+
+    public int2 WorldToIndex(Vector2 pos)
+    {
+        if(pos.x < 0 || pos.x/ChunkSize > gridParams.x || pos.y < 0 || pos.y / ChunkSize > gridParams.y)
+        {
+            throw new System.Exception("outside world, pos = " + pos);
+        }
+
+        return new int2(Mathf.FloorToInt(pos.x / ChunkSize), Mathf.FloorToInt(pos.y / ChunkSize));
     }
 
 }

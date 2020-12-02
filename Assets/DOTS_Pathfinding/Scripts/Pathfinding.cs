@@ -21,7 +21,7 @@ using Unity.Jobs;
 using Unity.Burst;
 
 
-
+[DisableAutoCreation]
 public class PathfindingCodeMonkey : ComponentSystem
 {
 

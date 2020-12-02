@@ -36,6 +36,8 @@ public class UnitGameObject : MonoBehaviour
         }
 
         PathFollow pathFollow = entityManager.GetComponentData<PathFollow>(entity);
+
+       
         DynamicBuffer<PathPosition> pathPositionBuffer = entityManager.GetBuffer<PathPosition>(entity);
 
         float moveAmount = moveSpeed * Time.deltaTime;
