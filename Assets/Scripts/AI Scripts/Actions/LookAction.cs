@@ -72,70 +72,72 @@ public class LookAction : Action
                     dir = (gameObject.transform.position - controller.gameObject.transform.position).normalized;
 
                     // Cast a ray straight down.
-                    RaycastHit2D hit = Physics2D.Raycast(controller.transform.position, dir);
+                    //RaycastHit2D hit = Physics2D.Raycast(controller.transform.position, dir);
 
-                    if (hit.collider != null)
+                    //if (hit.collider != null)
+                    //{
+
+                    //    if (hit.collider.gameObject != gameObject)
+                    //    {
+                    //        Debug.Log("Something is in the way");
+
+                    //        //We now need to pathfind
+                    //        //controller.AIVariables.SetPathfindingParams(controller.AIVariables.FocusedEnemy.transform.position);
+                    //        return;
+
+
+
+                    //    }
+                    //    else
+                    //    {
+                    //        //controller.AIVariables.MoveThisDirection(dir);
+                    //        controller.AIVariables.TargetSeen(gameObject);
+                    //    }
+                    //} else
+                    //{
+                    //    Debug.Log("nothing hit");
+                    //}
+
+
+                    RaycastHit2D[] raycastHit;
+
+                    bool targetFound = false;
+
+                    float distance = Vector2.Distance(controller.gameObject.transform.position, gameObject.transform.position);
+
+                    raycastHit = Physics2D.RaycastAll(controller.gameObject.transform.position, (gameObject.transform.position - controller.gameObject.transform.position).normalized, distance);
+
+                    Debug.Log("raycast lefght = " + raycastHit.Length);
+
+                    foreach (RaycastHit2D hit in raycastHit)
                     {
 
-                        if (hit.collider.gameObject != gameObject)
+                        if (hit.collider.gameObject == gameObject)
                         {
-                            Debug.Log("Something is in the way");
+                            //we have vision of the target!!
+                            Debug.Log("we see the target!!");
+                            targetFound = true;
+                            //Lets tell the AI we see a target
 
-                            //We now need to pathfind
-                            //controller.AIVariables.SetPathfindingParams(controller.AIVariables.FocusedEnemy.transform.position);
+                        }
+                        else if (hit.collider.tag == "Obstacle")
+                        {
+                            //We have found an obstacle between the two points so we dont see the target
+
+                            Debug.Log("hit obstacle");
                             return;
-
-
-
                         }
-                        else
-                        {
-                            //controller.AIVariables.MoveThisDirection(dir);
-                            controller.AIVariables.TargetSeen(gameObject);
-                        }
-                    } else
-                    {
-                        Debug.Log("nothing hit");
+
+
+
                     }
 
+                    if (targetFound)
+                    {
 
-                    //RaycastHit2D[] raycastHit;
+                        controller.AIVariables.TargetSeen(gameObject);
 
-                    //bool targetFound = false;
-
-                    //float distance = Vector2.Distance(controller.gameObject.transform.position, gameObject.transform.position);
-
-                    //raycastHit = Physics2D.RaycastAll(controller.gameObject.transform.position, (controller.gameObject.transform.position - gameObject.transform.position).normalized, distance);
-
-
-
-                    //foreach (RaycastHit2D hit in raycastHit)
-                    //{
-
-                    //    if (hit.collider.gameObject == gameObject)
-                    //    {
-                    //        //we have vision of the target!!
-                    //        Debug.Log("we see the target!!");
-                    //        targetFound = true;
-                    //        //Lets tell the AI we see a target
-
-                    //    }
-                    //    else if (hit.collider.tag == "Obstacle")
-                    //    {
-                    //        //We have found an obstacle between the two points so we dont see the target
-                    //        return;
-                    //    }
-
-
-
-                    //}
-
-                    //if (targetFound)
-                    //{
-
-                    //    controller.AIVariables.TargetSeen(gameObject);
-
-                    //}
+                    }
 
 
                 }

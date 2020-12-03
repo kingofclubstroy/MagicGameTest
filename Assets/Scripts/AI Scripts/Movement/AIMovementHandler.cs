@@ -40,14 +40,16 @@ public class AIMovementHandler : MonoBehaviour
     {
         if(Input.GetMouseButtonDown(0))
         {
-            targetPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            //targetPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
-            
-            hasTarget = true;
-            Vector2 testPos = Camera.main.ScreenToWorldPoint(transform.position);
-            float angle = Vector2.SignedAngle(testPos, (Vector2) transform.position - targetPosition);
-            isIdle = false;
-            
+
+            //hasTarget = true;
+            //Vector2 testPos = Camera.main.ScreenToWorldPoint(transform.position);
+            //float angle = Vector2.SignedAngle(testPos, (Vector2)transform.position - targetPosition);
+            //isIdle = false;
+
+
+
         }
 
         if(hasTarget)

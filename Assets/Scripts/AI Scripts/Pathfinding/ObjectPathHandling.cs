@@ -49,7 +49,7 @@ public class ObjectPathHandling : MonoBehaviour
             for(int j = 0; j < y; j++)
             {
 
-                Vector2 p = new Vector2(pos.x + (i * 16), pos.y * (j * 16));
+                Vector2 p = new Vector2(pos.x + (i * 16), pos.y + (j * 16));
                 Debug.Log(p);
                 ObstacleController.instance.SetObstacle(p, value);
 

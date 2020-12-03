@@ -28,6 +28,9 @@ public class ObstacleController : MonoBehaviour
     [SerializeField]
     int ChunkSize = 16;
 
+    [SerializeField]
+    public GameObject testPrefab;
+
     private void Awake()
     {
         instance = this;
@@ -225,12 +228,14 @@ public class ObstacleController : MonoBehaviour
             
     }
 
-    public static NativeArray<int> getNativeMap()
+    public NativeArray<int> getNativeMap()
     {
         //if(!nativeObstacleMap.IsCreated)
         //{
         //    return initializeNativeObstacleMap(gridParams.x, gridParams.y);
         //}
+        
+
         return nativeObstacleMap;
     }
     
@@ -260,6 +265,7 @@ public class ObstacleController : MonoBehaviour
         try
         {
             int2 arrayPos = WorldToIndex(pos);
+          
             nativeObstacleMap[GetIndex(arrayPos)] = value;
         } catch (System.Exception error)
         {
@@ -280,7 +286,7 @@ public class ObstacleController : MonoBehaviour
     }
 
     private int GetIndex(int2 pos) {
-        return pos.x + (pos.y * gridParams.y);
+        return pos.x + (pos.y * gridParams.x);
     }
 
 

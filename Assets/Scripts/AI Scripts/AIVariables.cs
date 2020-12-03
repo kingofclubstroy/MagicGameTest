@@ -8,6 +8,8 @@ public class AIVariables : MonoBehaviour
 {
     //TODO: need to refactor this out into different parts, it is currently doing too much
 
+    public GameObject TestPrefab;
+
     [SerializeField]
     private ConvertedEntityHolder convertedEntityHolder;
 
@@ -65,11 +67,19 @@ public class AIVariables : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(Awareness > 0)
+        if (Awareness > 0)
         {
             Awareness = Mathf.Max(Awareness - AwarenessDeclineRate * Time.deltaTime, 0);
-            Debug.Log(Awareness);
+
         }
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            
+            SetPathfindingParams(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+        }
+
+        
     }
 
     #endregion
@@ -139,15 +149,13 @@ public class AIVariables : MonoBehaviour
 
             pathPositionBuffer = entityManager.GetBuffer<PathPosition>(entity);
 
-            Debug.Log("pathpositionBuffer isCreated = " + pathPositionBuffer.IsCreated);
-
-            Debug.Log("new path = " + pathFollow.NewPath);
+           
 
             reachedDestination = false;
 
             if (pathPositionBuffer.IsCreated == false || pathFollow.NewPath == false)
             {
-                Debug.LogError("waiting for path");
+               
                 //TODO: may want to do something here, as we are waiting currently
                 return;
             }
@@ -159,12 +167,14 @@ public class AIVariables : MonoBehaviour
                 //Make sure to update the entity here, as the pathfollow is not a reference!!
                 entityManager.SetComponentData(entity, pathFollow);
 
+               
+
             }
         }
 
-       
 
-       if(pathPositionBuffer.Length == 0)
+
+        if (pathPositionBuffer.Length == 0)
         {
             Debug.LogError("path buffer has no length");
             reachedDestination = true;
@@ -177,11 +187,11 @@ public class AIVariables : MonoBehaviour
 
         float moveAmount = AIMovementHandler.speed * Time.deltaTime;
 
-        if(Vector2.Distance(transform.position, current) < moveAmount)
+        if (Vector2.Distance(transform.position, current) < moveAmount)
         {
             //We will reach the destanation with movement to spare, so do we just start moving to the next target? lets try that
             pathFollow.pathIndex -= 1;
-            if(pathFollow.pathIndex == -1)
+            if (pathFollow.pathIndex == -1)
             {
                 reachedDestination = true;
                 return;
@@ -190,47 +200,14 @@ public class AIVariables : MonoBehaviour
             pos = pathPositionBuffer[pathFollow.pathIndex].position;
             current = new Vector2((pos.x * 16) + 8, (pos.y * 16) + 8);
 
-            
+
 
         }
 
         AIMovementHandler.SetDirection(current - (Vector2)transform.position);
 
 
-        //while (Vector2.Distance(transform.position, current) <= moveAmount)
-        //{
-
-        //    if(pathFollow.pathIndex == 0)
-        //    {
-        //        break;
-        //    }
-
-        //    pathFollow.pathIndex -= 1;
-        //    pos = pathPositionBuffer[pathFollow.pathIndex].position;
-        //    current = new Vector2(pos.x, pos.y);
-
-        //}
-
-        //if(pathFollow.pathIndex == 0 && Vector2.Distance(transform.position, current) <= moveAmount)
-        //{
-
-        //}
-
-
-
-
-
-        //if(pos.position)
-
-        ////TODO: may need to fix this
-        //if()
-
-        //while (moveAmount > 0 && pathFollow.pathIndex >= 0)
-        //{
-        //    int2 pathPosition = pathPositionBuffer[pathFollow.pathIndex].position;
-
-
-        //}
+       
 
     }
 

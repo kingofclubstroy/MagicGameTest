@@ -132,7 +132,7 @@ public class Pathfinding : JobComponentSystem
                 startPosition = pathfindingParams.startPosition,
                 endPosition = pathfindingParams.endPosition,
                 itterationLimit = itterationLimit,
-                Grid = ObstacleController.getNativeMap(),
+                Grid = ObstacleController.instance.getNativeMap(),
                 CostSoFar = data.CostSoFar,
                 CameFrom = data.CameFrom,
                 entity = entityArray[r],
@@ -180,7 +180,7 @@ public class Pathfinding : JobComponentSystem
     }
 
 
-    [BurstCompile]
+    //[BurstCompile]
     private struct FindPathJob : IJob
     {
         [ReadOnly] public int DimX;
@@ -298,7 +298,10 @@ public class Pathfinding : JobComponentSystem
         {
             int cell = Grid[toIndex];
             if (cell == -1)
+            {
+                Debug.Log("we found a negative cell!!");
                 return float.PositiveInfinity;
+            }
 
             // TODO HEIGHT ADJUSTMENTS ETC
 
