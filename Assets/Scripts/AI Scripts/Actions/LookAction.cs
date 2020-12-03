@@ -99,42 +99,43 @@ public class LookAction : Action
                     }
 
 
-                //    RaycastHit2D[] raycastHit;
+                    //RaycastHit2D[] raycastHit;
 
-                //    bool targetFound = false;
+                    //bool targetFound = false;
 
-                //    float distance = Vector2.Distance(controller.gameObject.transform.position, gameObject.transform.position);
+                    //float distance = Vector2.Distance(controller.gameObject.transform.position, gameObject.transform.position);
 
-                //    raycastHit = Physics2D.RaycastAll(controller.gameObject.transform.position, (controller.gameObject.transform.position - gameObject.transform.position).normalized, distance);
+                    //raycastHit = Physics2D.RaycastAll(controller.gameObject.transform.position, (controller.gameObject.transform.position - gameObject.transform.position).normalized, distance);
 
-                   
 
-                //    foreach (RaycastHit2D hit in raycastHit)
-                //    {
 
-                //        if (hit.collider.gameObject == gameObject)
-                //        {
-                //            //we have vision of the target!!
-                //            Debug.Log("we see the target!!");
-                //            targetFound = true;
-                //            //Lets tell the AI we see a target
-                               
-                //        } else if (hit.collider.tag == "Obstacle")
-                //        {
-                //            //We have found an obstacle between the two points so we dont see the target
-                //            return;
-                //        }
+                    //foreach (RaycastHit2D hit in raycastHit)
+                    //{
 
-                        
+                    //    if (hit.collider.gameObject == gameObject)
+                    //    {
+                    //        //we have vision of the target!!
+                    //        Debug.Log("we see the target!!");
+                    //        targetFound = true;
+                    //        //Lets tell the AI we see a target
 
-                //    }
+                    //    }
+                    //    else if (hit.collider.tag == "Obstacle")
+                    //    {
+                    //        //We have found an obstacle between the two points so we dont see the target
+                    //        return;
+                    //    }
 
-                //    if (targetFound)
-                //    {
 
-                //        controller.AIVariables.TargetSeen(gameObject);
 
-                //    }
+                    //}
+
+                    //if (targetFound)
+                    //{
+
+                    //    controller.AIVariables.TargetSeen(gameObject);
+
+                    //}
 
 
                 }
