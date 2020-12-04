@@ -260,7 +260,12 @@ public class ObstacleController : MonoBehaviour
     public void SetObstacle(Vector2 pos, int value)
     {
 
-      
+
+
+        if (nativeObstacleMap == null || nativeObstacleMap.IsCreated == false) 
+        {
+            return;
+        }
 
         try
         {

@@ -41,8 +41,6 @@ public class ObjectPathHandling : MonoBehaviour
         int x = Mathf.FloorToInt(size.x / 16);
         int y = Mathf.FloorToInt(size.y / 16);
 
-        Debug.Log("x = " + x);
-        Debug.Log("y = " + y);
 
         for (int i = 0; i < x; i++)
         {
@@ -50,7 +48,7 @@ public class ObjectPathHandling : MonoBehaviour
             {
 
                 Vector2 p = new Vector2(pos.x + (i * 16), pos.y + (j * 16));
-                Debug.Log(p);
+               
                 ObstacleController.instance.SetObstacle(p, value);
 
             }
@@ -65,7 +63,7 @@ public class ObjectPathHandling : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        Debug.Log("entered wall collider");
+       
     }
 
     private void OnDestroy()

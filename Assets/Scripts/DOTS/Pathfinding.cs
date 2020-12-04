@@ -299,7 +299,7 @@ public class Pathfinding : JobComponentSystem
             int cell = Grid[toIndex];
             if (cell == -1)
             {
-                Debug.Log("we found a negative cell!!");
+               
                 return float.PositiveInfinity;
             }
 
@@ -350,7 +350,7 @@ public class Pathfinding : JobComponentSystem
 
             CalculatePath(startPosition, endPosition, pathPositionBuffer);
 
-            pathFollowComponentDataFromEntity[entity] = new PathFollow { pathIndex = pathPositionBuffer.Length - 1, NewPath = true };
+            pathFollowComponentDataFromEntity[entity] = new PathFollow { pathIndex = pathPositionBuffer.Length - 2, NewPath = true };
 
 
             var buffer = CostSoFar.GetUnsafePtr();
@@ -381,6 +381,51 @@ public class Pathfinding : JobComponentSystem
         private int GetIndex(int2 position)
         {
             return position.x + (position.y * DimX);
+        }
+
+        private Direction GetDirection(int2 current, int2 next)
+        {
+            int x = next.x - current.x;
+            int y = next.y - current.y;
+
+            if(y > 0)
+            {
+                //We are looking at the upperDirections
+                if(x == 0)
+                {
+                    return Direction.UP;
+                } if (x == 1)
+                {
+                    return Direction.TOPRIGHT;
+                } else
+                {
+                    return Direction.TOPLEFT;
+                }
+            } else if (y < 0)
+            {
+                //We are looking at the upperDirections
+                if (x == 0)
+                {
+                    return Direction.Down;
+                }
+                if (x == 1)
+                {
+                    return Direction.BOTTOMRIGHT;
+                }
+                else
+                {
+                    return Direction.BOTTOMLEFT;
+                }
+            } else
+            {
+                if(x == 1)
+                {
+                    return Direction.RIGHT;
+                } else
+                {
+                    return Direction.LEFT;
+                }
+            }
         }
 
     }
@@ -515,7 +560,7 @@ public class Pathfinding : JobComponentSystem
             collection.OpenSet.Dispose();
         }
 
-        obstacleArray.Dispose();
+        //obstacleArray.Dispose();
     }
 
 
