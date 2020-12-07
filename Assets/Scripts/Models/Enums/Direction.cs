@@ -5,6 +5,10 @@
     LEFT,
     UP,
     Down,
-    IDLE
+    IDLE,
+    TOPRIGHT,
+    TOPLEFT,
+    BOTTOMRIGHT,
+    BOTTOMLEFT
 
 }

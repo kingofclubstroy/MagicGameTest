@@ -167,6 +167,8 @@ public class AIVariables : MonoBehaviour
                 //Make sure to update the entity here, as the pathfollow is not a reference!!
                 entityManager.SetComponentData(entity, pathFollow);
 
+
+
                
 
             }
@@ -224,5 +226,15 @@ public class AIVariables : MonoBehaviour
         NearbyEnemies.Remove(enemy);
 
         Debug.Log("Nearby count = " + NearbyEnemies.Count);
+    }
+
+    void SmoothOutPath(DynamicBuffer<PathPosition> pathPositionBuffer)
+    {
+        for( int i = pathPositionBuffer.Length - 1; i >= 0;  i--)
+        {
+
+
+
+        }
     }
 }
