@@ -1,31 +1,31 @@
 fileFormatVersion: 2
-guid: 496c7e9d8b51e40f0b6c62635a91f9f3
+guid: 217992ef6bd01429bb4ba76a04f0b963
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -3107478348988958966
-    second: frontattackSheet 1_0
+      213: -7234612984996192319
+    second: backSwordSlash1-Sheet_0
   - first:
-      213: -5223413483167607734
-    second: frontattackSheet 1_1
+      213: -8068200288356711777
+    second: backSwordSlash1-Sheet_1
   - first:
-      213: -1806282263166406294
-    second: frontattackSheet 1_2
+      213: 1748223733927144561
+    second: backSwordSlash1-Sheet_2
   - first:
-      213: 6240847525880172356
-    second: frontattackSheet 1_3
+      213: 646872040979131412
+    second: backSwordSlash1-Sheet_3
   - first:
-      213: 2703763741572360996
-    second: frontattackSheet 1_4
+      213: -8205940863368882737
+    second: backSwordSlash1-Sheet_4
   - first:
-      213: 7984796648514897899
-    second: frontattackSheet 1_5
+      213: -2335956421580280912
+    second: backSwordSlash1-Sheet_5
   - first:
-      213: -366180389890118040
-    second: frontattackSheet 1_6
+      213: 542967631408980628
+    second: backSwordSlash1-Sheet_6
   - first:
-      213: 6541373101588300704
-    second: frontattackSheet 1_7
+      213: -3578757678741688365
+    second: backSwordSlash1-Sheet_7
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -55,7 +55,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 0
+    filterMode: -1
     aniso: -1
     mipBias: -100
     wrapU: 1
@@ -111,13 +111,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: frontattackSheet 1_0
+      name: backSwordSlash1-Sheet_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
         width: 54
-        height: 46
+        height: 37
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -125,20 +125,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a07bb4dd7e400e4d0800000000000000
-      internalID: -3107478348988958966
+      spriteID: 1cf9fdd12dd799b90800000000000000
+      internalID: -7234612984996192319
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: frontattackSheet 1_1
+      name: backSwordSlash1-Sheet_1
       rect:
         serializedVersion: 2
         x: 54
         y: 0
         width: 54
-        height: 46
+        height: 37
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -146,20 +146,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a441fc4ac15b287b0800000000000000
-      internalID: -5223413483167607734
+      spriteID: f924bcbb59ef70090800000000000000
+      internalID: -8068200288356711777
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: frontattackSheet 1_2
+      name: backSwordSlash1-Sheet_2
       rect:
         serializedVersion: 2
         x: 108
         y: 0
         width: 54
-        height: 46
+        height: 37
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -167,20 +167,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a61b0eb0adbcee6e0800000000000000
-      internalID: -1806282263166406294
+      spriteID: 17c62a83930f24810800000000000000
+      internalID: 1748223733927144561
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: frontattackSheet 1_3
+      name: backSwordSlash1-Sheet_3
       rect:
         serializedVersion: 2
         x: 162
         y: 0
         width: 54
-        height: 46
+        height: 37
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -188,20 +188,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 44f867562c1fb9650800000000000000
-      internalID: 6240847525880172356
+      spriteID: 41c61b9a1b62af800800000000000000
+      internalID: 646872040979131412
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: frontattackSheet 1_4
+      name: backSwordSlash1-Sheet_4
       rect:
         serializedVersion: 2
         x: 216
         y: 0
         width: 54
-        height: 46
+        height: 37
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -209,20 +209,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 42b600d3cc2b58520800000000000000
-      internalID: 2703763741572360996
+      spriteID: fc5190ff244ae1e80800000000000000
+      internalID: -8205940863368882737
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: frontattackSheet 1_5
+      name: backSwordSlash1-Sheet_5
       rect:
         serializedVersion: 2
         x: 270
         y: 0
         width: 54
-        height: 46
+        height: 37
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -230,20 +230,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: be7c57e1f32bfce60800000000000000
-      internalID: 7984796648514897899
+      spriteID: 0bb2ae0d204059fd0800000000000000
+      internalID: -2335956421580280912
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: frontattackSheet 1_6
+      name: backSwordSlash1-Sheet_6
       rect:
         serializedVersion: 2
         x: 324
         y: 0
         width: 54
-        height: 46
+        height: 37
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -251,20 +251,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 86ea2e020e01beaf0800000000000000
-      internalID: -366180389890118040
+      spriteID: 492eaaa1f22098700800000000000000
+      internalID: 542967631408980628
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: frontattackSheet 1_7
+      name: backSwordSlash1-Sheet_7
       rect:
         serializedVersion: 2
         x: 378
         y: 0
         width: 54
-        height: 46
+        height: 37
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -272,8 +272,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0a3477f9d20a7ca50800000000000000
-      internalID: 6541373101588300704
+      spriteID: 3df666d2ad2b55ec0800000000000000
+      internalID: -3578757678741688365
       vertices: []
       indices: 
       edges: []
