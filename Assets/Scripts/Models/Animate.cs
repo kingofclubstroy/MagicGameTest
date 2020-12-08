@@ -33,6 +33,34 @@ public class Animate
                 animator.Play("Casting_Animation");
                 break;
 
+            case "Attacking":
+
+                Debug.LogError("initiating attacking animation, current direction = " + currentDirection);
+
+                switch (currentDirection) {
+
+                    case Direction.UP:
+                        animator.Play("Attack_Up_Animation");
+                        break;
+
+                    case Direction.Down:
+                        Debug.LogError("playing down attack animation");
+                        animator.Play("Attack_Down_Animation");
+                        break;
+
+                    case Direction.LEFT:
+                        animator.Play("Attack_Down_Animation");
+                        break;
+
+                    case Direction.RIGHT:
+                        animator.Play("Attack_Down_Animation");
+                        break;
+
+                }
+
+
+                break;
+
             case "Idle":
 
 

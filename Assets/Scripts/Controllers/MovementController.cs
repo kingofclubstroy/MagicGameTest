@@ -32,6 +32,10 @@ public class MovementController : MonoBehaviour
 
     Direction currentDirection;
 
+    bool IsAttacking = false;
+
+    bool IsIdle = true;
+
     #endregion
 
     #region MonoBehaviour Callbacks
@@ -58,8 +62,20 @@ public class MovementController : MonoBehaviour
             StartCasting();
         }
 
+        if(IsAttacking)
+        {
+            return;
+        }
+
+        if(Input.GetKeyDown(KeyCode.Period))
+        {
+            Debug.LogError("Attacking");
+            IsAttacking = true;
+            Animate.ChangeAnimationState("Attacking", animator, currentDirection);
+        }
+
         //TODO: dont want to be doing this, but i must for now, means when holding space (casting) you cant move
-        if (Input.GetKey(KeyCode.Space) == false)
+        else if (Input.GetKey(KeyCode.Space) == false)
         {
 
             float h = Input.GetAxis("Horizontal");
@@ -69,7 +85,7 @@ public class MovementController : MonoBehaviour
             {
                 if (v > 0)
                 {
-                    if (currentDirection != Direction.UP)
+                    if (currentDirection != Direction.UP || IsIdle)
                     {
                         currentDirection = Direction.UP;
                         Animate.ChangeAnimationState("WalkUp", animator, currentDirection);
@@ -77,12 +93,14 @@ public class MovementController : MonoBehaviour
                 }
                 else
                 {
-                    if (currentDirection != Direction.Down)
+                    if (currentDirection != Direction.Down || IsIdle)
                     {
                         currentDirection = Direction.Down;
                         Animate.ChangeAnimationState("WalkDown", animator, currentDirection);
                     }
                 }
+
+                IsIdle = false;
             }
             else if (h != 0)
             {
@@ -90,7 +108,7 @@ public class MovementController : MonoBehaviour
                 if (h > 0)
                 {
 
-                    if (currentDirection != Direction.RIGHT)
+                    if (currentDirection != Direction.RIGHT || IsIdle)
                     {
                         currentDirection = Direction.RIGHT;
                         Animate.ChangeAnimationState("WalkRight", animator, currentDirection);
@@ -99,7 +117,7 @@ public class MovementController : MonoBehaviour
                 }
                 else if (h < 0)
                 {
-                    if (currentDirection != Direction.LEFT)
+                    if (currentDirection != Direction.LEFT || IsIdle)
                     {
                         currentDirection = Direction.LEFT;
                         Animate.ChangeAnimationState("WalkLeft", animator, currentDirection);
@@ -107,13 +125,19 @@ public class MovementController : MonoBehaviour
 
                     //Flip();
                 }
+
+                IsIdle = false;
             }
             else
             {
-                if (currentDirection != Direction.IDLE)
+                if (IsIdle == false)
                 {
+                    
                     Animate.ChangeAnimationState("Idle", animator, currentDirection);
-                    currentDirection = Direction.IDLE;
+                    //currentDirection = Direction.IDLE;
+                    IsIdle = true;
+
+
                 }
             }
 
@@ -259,6 +283,15 @@ public class MovementController : MonoBehaviour
 
         Animate.ChangeAnimationState("Casting", animator, currentDirection);
         casting = true;
+
+    }
+
+    void StoppedAttactingAlert()
+    {
+        Debug.LogError("Stopped attacking");
+        Animate.ChangeAnimationState("Idle", animator, currentDirection);
+        IsIdle = true;
+        IsAttacking = false;
 
     }
 
