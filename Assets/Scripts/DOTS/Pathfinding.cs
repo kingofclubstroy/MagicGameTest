@@ -20,6 +20,7 @@ using Unity.Jobs;
 using Unity.Burst;
 
 
+[DisableAutoCreation]
 public class Pathfinding : JobComponentSystem
 {
 
