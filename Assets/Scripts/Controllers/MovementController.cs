@@ -113,6 +113,7 @@ public class MovementController : MonoBehaviour
                 if (currentDirection != Direction.IDLE)
                 {
                     Animate.ChangeAnimationState("Idle", animator, currentDirection);
+                    currentDirection = Direction.IDLE;
                 }
             }
 

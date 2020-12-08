@@ -18,8 +18,25 @@ public class ObjectPathHandling : MonoBehaviour
         {
             Vector2 pos = transform.position;
 
-            pos.x -= pos.x % 16;
-            pos.y -= pos.y % 16;
+         
+
+            pos.x = Mathf.FloorToInt(pos.x);
+
+          
+
+            pos.x -= Mathf.FloorToInt(pos.x % 16);
+
+         
+
+            pos.y = Mathf.FloorToInt(pos.y);
+
+
+
+
+
+            pos.y -= Mathf.FloorToInt(pos.y % 16);
+
+       
 
             transform.position = pos;
         }
