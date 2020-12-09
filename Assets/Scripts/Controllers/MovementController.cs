@@ -79,6 +79,9 @@ public class MovementController : MonoBehaviour
             Debug.LogError("Attacking");
             IsAttacking = true;
             Animate.ChangeAnimationState("Attacking", animator, currentDirection);
+
+            Horizontal = 0;
+            Vertical = 0;
         }
 
         
@@ -270,7 +273,15 @@ public class MovementController : MonoBehaviour
 
     private void FixedUpdate()
     {
+
+
         Vector2 velocity = new Vector2(Horizontal, Vertical).normalized * speed;
+
+        //TODO: i dont like just setting velocity to zero when attacking, since it overrides any externally acting forces, but for now it works
+        if(IsAttacking)
+        {
+            velocity = Vector2.zero;
+        }
 
         rigidbody.velocity = velocity;
     }
