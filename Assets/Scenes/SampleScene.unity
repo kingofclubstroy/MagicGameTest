@@ -5817,6 +5817,7 @@ GameObject:
   - component: {fileID: 680286488}
   - component: {fileID: 680286489}
   - component: {fileID: 680286487}
+  - component: {fileID: 680286491}
   m_Layer: 0
   m_Name: Character
   m_TagString: Untagged
@@ -6010,6 +6011,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RunSpeed: 20
+--- !u!114 &680286491
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 680286481}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 49e8975e9f216794fa9fff630963fab0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  animationHitboxes:
+  - Name: SouthAttack
+    Hitboxes:
+    - {fileID: 2057250621565612161, guid: d7af0afbf1aae4d4d8d6f2d83692a0ac, type: 3}
+    - {fileID: 8445383453845015061, guid: 4c5e07dba0d04664eb689d018398df12, type: 3}
 --- !u!1 &711936000
 GameObject:
   m_ObjectHideFlags: 0

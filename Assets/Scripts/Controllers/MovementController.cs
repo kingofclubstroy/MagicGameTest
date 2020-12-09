@@ -80,6 +80,11 @@ public class MovementController : MonoBehaviour
             IsAttacking = true;
             Animate.ChangeAnimationState("Attacking", animator, currentDirection);
 
+            if(currentDirection == Direction.Down)
+            {
+                GetComponent<HitBoxController>().SetNewAnimation("SouthAttack");
+            }
+
             Horizontal = 0;
             Vertical = 0;
         }
