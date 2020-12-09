@@ -10,6 +10,8 @@ public class MovementController : MonoBehaviour
     [SerializeField]
     float speed;
 
+    Rigidbody2D rigidbody;
+
     [SerializeField]
     CrawlController crawlController;
 
@@ -36,6 +38,9 @@ public class MovementController : MonoBehaviour
 
     bool IsIdle = true;
 
+    float Horizontal;
+    float Vertical;
+
     #endregion
 
     #region MonoBehaviour Callbacks
@@ -44,13 +49,15 @@ public class MovementController : MonoBehaviour
     void Start()
     {
         initializeCallbacks();
+        rigidbody = GetComponent<Rigidbody2D>();
     }
 
     // Update is called once per frame
     void Update()
     {
 
-
+        Horizontal = Input.GetAxisRaw("Horizontal");
+        Vertical = Input.GetAxisRaw("Vertical");
 
         if (casting && Input.GetKeyUp("space"))
         {
@@ -62,28 +69,31 @@ public class MovementController : MonoBehaviour
             StartCasting();
         }
 
-        if(IsAttacking)
+        if (IsAttacking)
         {
             return;
         }
 
-        if(Input.GetKeyDown(KeyCode.Period))
+        if (Input.GetKeyDown(KeyCode.Period))
         {
             Debug.LogError("Attacking");
             IsAttacking = true;
             Animate.ChangeAnimationState("Attacking", animator, currentDirection);
         }
 
+        
+
+        
+
         //TODO: dont want to be doing this, but i must for now, means when holding space (casting) you cant move
         else if (Input.GetKey(KeyCode.Space) == false)
         {
 
-            float h = Input.GetAxis("Horizontal");
-            float v = Input.GetAxis("Vertical");
+           
 
-            if (v != 0 && h == 0)
+            if (Vertical != 0 && Horizontal == 0)
             {
-                if (v > 0)
+                if (Vertical > 0)
                 {
                     if (currentDirection != Direction.UP || IsIdle)
                     {
@@ -102,10 +112,10 @@ public class MovementController : MonoBehaviour
 
                 IsIdle = false;
             }
-            else if (h != 0)
+            else if (Horizontal != 0)
             {
 
-                if (h > 0)
+                if (Horizontal > 0)
                 {
 
                     if (currentDirection != Direction.RIGHT || IsIdle)
@@ -115,7 +125,7 @@ public class MovementController : MonoBehaviour
                     }
                     //Flip();
                 }
-                else if (h < 0)
+                else if (Horizontal < 0)
                 {
                     if (currentDirection != Direction.LEFT || IsIdle)
                     {
@@ -141,10 +151,10 @@ public class MovementController : MonoBehaviour
                 }
             }
 
-            Vector3 tempVect = new Vector3(h, v, 0);
-            tempVect = tempVect.normalized * speed * Time.deltaTime;
+            //Vector3 tempVect = new Vector3(Horizontal, Vertical, 0);
+            //tempVect = tempVect.normalized * speed * Time.deltaTime;
 
-            this.transform.position += tempVect;
+            //this.transform.position += tempVect;
         }
         else if (casting)
         {
@@ -256,6 +266,13 @@ public class MovementController : MonoBehaviour
         //    theScale.x *= -1;
         //    transform.localScale = theScale;
         //}
+    }
+
+    private void FixedUpdate()
+    {
+        Vector2 velocity = new Vector2(Horizontal, Vertical).normalized * speed;
+
+        rigidbody.velocity = velocity;
     }
 
     void StopCasting()
