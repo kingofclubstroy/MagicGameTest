@@ -35,8 +35,6 @@ public class Animate
 
             case "Attacking":
 
-                Debug.LogError("initiating attacking animation, current direction = " + currentDirection);
-
                 switch (currentDirection) {
 
                     case Direction.UP:

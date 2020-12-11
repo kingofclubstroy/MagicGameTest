@@ -5,6 +5,8 @@ using UnityEngine;
 public class MovementController : MonoBehaviour
 {
 
+    //TODO: refactor this, getting too big!
+
     #region Private Fields
     [Tooltip("Character's speed, used to move around the map")]
     [SerializeField]
@@ -76,14 +78,11 @@ public class MovementController : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Period))
         {
-            Debug.LogError("Attacking");
+            
             IsAttacking = true;
             Animate.ChangeAnimationState("Attacking", animator, currentDirection);
 
-            if(currentDirection == Direction.Down)
-            {
-                GetComponent<HitBoxController>().SetNewAnimation("SouthAttack");
-            }
+            PrepareAttackHitboxes(currentDirection);
 
             Horizontal = 0;
             Vertical = 0;
@@ -321,11 +320,31 @@ public class MovementController : MonoBehaviour
 
     void StoppedAttactingAlert()
     {
-        Debug.LogError("Stopped attacking");
+       
         Animate.ChangeAnimationState("Idle", animator, currentDirection);
         IsIdle = true;
         IsAttacking = false;
 
+    }
+
+    void PrepareAttackHitboxes(Direction direction)
+    {
+        if (direction == Direction.Down)
+        {
+            GetComponent<HitBoxController>().SetNewAnimation("SouthAttack");
+        }
+        else if (direction == Direction.UP)
+        {
+            GetComponent<HitBoxController>().SetNewAnimation("NorthAttack");
+        }
+        else if (direction == Direction.LEFT)
+        {
+            GetComponent<HitBoxController>().SetNewAnimation("WestAttack");
+        }
+        else if (direction == Direction.RIGHT)
+        {
+            GetComponent<HitBoxController>().SetNewAnimation("EastAttack");
+        }
     }
 
     #endregion
