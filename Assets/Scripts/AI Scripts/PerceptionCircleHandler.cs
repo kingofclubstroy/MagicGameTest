@@ -24,9 +24,11 @@ public class PerceptionCircleHandler : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {
         Debug.Log("trigger enter");
+       
         //TODO: Need to add a tag to things ai are interested about, is currently just adding anything other than itself
-        if (collision.gameObject != transform.gameObject && collision.gameObject.tag != "Obstacle")
+        if (collision.gameObject != transform.gameObject && collision.gameObject.tag != "Obstacle" && collision.GetType() != typeof(PolygonCollider2D))
         {
+
             AiVariables.AddNearbyEnemy(collision.gameObject);
 
         }

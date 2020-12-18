@@ -17,11 +17,11 @@ public class AIMovementHandler : MonoBehaviour
     public int speed;
 
     [SerializeField]
-    Animator animator;
+    public Animator animator;
 
     CircleCollider2D circleCollider; 
 
-    public Direction currentDirection = Direction.Down;
+    public Direction currentDirection = Direction.SOUTH;
 
     public bool isIdle = true;
 
@@ -100,44 +100,44 @@ public class AIMovementHandler : MonoBehaviour
 
         if (Mathf.Abs(angle) <= rightAngle)
         {
-            if (currentDirection != Direction.RIGHT)
+            if (currentDirection != Direction.EAST)
             {
-                currentDirection = Direction.RIGHT;
+                currentDirection = Direction.EAST;
 
                 //animator.SetTrigger("Walking_Right");
-                Animate.ChangeAnimationState("WalkRight", animator, currentDirection);
+                Animate.ChangeAnimationState("Walk", animator, currentDirection);
 
             }
         }
         else if (Mathf.Abs(angle) >= leftAngle)
         {
-            if (currentDirection != Direction.LEFT)
+            if (currentDirection != Direction.WEST)
             {
-                currentDirection = Direction.LEFT;
+                currentDirection = Direction.WEST;
 
                 //animator.SetTrigger("Walking_Left");
-                Animate.ChangeAnimationState("WalkLeft", animator, currentDirection);
+                Animate.ChangeAnimationState("Walk", animator, currentDirection);
 
 
             }
         }
         else if (angle > 0)
         {
-            if (currentDirection != Direction.Down)
+            if (currentDirection != Direction.SOUTH)
             {
-                currentDirection = Direction.Down;
+                currentDirection = Direction.SOUTH;
 
                 //animator.SetTrigger("Walking_Down");
-                Animate.ChangeAnimationState("WalkDown", animator, currentDirection);
+                Animate.ChangeAnimationState("Walk", animator, currentDirection);
 
             }
         }
         else
         {
-            if (currentDirection != Direction.UP)
+            if (currentDirection != Direction.NORTH)
             {
-                currentDirection = Direction.UP;
-                Animate.ChangeAnimationState("WalkUp", animator, currentDirection);
+                currentDirection = Direction.NORTH;
+                Animate.ChangeAnimationState("Walk", animator, currentDirection);
 
             }
         }
@@ -174,6 +174,13 @@ public class AIMovementHandler : MonoBehaviour
     //}
 
     #endregion
+
+    public void SetIdle()
+    {
+        Debug.Log("Setting idle");
+        isIdle = true;
+        Animate.ChangeAnimationState("Idle", animator, currentDirection);
+    }
 
 
 }

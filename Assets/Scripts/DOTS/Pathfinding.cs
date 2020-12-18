@@ -393,37 +393,37 @@ public class Pathfinding : JobComponentSystem
                 //We are looking at the upperDirections
                 if(x == 0)
                 {
-                    return Direction.UP;
+                    return Direction.NORTH;
                 } if (x == 1)
                 {
-                    return Direction.TOPRIGHT;
+                    return Direction.NORTHEAST;
                 } else
                 {
-                    return Direction.TOPLEFT;
+                    return Direction.NORTHWEST;
                 }
             } else if (y < 0)
             {
                 //We are looking at the upperDirections
                 if (x == 0)
                 {
-                    return Direction.Down;
+                    return Direction.SOUTH;
                 }
                 if (x == 1)
                 {
-                    return Direction.BOTTOMRIGHT;
+                    return Direction.SOUTHEAST;
                 }
                 else
                 {
-                    return Direction.BOTTOMLEFT;
+                    return Direction.SOUTHWEST;
                 }
             } else
             {
                 if(x == 1)
                 {
-                    return Direction.RIGHT;
+                    return Direction.EAST;
                 } else
                 {
-                    return Direction.LEFT;
+                    return Direction.WEST;
                 }
             }
         }

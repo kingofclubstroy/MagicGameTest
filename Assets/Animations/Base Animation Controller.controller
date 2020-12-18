@@ -7,7 +7,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Walk_Up_Animation
+  m_Name: North_Walk_Animation
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -85,7 +85,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Attack_Left_Animation
+  m_Name: West_Attack_Animation
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -111,7 +111,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Hit_South_Animation
+  m_Name: South_Hit_Animation
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -137,7 +137,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Walk_Down_Animation
+  m_Name: South_Walk_Animation
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -365,7 +365,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Walk_Right_Animation
+  m_Name: East_Walk_Animation
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -439,7 +439,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Hit_North_Animation
+  m_Name: North_Hit_Animation
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -491,7 +491,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Walk_Left_Animation
+  m_Name: West_Walk_Animation
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -517,7 +517,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Hit_East_Animation
+  m_Name: East_Hit_Animation
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -543,7 +543,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Hit_West_Animation
+  m_Name: West_Hit_Animation
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -569,7 +569,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Attack_Down_Animation
+  m_Name: South_Attack_Animation
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -595,7 +595,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Attack_Right_Animation
+  m_Name: East_Attack_Animation
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -621,7 +621,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Attack_Up_Animation
+  m_Name: North_Attack_Animation
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []

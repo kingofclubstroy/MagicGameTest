@@ -237,4 +237,20 @@ public class AIVariables : MonoBehaviour
 
         }
     }
+
+    public void OnTriggerEnter2D(Collider2D collision)
+    {
+       
+
+        if(collision.GetType() == typeof(PolygonCollider2D))
+        {
+            //We are hit by an attack!!!
+            Debug.Log("ai hit by an attack!!!!");
+            Animate.ChangeAnimationState("Hit", AIMovementHandler.animator, AIMovementHandler.currentDirection);
+        }
+    }
+
+   
+
+    
 }

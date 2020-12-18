@@ -35,7 +35,7 @@ public class FireSpriteParticleScript : MonoBehaviour
         Vector3 pos;
         pos.x = 3.7f;
         pos.y = 12.8f;
-        pos.z = 1f;
+        pos.z = 0f;
 
 
         if (AIMovementHandler.isIdle) {

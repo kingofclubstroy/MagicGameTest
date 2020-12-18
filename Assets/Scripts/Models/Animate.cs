@@ -9,24 +9,34 @@ public class Animate
     {
         switch (newState)
         {
-            case "WalkLeft":
-                animator.Play("Walk_Left_Animation");
-               
-                break;
 
-            case "WalkRight":
-                animator.Play("Walk_Right_Animation");
-               
-                break;
+            case "Walk":
 
-            case "WalkDown":
-                animator.Play("Walk_Down_Animation");
-                
-                break;
+                switch (currentDirection)
+                {
+                    case Direction.WEST:
+                        animator.Play("West_Walk_Animation");
 
-            case "WalkUp":
-                animator.Play("Walk_Up_Animation");
-                
+                        break;
+
+                    case Direction.EAST:
+                        animator.Play("East_Walk_Animation");
+
+                        break;
+
+                    case Direction.SOUTH:
+                        animator.Play("South_Walk_Animation");
+
+                        break;
+
+                    case Direction.NORTH:
+                        animator.Play("North_Walk_Animation");
+
+                        break;
+
+                    
+
+                }
                 break;
 
             case "Casting":
@@ -37,21 +47,23 @@ public class Animate
 
                 switch (currentDirection) {
 
-                    case Direction.UP:
-                        animator.Play("Attack_Up_Animation");
+                    case Direction.NORTH:
+                        animator.Play("North_Attack_Animation");
                         break;
 
-                    case Direction.Down:
+                    case Direction.SOUTH:
                         Debug.LogError("playing down attack animation");
-                        animator.Play("Attack_Down_Animation");
+                        animator.Play("South_Attack_Animation");
                         break;
 
-                    case Direction.LEFT:
-                        animator.Play("Attack_Down_Animation");
+                    case Direction.WEST:
+                        Debug.LogError("FIXME: playing south attack animation insted of left");
+                        animator.Play("South_Attack_Animation");
                         break;
 
-                    case Direction.RIGHT:
-                        animator.Play("Attack_Down_Animation");
+                    case Direction.EAST:
+                        Debug.LogError("FIXME: playing south attack animation insted of left");
+                        animator.Play("South_Attack_Animation");
                         break;
 
                 }
@@ -59,25 +71,51 @@ public class Animate
 
                 break;
 
-            case "Idle":
+            case "Hit":
 
 
                 switch (currentDirection)
                 {
-                    case Direction.UP:
-                        animator.Play("Up_Idle_Animation");
+                    case Direction.NORTH:
+                        animator.Play("North_Hit_Animation");
                         break;
 
-                    case Direction.Down:
-                        animator.Play("Down_Idle_Animation");
+                    case Direction.SOUTH:
+                        animator.Play("South_Hit_Animation");
                         break;
 
-                    case Direction.LEFT:
-                        animator.Play("Left_Idle_Animation");
+                    case Direction.WEST:
+                        animator.Play("West_Hit_Animation");
                         break;
 
-                    case Direction.RIGHT:
-                        animator.Play("Right_Idle_Animation");
+                    case Direction.EAST:
+                        animator.Play("East_Hit_Animation");
+                        break;
+
+                }
+
+                break;
+
+            case "Idle":
+
+                Debug.Log("setting idle animation, current direction = " + currentDirection);
+
+                switch (currentDirection)
+                {
+                    case Direction.NORTH:
+                        animator.Play("North_Idle_Animation");
+                        break;
+
+                    case Direction.SOUTH:
+                        animator.Play("South_Idle_Animation");
+                        break;
+
+                    case Direction.WEST:
+                        animator.Play("West_Idle_Animation");
+                        break;
+
+                    case Direction.EAST:
+                        animator.Play("East_Idle_Animation");
                         break;
 
                 }

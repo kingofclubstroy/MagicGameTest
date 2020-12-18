@@ -6,7 +6,7 @@ AnimationClip:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Attack_Up_Animation
+  m_Name: Attack_North_Animation
   serializedVersion: 6
   m_Legacy: 0
   m_Compressed: 0
@@ -23,7 +23,7 @@ AnimationClip:
       value: {fileID: -7234612984996192319, guid: 217992ef6bd01429bb4ba76a04f0b963,
         type: 3}
     - time: 0.1
-      value: {fileID: -7234612984996192319, guid: 217992ef6bd01429bb4ba76a04f0b963,
+      value: {fileID: -8068200288356711777, guid: 217992ef6bd01429bb4ba76a04f0b963,
         type: 3}
     - time: 0.2
       value: {fileID: 1748223733927144561, guid: 217992ef6bd01429bb4ba76a04f0b963,
@@ -63,7 +63,7 @@ AnimationClip:
       isPPtrCurve: 1
     pptrCurveMapping:
     - {fileID: -7234612984996192319, guid: 217992ef6bd01429bb4ba76a04f0b963, type: 3}
-    - {fileID: -7234612984996192319, guid: 217992ef6bd01429bb4ba76a04f0b963, type: 3}
+    - {fileID: -8068200288356711777, guid: 217992ef6bd01429bb4ba76a04f0b963, type: 3}
     - {fileID: 1748223733927144561, guid: 217992ef6bd01429bb4ba76a04f0b963, type: 3}
     - {fileID: 646872040979131412, guid: 217992ef6bd01429bb4ba76a04f0b963, type: 3}
     - {fileID: -8205940863368882737, guid: 217992ef6bd01429bb4ba76a04f0b963, type: 3}

@@ -73,6 +73,7 @@ public class MovementController : MonoBehaviour
 
         if (IsAttacking)
         {
+            Debug.Log("update loop stooped cause attacting");
             return;
         }
 
@@ -102,18 +103,18 @@ public class MovementController : MonoBehaviour
             {
                 if (Vertical > 0)
                 {
-                    if (currentDirection != Direction.UP || IsIdle)
+                    if (currentDirection != Direction.NORTH || IsIdle)
                     {
-                        currentDirection = Direction.UP;
-                        Animate.ChangeAnimationState("WalkUp", animator, currentDirection);
+                        currentDirection = Direction.NORTH;
+                        Animate.ChangeAnimationState("Walk", animator, currentDirection);
                     }
                 }
                 else
                 {
-                    if (currentDirection != Direction.Down || IsIdle)
+                    if (currentDirection != Direction.SOUTH || IsIdle)
                     {
-                        currentDirection = Direction.Down;
-                        Animate.ChangeAnimationState("WalkDown", animator, currentDirection);
+                        currentDirection = Direction.SOUTH;
+                        Animate.ChangeAnimationState("Walk", animator, currentDirection);
                     }
                 }
 
@@ -125,19 +126,19 @@ public class MovementController : MonoBehaviour
                 if (Horizontal > 0)
                 {
 
-                    if (currentDirection != Direction.RIGHT || IsIdle)
+                    if (currentDirection != Direction.EAST || IsIdle)
                     {
-                        currentDirection = Direction.RIGHT;
-                        Animate.ChangeAnimationState("WalkRight", animator, currentDirection);
+                        currentDirection = Direction.EAST;
+                        Animate.ChangeAnimationState("Walk", animator, currentDirection);
                     }
                     //Flip();
                 }
                 else if (Horizontal < 0)
                 {
-                    if (currentDirection != Direction.LEFT || IsIdle)
+                    if (currentDirection != Direction.WEST || IsIdle)
                     {
-                        currentDirection = Direction.LEFT;
-                        Animate.ChangeAnimationState("WalkLeft", animator, currentDirection);
+                        currentDirection = Direction.WEST;
+                        Animate.ChangeAnimationState("Walk", animator, currentDirection);
                     }
 
                     //Flip();
@@ -320,7 +321,7 @@ public class MovementController : MonoBehaviour
 
     void StoppedAttactingAlert()
     {
-       
+        Debug.Log("Stoped attacking");
         Animate.ChangeAnimationState("Idle", animator, currentDirection);
         IsIdle = true;
         IsAttacking = false;
@@ -329,19 +330,19 @@ public class MovementController : MonoBehaviour
 
     void PrepareAttackHitboxes(Direction direction)
     {
-        if (direction == Direction.Down)
+        if (direction == Direction.SOUTH)
         {
             GetComponent<HitBoxController>().SetNewAnimation("SouthAttack");
         }
-        else if (direction == Direction.UP)
+        else if (direction == Direction.NORTH)
         {
             GetComponent<HitBoxController>().SetNewAnimation("NorthAttack");
         }
-        else if (direction == Direction.LEFT)
+        else if (direction == Direction.WEST)
         {
             GetComponent<HitBoxController>().SetNewAnimation("WestAttack");
         }
-        else if (direction == Direction.RIGHT)
+        else if (direction == Direction.EAST)
         {
             GetComponent<HitBoxController>().SetNewAnimation("EastAttack");
         }
