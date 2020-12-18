@@ -31,7 +31,7 @@ public class PathfindingCodeMonkey : ComponentSystem
 
     private NativeArray<int> nativeInt;
 
-    NativeArray<PathNode> pathNodeArray;
+    NativeArray<OldPathNode> pathNodeArray;
 
     const int gridWidth = 100;
     const int gridHeight = 100;
@@ -96,7 +96,7 @@ public class PathfindingCodeMonkey : ComponentSystem
             FindPathJob findPathJob = new FindPathJob
             {
                 gridSize = gridSize,
-                pathNodeArray = new NativeArray<PathNode>(pathNodeArray, Allocator.TempJob),
+                pathNodeArray = new NativeArray<OldPathNode>(pathNodeArray, Allocator.TempJob),
                 startPosition = pathfindingParams.startPosition,
                 endPosition = pathfindingParams.endPosition,
                 entity = entity,
@@ -138,7 +138,7 @@ public class PathfindingCodeMonkey : ComponentSystem
         public int2 gridSize;
 
         [DeallocateOnJobCompletion]
-        public NativeArray<PathNode> pathNodeArray;
+        public NativeArray<OldPathNode> pathNodeArray;
 
         public Entity entity;
 
@@ -153,7 +153,7 @@ public class PathfindingCodeMonkey : ComponentSystem
 
             PathfindingParams pathfindingParams = pathfindingParamsComponentDataFromEntity[entity];
             int endNodeIndex = CalculateIndex(pathfindingParams.endPosition.x, pathfindingParams.endPosition.y, gridSize.x);
-            PathNode endNode = pathNodeArray[endNodeIndex];
+            OldPathNode endNode = pathNodeArray[endNodeIndex];
             if (endNode.cameFromNodeIndex == -1)
             {
                 // Didn't find a path!
@@ -177,7 +177,7 @@ public class PathfindingCodeMonkey : ComponentSystem
     {
 
         public int2 gridSize;
-        public NativeArray<PathNode> pathNodeArray;
+        public NativeArray<OldPathNode> pathNodeArray;
 
         public int2 startPosition;
         public int2 endPosition;
@@ -192,7 +192,7 @@ public class PathfindingCodeMonkey : ComponentSystem
         {
             for (int i = 0; i < pathNodeArray.Length; i++)
             {
-                PathNode pathNode = pathNodeArray[i];
+                OldPathNode pathNode = pathNodeArray[i];
                 pathNode.hCost = CalculateDistanceCost(new int2(pathNode.x, pathNode.y), endPosition);
                 pathNode.cameFromNodeIndex = -1;
 
@@ -203,7 +203,7 @@ public class PathfindingCodeMonkey : ComponentSystem
 
             int endNodeIndex = CalculateIndex(endPosition.x, endPosition.y, gridSize.x);
 
-            PathNode startNode = pathNodeArray[CalculateIndex(startPosition.x, startPosition.y, gridSize.x)];
+            OldPathNode startNode = pathNodeArray[CalculateIndex(startPosition.x, startPosition.y, gridSize.x)];
             startNode.gCost = 0;
             startNode.CalculateFCost();
             pathNodeArray[startNode.index] = startNode;
@@ -216,7 +216,7 @@ public class PathfindingCodeMonkey : ComponentSystem
             while (openList.Length > 0)
             {
                 int currentNodeIndex = GetLowestCostFNodeIndex(openList, pathNodeArray);
-                PathNode currentNode = pathNodeArray[currentNodeIndex];
+                OldPathNode currentNode = pathNodeArray[currentNodeIndex];
 
                 if (currentNodeIndex == endNodeIndex)
                 {
@@ -255,7 +255,7 @@ public class PathfindingCodeMonkey : ComponentSystem
                         continue;
                     }
 
-                    PathNode neighbourNode = pathNodeArray[neighbourNodeIndex];
+                    OldPathNode neighbourNode = pathNodeArray[neighbourNodeIndex];
                     if (!neighbourNode.isWalkable)
                     {
                         // Not walkable
@@ -304,7 +304,7 @@ public class PathfindingCodeMonkey : ComponentSystem
 
     }
 
-    private static void CalculatePath(NativeArray<PathNode> pathNodeArray, PathNode endNode, DynamicBuffer<PathPosition> pathPositionBuffer)
+    private static void CalculatePath(NativeArray<OldPathNode> pathNodeArray, OldPathNode endNode, DynamicBuffer<PathPosition> pathPositionBuffer)
     {
         if (endNode.cameFromNodeIndex == -1)
         {
@@ -315,17 +315,17 @@ public class PathfindingCodeMonkey : ComponentSystem
             // Found a path
             pathPositionBuffer.Add(new PathPosition { position = new int2(endNode.x, endNode.y) });
 
-            PathNode currentNode = endNode;
+            OldPathNode currentNode = endNode;
             while (currentNode.cameFromNodeIndex != -1)
             {
-                PathNode cameFromNode = pathNodeArray[currentNode.cameFromNodeIndex];
+                OldPathNode cameFromNode = pathNodeArray[currentNode.cameFromNodeIndex];
                 pathPositionBuffer.Add(new PathPosition { position = new int2(cameFromNode.x, cameFromNode.y) });
                 currentNode = cameFromNode;
             }
         }
     }
 
-    private static NativeList<int2> CalculatePath(NativeArray<PathNode> pathNodeArray, PathNode endNode)
+    private static NativeList<int2> CalculatePath(NativeArray<OldPathNode> pathNodeArray, OldPathNode endNode)
     {
         if (endNode.cameFromNodeIndex == -1)
         {
@@ -338,10 +338,10 @@ public class PathfindingCodeMonkey : ComponentSystem
             NativeList<int2> path = new NativeList<int2>(Allocator.Temp);
             path.Add(new int2(endNode.x, endNode.y));
 
-            PathNode currentNode = endNode;
+            OldPathNode currentNode = endNode;
             while (currentNode.cameFromNodeIndex != -1)
             {
-                PathNode cameFromNode = pathNodeArray[currentNode.cameFromNodeIndex];
+                OldPathNode cameFromNode = pathNodeArray[currentNode.cameFromNodeIndex];
                 path.Add(new int2(cameFromNode.x, cameFromNode.y));
                 currentNode = cameFromNode;
             }
@@ -373,12 +373,12 @@ public class PathfindingCodeMonkey : ComponentSystem
     }
 
 
-    private static int GetLowestCostFNodeIndex(NativeList<int> openList, NativeArray<PathNode> pathNodeArray)
+    private static int GetLowestCostFNodeIndex(NativeList<int> openList, NativeArray<OldPathNode> pathNodeArray)
     {
-        PathNode lowestCostPathNode = pathNodeArray[openList[0]];
+        OldPathNode lowestCostPathNode = pathNodeArray[openList[0]];
         for (int i = 1; i < openList.Length; i++)
         {
-            PathNode testPathNode = pathNodeArray[openList[i]];
+            OldPathNode testPathNode = pathNodeArray[openList[i]];
             if (testPathNode.fCost < lowestCostPathNode.fCost)
             {
                 lowestCostPathNode = testPathNode;

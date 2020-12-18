@@ -174,7 +174,8 @@ public class AIVariables : MonoBehaviour
             }
         }
 
-
+       
+        
 
         if (pathPositionBuffer.Length == 0)
         {

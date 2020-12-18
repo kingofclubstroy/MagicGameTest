@@ -32,7 +32,7 @@ public unsafe struct NativeMinHeap : IDisposable
 
     private static void Allocate(int capacity, Allocator allocator, out NativeMinHeap nativeMinHeap)
     {
-        var size = (long)UnsafeUtility.SizeOf<MinHeapNode>() * capacity;
+        var size = (long)UnsafeUtility.SizeOf<PathNode>() * capacity;
         if (allocator <= Allocator.None)
             throw new ArgumentException("Allocator must be Temp, TempJob or Persistent", nameof(allocator));
         if (capacity < 0)
@@ -41,7 +41,7 @@ public unsafe struct NativeMinHeap : IDisposable
             throw new ArgumentOutOfRangeException(nameof(capacity),
                 $"Length * sizeof(T) cannot exceed {(object)int.MaxValue} bytes");
 
-        nativeMinHeap.m_Buffer = UnsafeUtility.Malloc(size, UnsafeUtility.AlignOf<MinHeapNode>(), allocator);
+        nativeMinHeap.m_Buffer = UnsafeUtility.Malloc(size, UnsafeUtility.AlignOf<PathNode>(), allocator);
         nativeMinHeap.m_capacity = capacity;
         nativeMinHeap.m_AllocatorLabel = allocator;
         nativeMinHeap.m_MinIndex = 0;
@@ -64,7 +64,7 @@ public unsafe struct NativeMinHeap : IDisposable
         return m_head >= 0;
     }
 
-    public void Push(MinHeapNode node)
+    public void Push(PathNode node)
     {
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
         if (m_length == m_capacity)
@@ -112,7 +112,7 @@ public unsafe struct NativeMinHeap : IDisposable
         return result;
     }
 
-    public MinHeapNode this[int index]
+    public PathNode this[int index]
     {
         get
         {
@@ -122,7 +122,7 @@ public unsafe struct NativeMinHeap : IDisposable
             AtomicSafetyHandle.CheckReadAndThrow(m_Safety);
 #endif
 
-            return UnsafeUtility.ReadArrayElement<MinHeapNode>(m_Buffer, index);
+            return UnsafeUtility.ReadArrayElement<PathNode>(m_Buffer, index);
         }
     }
 
@@ -156,15 +156,17 @@ public unsafe struct NativeMinHeap : IDisposable
 #endif
 }
 
-public struct MinHeapNode
+public struct PathNode
 {
-    public MinHeapNode(int2 position, float expectedCost)
+    public PathNode(int2 position, float expectedCost)
     {
         Position = position;
         ExpectedCost = expectedCost;
         Next = -1;
+        NextToObstacle = false;
     }
 
+    public bool NextToObstacle { get; set; }
     public int2 Position { get; } // TODO to position
     public float ExpectedCost { get; }
     public int Next { get; set; }

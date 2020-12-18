@@ -16,7 +16,7 @@ public class ObstacleController : MonoBehaviour
     //TODO: need this to react to room size
     static Dictionary<Vector2, int> obstacleMap = new Dictionary<Vector2, int>();
 
-    public NativeArray<PathNode> pathNodeArray;
+    public NativeArray<OldPathNode> pathNodeArray;
 
     public NativeArray<int2> neighbourOffsetArray;
 
@@ -204,13 +204,13 @@ public class ObstacleController : MonoBehaviour
     //TODO: currently making this public to initialize via the pathfinding system, since we dont have a proper understanding of the size of the rooms yet
     public void initializePathNodeArray(int width, int height)
     {
-            pathNodeArray = new NativeArray<PathNode>(width * height, Allocator.Persistent);
+            pathNodeArray = new NativeArray<OldPathNode>(width * height, Allocator.Persistent);
 
             for (int x = 0; x < width; x++)
             {
                 for (int y = 0; y < height; y++)
                 {
-                    PathNode pathNode = new PathNode();
+                    OldPathNode pathNode = new OldPathNode();
                     pathNode.x = x;
                     pathNode.y = y;
                     pathNode.index = CalculateIndex(x, y, width);
@@ -280,7 +280,7 @@ public class ObstacleController : MonoBehaviour
         
     }
 
-    public NativeArray<PathNode> GetPathNodeArray()
+    public NativeArray<OldPathNode> GetPathNodeArray()
     {
         return pathNodeArray;
     }

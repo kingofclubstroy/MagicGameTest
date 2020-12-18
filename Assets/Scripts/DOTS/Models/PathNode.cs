@@ -1,4 +1,4 @@
-﻿public struct PathNode
+﻿public struct OldPathNode
 {
     public int x;
     public int y;
