@@ -56,6 +56,8 @@ public class HitBoxController : MonoBehaviour
     /// <param name="animation"> Name of Animation that is about to exaqute</param>
     public void SetNewAnimation(string animation)
     {
+
+        
         if (AnimationDictionary.ContainsKey(animation))
         {
             //Grab the appropriate list of coliders and resets the index of current hitbox
@@ -63,7 +65,9 @@ public class HitBoxController : MonoBehaviour
             hitboxIndex = 0;
         } else
         {
-            Debug.LogError("No hitboxes set for this attack");
+            Debug.LogError("No hitboxes set for this attack, so setting to south attack as default");
+            colliders = AnimationDictionary["SouthAttack"];
+            hitboxIndex = 0;
         }
     }
 

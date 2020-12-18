@@ -5469,7 +5469,7 @@ CircleCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 533322733}
-  m_Enabled: 0
+  m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
   m_IsTrigger: 1
@@ -5477,7 +5477,7 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 100
+  m_Radius: 6
 --- !u!114 &533322735
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5523,7 +5523,7 @@ Animator:
   m_GameObject: {fileID: 533322733}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: d7804e21378bae4498291f6698e45f42, type: 2}
+  m_Controller: {fileID: 9100000, guid: ad62b7d5d5a477b469b85dc8bcd8b69d, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -5933,7 +5933,7 @@ Animator:
   m_GameObject: {fileID: 680286481}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 61482ffa2722e824eb03dbcf16e56a0a, type: 2}
+  m_Controller: {fileID: 9100000, guid: 3f959b15a08e0fa4c962edd4ce6453bf, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -12010,7 +12010,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1344241945
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -27,21 +27,21 @@ public class LookAction : Action
 
                 switch (direction) {
 
-                    case Direction.UP:
+                    case Direction.NORTH:
                         if(angle >= 45 && angle <= 135)
                         {
                             lookingToward = true;
                         }
                         break;
 
-                    case Direction.LEFT:
+                    case Direction.WEST:
                         if(angle <= 45 && angle >= -45)
                         {
                             lookingToward = true;
                         }
                         break;
 
-                    case Direction.RIGHT:
+                    case Direction.EAST:
 
                         if(Mathf.Abs(angle) >= 135)
                         {
@@ -49,7 +49,7 @@ public class LookAction : Action
                         }
                         break;
 
-                    case Direction.Down:
+                    case Direction.SOUTH:
                         if (angle <= -45 && angle >= -135)
                         {
                             lookingToward = true;

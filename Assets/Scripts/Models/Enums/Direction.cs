@@ -1,14 +1,14 @@
 ﻿public enum Direction
 {
 
-    RIGHT,
-    LEFT,
-    UP,
-    Down,
+    EAST,
+    WEST,
+    NORTH,
+    SOUTH,
     IDLE,
-    TOPRIGHT,
-    TOPLEFT,
-    BOTTOMRIGHT,
-    BOTTOMLEFT
+    NORTHEAST,
+    NORTHWEST,
+    SOUTHEAST,
+    SOUTHWEST
 
 }
