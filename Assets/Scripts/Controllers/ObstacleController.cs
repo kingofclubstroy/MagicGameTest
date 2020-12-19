@@ -280,6 +280,11 @@ public class ObstacleController : MonoBehaviour
         
     }
 
+    public int GetNativeResistence(Vector2 pos)
+    {
+        return nativeObstacleMap[GetIndex(WorldToIndex(pos))];
+    }
+
     public NativeArray<OldPathNode> GetPathNodeArray()
     {
         return pathNodeArray;

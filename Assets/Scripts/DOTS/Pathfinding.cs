@@ -227,6 +227,17 @@ public class Pathfinding : JobComponentSystem
                 int currentIndex = OpenSet.Pop();
                 PathNode current = OpenSet[currentIndex];
 
+                PathNode cameFromNode = CameFrom[currentIndex];
+
+                if(cameFromNode.Equals(null) && cameFromNode.NextToObstacle && current.NextToObstacle && IsDiagonal(current.Position, cameFromNode.Position))
+                {
+                    //In this case, the path came from point that was next to a obstacle, and is moving diagonally towards a point next to an obstacle. so we are assuming they are moving diagonally through the obstacle
+                    //TODO: this is not always the case, will need to resolve later
+                    continue;
+
+                
+                }
+
                 
 
                 if(current.Position.Equals(endPosition))
@@ -296,6 +307,11 @@ public class Pathfinding : JobComponentSystem
                 
             }
 
+        }
+
+        private bool IsDiagonal(int2 a, int2 b)
+        {
+            return ((math.abs(a.x - b.x) + math.abs(a.y - b.y)) == 2);
         }
 
         private float GetCellCost(int fromIndex, int toIndex, bool areNeighbours)
@@ -377,7 +393,7 @@ public class Pathfinding : JobComponentSystem
                 current = previous.Position;
                 if (previous.NextToObstacle || current.Equals(startPosition))
                 {
-                    Debug.Log("adding path, next to obstacle = " + previous.NextToObstacle);
+                   
                     pathPositionBuffer.Add(new PathPosition { position = current });
                 }
                

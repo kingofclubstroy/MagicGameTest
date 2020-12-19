@@ -5,8 +5,13 @@ using UnityEngine;
 public class AIMovementHandler : MonoBehaviour
 {
 
-    Vector2 targetPosition;
-    bool hasTarget = false;
+    [SerializeField]
+    float turnRate;
+
+    float timeElapsed;
+
+    public Vector2 targetPosition;
+    bool hasTarget = false, turning = false;
 
     [SerializeField]
     int leftAngle = 135;
@@ -26,6 +31,8 @@ public class AIMovementHandler : MonoBehaviour
     public bool isIdle = true;
 
     public Vector2 targetDirection;
+
+    Vector2 previousDirection;
 
 
 
@@ -55,7 +62,27 @@ public class AIMovementHandler : MonoBehaviour
         if(hasTarget)
         {
 
-            Vector2 dir = (targetPosition - (Vector2)transform.position).normalized;
+            Vector2 dir;
+
+            if (turning)
+            {
+                if (timeElapsed < turnRate)
+                {
+                    timeElapsed += Time.deltaTime;
+                    dir = Vector3.Lerp(previousDirection, (targetPosition - (Vector2)transform.position).normalized, timeElapsed / turnRate);
+
+                } else
+                {
+                    dir = (targetPosition - (Vector2)transform.position).normalized;
+                    turning = false;
+                }
+            }
+            else
+            {
+
+                dir = (targetPosition - (Vector2)transform.position).normalized;
+
+            }
 
             SetAnimationDirection(dir);
 
@@ -90,6 +117,18 @@ public class AIMovementHandler : MonoBehaviour
         targetPosition = (Vector2) this.transform.position + dir;
         hasTarget = true;
         isIdle = false;
+    }
+
+    public void SetNewWaypoint(Vector2 waypoint)
+    {
+        hasTarget = true;
+        previousDirection = (targetPosition - (Vector2) transform.position).normalized;
+
+        targetPosition = (Vector2) this.transform.position + waypoint;
+
+        turning = true;
+
+        timeElapsed = 0;
     }
 
     

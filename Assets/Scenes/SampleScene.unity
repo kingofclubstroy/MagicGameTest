@@ -5490,9 +5490,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7491829c88b9f314688afb694bc07f3b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  turnRate: 1
+  targetPosition: {x: 0, y: 0}
   leftAngle: 135
-  rightAngle: 45
-  speed: 30
+  rightAngle: 30
+  speed: 45
   animator: {fileID: 533322737}
   currentDirection: 3
   isIdle: 1
@@ -5588,6 +5590,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8dd1b6c032ff3a48b6192d4e0cd4566, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  turnStartDistance: 8
   TestPrefab: {fileID: 8640987627719303680, guid: 77bcc74eab19db84a919d959fceaef66,
     type: 3}
   convertedEntityHolder: {fileID: 2010065618}
@@ -5975,6 +5978,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7491829c88b9f314688afb694bc07f3b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  turnRate: 0
+  targetPosition: {x: 0, y: 0}
   leftAngle: 135
   rightAngle: 45
   speed: 85
@@ -6324,6 +6329,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7491829c88b9f314688afb694bc07f3b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  turnRate: 0
+  targetPosition: {x: 0, y: 0}
   leftAngle: 135
   rightAngle: 45
   speed: 85
@@ -6475,6 +6482,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8dd1b6c032ff3a48b6192d4e0cd4566, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  turnStartDistance: 0
   TestPrefab: {fileID: 0}
   convertedEntityHolder: {fileID: 0}
   findingPath: 0
@@ -12956,8 +12964,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b289d46b9d0a7e469176f1bbcbeb2cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pathIndex: -1
-  NewPath: 0
+  pathIndex: -1418072692
+  NewPath: 255
 --- !u!114 &2076519832
 MonoBehaviour:
   m_ObjectHideFlags: 0

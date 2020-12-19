@@ -8,6 +8,9 @@ public class AIVariables : MonoBehaviour
 {
     //TODO: need to refactor this out into different parts, it is currently doing too much
 
+    [SerializeField]
+    float turnStartDistance;
+
     public GameObject TestPrefab;
 
     [SerializeField]
@@ -143,6 +146,8 @@ public class AIVariables : MonoBehaviour
 
     public void MoveAlongPath()
     {
+        int2 pos;
+        Vector2 current;
         if (findingPath == true)
         {
             pathFollow = entityManager.GetComponentData<PathFollow>(entity);
@@ -167,30 +172,29 @@ public class AIVariables : MonoBehaviour
                 //Make sure to update the entity here, as the pathfollow is not a reference!!
                 entityManager.SetComponentData(entity, pathFollow);
 
+                if (pathPositionBuffer.Length == 0)
+                {
+                    Debug.LogError("path buffer has no length");
+                    reachedDestination = true;
+                    return;
+                }
 
 
-               
+                pos = pathPositionBuffer[pathFollow.pathIndex].position;
+                current = new Vector2((pos.x * 16) + 8, (pos.y * 16) + 8);
+
+                AIMovementHandler.SetDirection(current - (Vector2)transform.position);
+
+                return;
+
+
 
             }
         }
 
        
-        
 
-        if (pathPositionBuffer.Length == 0)
-        {
-            Debug.LogError("path buffer has no length");
-            reachedDestination = true;
-            return;
-        }
-
-
-        int2 pos = pathPositionBuffer[pathFollow.pathIndex].position;
-        Vector2 current = new Vector2((pos.x * 16) + 8, (pos.y * 16) + 8);
-
-        float moveAmount = AIMovementHandler.speed * Time.deltaTime;
-
-        if (Vector2.Distance(transform.position, current) < moveAmount)
+        if (Vector2.Distance(transform.position, AIMovementHandler.targetPosition) < turnStartDistance)
         {
             //We will reach the destanation with movement to spare, so do we just start moving to the next target? lets try that
             pathFollow.pathIndex -= 1;
@@ -203,11 +207,13 @@ public class AIVariables : MonoBehaviour
             pos = pathPositionBuffer[pathFollow.pathIndex].position;
             current = new Vector2((pos.x * 16) + 8, (pos.y * 16) + 8);
 
+            AIMovementHandler.SetNewWaypoint(current - (Vector2)transform.position);
+
 
 
         }
 
-        AIMovementHandler.SetDirection(current - (Vector2)transform.position);
+       
 
 
        

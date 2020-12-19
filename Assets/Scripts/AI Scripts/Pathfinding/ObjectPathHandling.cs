@@ -64,17 +64,21 @@ public class ObjectPathHandling : MonoBehaviour
             for(int j = -1; j < y + 1; j++)
             {
 
+                Vector2 p = new Vector2(pos.x + (i * 16), pos.y + (j * 16));
+
                 //Set the area around the object to have a resistance
                 //if (i == -1 || i == x || j == -1 || j == y)
                 //{
-                //    Vector2 p = new Vector2(pos.x + (i * 16), pos.y + (j * 16));
+                   
 
-                //    ObstacleController.instance.SetObstacle(p, 1);
+                //    if (ObstacleController.instance.GetNativeResistence(p) != -1)
+                //    {
+
+                //        ObstacleController.instance.SetObstacle(p, 1);
+                //    }
                 //}
                 //else
                 //{
-
-                    Vector2 p = new Vector2(pos.x + (i * 16), pos.y + (j * 16));
 
                     ObstacleController.instance.SetObstacle(p, value);
                 //}
