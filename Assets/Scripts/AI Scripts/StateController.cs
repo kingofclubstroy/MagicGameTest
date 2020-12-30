@@ -35,7 +35,7 @@ public class StateController : MonoBehaviour
 
     public void TransitionToState(State nextState)
     {
-        Debug.Log("transitioned states");
+       
         
         currentState = nextState;
         OnExitState();

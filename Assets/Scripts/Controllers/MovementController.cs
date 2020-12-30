@@ -43,6 +43,13 @@ public class MovementController : MonoBehaviour
     float Horizontal;
     float Vertical;
 
+    [SerializeField]
+    int MaxHealth;
+
+
+    public int CurrentHealth;
+   
+
     #endregion
 
     #region MonoBehaviour Callbacks
@@ -52,6 +59,7 @@ public class MovementController : MonoBehaviour
     {
         initializeCallbacks();
         rigidbody = GetComponent<Rigidbody2D>();
+        CurrentHealth = MaxHealth;
     }
 
     // Update is called once per frame
@@ -291,6 +299,10 @@ public class MovementController : MonoBehaviour
         rigidbody.velocity = velocity;
     }
 
+    #endregion
+
+    #region functions
+
     void StopCasting()
     {
         Animate.ChangeAnimationState("Idle", animator, currentDirection);
@@ -345,6 +357,49 @@ public class MovementController : MonoBehaviour
         else if (direction == Direction.EAST)
         {
             GetComponent<HitBoxController>().SetNewAnimation("EastAttack");
+        }
+    }
+
+    public void SetIdle()
+    {
+        Debug.Log("Setting idle");
+        IsIdle = true;
+        Animate.ChangeAnimationState("Idle", animator, currentDirection);
+    }
+
+    public void OnTriggerEnter2D(Collider2D collision)
+    {
+
+
+        if (collision.GetType() == typeof(PolygonCollider2D))
+        {
+            //We are hit by an attack!!!
+            Debug.Log("character got hit by an attack!!!!");
+            Animate.ChangeAnimationState("Hit", animator, currentDirection);
+
+            TakeDamage(collision.gameObject.GetComponent<AIVariables>().AttackDamage);
+
+        }
+    }
+
+    void TakeDamage(int damageAmount)
+    {
+        CurrentHealth -= damageAmount;
+
+        if(CurrentHealth <= 0)
+        {
+            //I am ded...
+            Destroy(gameObject);
+        }
+    }
+
+    void HealHealth(int HealAmount)
+    {
+        CurrentHealth += HealAmount;
+
+        if(CurrentHealth > MaxHealth)
+        {
+            CurrentHealth = MaxHealth;
         }
     }
 

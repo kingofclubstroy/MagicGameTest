@@ -45,8 +45,11 @@ public class HitBoxController : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D col)
     {
+        
+
         Debug.Log("HitBoxController hit something!");
-        Debug.Log(col.gameObject.name);
+        Debug.Log("Calling from hitbox controller of: " + gameObject.name);
+        Debug.Log("Collided with: " + col.gameObject.name);
         
     }
 

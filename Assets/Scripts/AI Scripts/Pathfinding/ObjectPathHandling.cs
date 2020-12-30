@@ -59,14 +59,29 @@ public class ObjectPathHandling : MonoBehaviour
         int y = Mathf.FloorToInt(size.y / 16);
 
 
-        for (int i = 0; i < x; i++)
+        for (int i = -1; i < x + 1; i++)
         {
-            for(int j = 0; j < y; j++)
+            for(int j = -1; j < y + 1; j++)
             {
 
                 Vector2 p = new Vector2(pos.x + (i * 16), pos.y + (j * 16));
-               
-                ObstacleController.instance.SetObstacle(p, value);
+
+                //Set the area around the object to have a resistance
+                //if (i == -1 || i == x || j == -1 || j == y)
+                //{
+                   
+
+                //    if (ObstacleController.instance.GetNativeResistence(p) != -1)
+                //    {
+
+                //        ObstacleController.instance.SetObstacle(p, 1);
+                //    }
+                //}
+                //else
+                //{
+
+                    ObstacleController.instance.SetObstacle(p, value);
+                //}
 
             }
         }
