@@ -98,8 +98,6 @@ public class Animate
 
             case "Idle":
 
-                Debug.Log("setting idle animation, current direction = " + currentDirection);
-
                 switch (currentDirection)
                 {
                     case Direction.NORTH:

@@ -34,6 +34,8 @@ public class AIMovementHandler : MonoBehaviour
 
     Vector2 previousDirection;
 
+    bool IsAttacking = false;
+
 
 
     // Start is called before the first frame update
@@ -59,7 +61,13 @@ public class AIMovementHandler : MonoBehaviour
 
         }
 
-        if(hasTarget)
+        if (IsAttacking)
+        {
+            Debug.Log("update loop stooped cause attacting");
+            return;
+        }
+
+        if (hasTarget)
         {
 
             Vector2 dir;
@@ -111,6 +119,8 @@ public class AIMovementHandler : MonoBehaviour
 
        
     }
+
+    #region Movement
 
     public void SetDirection(Vector2 dir)
     {
@@ -193,6 +203,51 @@ public class AIMovementHandler : MonoBehaviour
 
         return (targetPosition - (Vector2)transform.position).normalized;
     }
+
+    #endregion
+
+    #region Attacking
+
+    public void Attack()
+    {
+        IsAttacking = true;
+        Animate.ChangeAnimationState("Attacking", animator, currentDirection);
+
+        PrepareAttackHitboxes(currentDirection);
+    }
+
+    void StoppedAttactingAlert()
+    {
+        Debug.Log("Stoped attacking");
+        Animate.ChangeAnimationState("Idle", animator, currentDirection);
+        isIdle = true;
+        IsAttacking = false;
+
+    }
+
+    void PrepareAttackHitboxes(Direction direction)
+    {
+        if (direction == Direction.SOUTH)
+        {
+            GetComponent<HitBoxController>().SetNewAnimation("SouthAttack");
+        }
+        else if (direction == Direction.NORTH)
+        {
+            GetComponent<HitBoxController>().SetNewAnimation("NorthAttack");
+        }
+        else if (direction == Direction.WEST)
+        {
+            GetComponent<HitBoxController>().SetNewAnimation("WestAttack");
+        }
+        else if (direction == Direction.EAST)
+        {
+            GetComponent<HitBoxController>().SetNewAnimation("EastAttack");
+        }
+    }
+
+    #endregion
+
+
 
 
 

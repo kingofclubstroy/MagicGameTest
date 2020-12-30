@@ -51,6 +51,17 @@ public class AIVariables : MonoBehaviour
 
     PathFollow pathFollow;
 
+    [SerializeField]
+    public float AttackRange;
+
+    float timeSinceLastAttack = 0;
+
+    [SerializeField]
+    float AttackSpeed;
+
+    [SerializeField]
+    public int AttackDamage;
+
 
     #region MonoBehaviour Functions
 
@@ -120,6 +131,18 @@ public class AIVariables : MonoBehaviour
         AIMovementHandler.SetDirection(dir);
         //transform.position += (Vector3) (dir * Time.deltaTime);
     }
+
+    public void Attack()
+    {
+        if(Time.time - timeSinceLastAttack >= AttackSpeed)
+        {
+            timeSinceLastAttack = Time.time;
+            AIMovementHandler.Attack();
+
+        }
+    }
+
+    
 
     #endregion
 

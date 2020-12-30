@@ -14,6 +14,12 @@ public class MoveToTargetAction : Action
 
         Vector2 dir = (targetPos - (Vector2)controller.transform.position).normalized;
 
+        if (Vector2.Distance(targetPos, controller.AIVariables.transform.position) <= controller.AIVariables.AttackRange)
+        {
+            //We are in attack range, so lets return and allow the attack action to take over
+            return;
+        }
+
         // Cast a ray straight down.
         RaycastHit2D hit = Physics2D.Raycast(controller.transform.position, dir);
 
