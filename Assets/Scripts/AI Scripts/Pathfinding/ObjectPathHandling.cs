@@ -9,6 +9,8 @@ public class ObjectPathHandling : MonoBehaviour
 
     Vector2[] points = new Vector2[4];
 
+    List<Vector2> obstaclePoints = new List<Vector2>();
+
     // Start is called before the first frame update
     void Start()
     {
@@ -59,9 +61,9 @@ public class ObjectPathHandling : MonoBehaviour
         int y = Mathf.FloorToInt(size.y / 16);
 
 
-        for (int i = -1; i < x + 1; i++)
+        for (int i = 0; i < x; i++)
         {
-            for(int j = -1; j < y + 1; j++)
+            for(int j = 0; j < y; j++)
             {
 
                 Vector2 p = new Vector2(pos.x + (i * 16), pos.y + (j * 16));
@@ -79,11 +81,24 @@ public class ObjectPathHandling : MonoBehaviour
                 //}
                 //else
                 //{
-
-                    ObstacleController.instance.SetObstacle(p, value);
+                    
+                ObstacleController.instance.SetObstacle(p, value);
+                obstaclePoints.Add(p);
                 //}
 
             }
+        }
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        foreach(Vector2 pos in obstaclePoints)
+        {
+            Gizmos.color = new Color(1, 0, 0, 0.5f);
+            Vector2 p = new Vector2(pos.x + 8, pos.y + 8);
+            
+            Gizmos.DrawCube(p, new Vector3(16, 16, 1));
+            
         }
     }
 

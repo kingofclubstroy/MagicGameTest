@@ -66,6 +66,7 @@ public class Pathfinding : JobComponentSystem
         public NativeArray<float> CostSoFar;
         public NativeArray<PathNode> CameFrom;
         public NativeMinHeap OpenSet;
+        public bool foundPath;
     }
 
     protected override void OnCreate()
@@ -151,6 +152,7 @@ public class Pathfinding : JobComponentSystem
                 CameFrom = data.CameFrom,
                 DimX = gridParams.x,
                 entity = entityArray[r],
+                pathFound = data.foundPath,
                 pathfindingParamsComponentDataFromEntity = GetComponentDataFromEntity<PathfindingParams>(),
                 pathFollowComponentDataFromEntity = GetComponentDataFromEntity<PathFollow>(),
                 pathPositionBufferFromEntity = GetBufferFromEntity<PathPosition>(),
@@ -190,6 +192,8 @@ public class Pathfinding : JobComponentSystem
         public int2 endPosition;
         [ReadOnly] public NativeArray<int2> Neighbours;
 
+        public bool foundPath;
+
         //TODO: need to decouple the pathnode struct into multiple arrays to allow for easier parrelization
         [ReadOnly] public NativeArray<int> Grid;
 
@@ -202,6 +206,8 @@ public class Pathfinding : JobComponentSystem
 
         public NativeMinHeap OpenSet;
 
+        
+
         public void Execute()
         {
 
@@ -211,11 +217,17 @@ public class Pathfinding : JobComponentSystem
 
         private void FindPath(int2 startPosition, int2 endPosition)
         {
-            if(startPosition.Equals(endPosition))
+            Debug.Log("Pathfinding to: " + endPosition);
+            if(startPosition.Equals(endPosition) || Grid[GetIndex(endPosition)] == -1)
             {
+
+                Debug.LogError("asking to go into an obstacle, or is already there!");
+                foundPath = false;
                
                 return;
             }
+
+            
 
             PathNode head = new PathNode(startPosition, CalculateDistanceCost(startPosition, endPosition));
             OpenSet.Push(head);
@@ -348,6 +360,7 @@ public class Pathfinding : JobComponentSystem
         [WriteOnly] public NativeMinHeap OpenSet;
         [ReadOnly] public NativeArray<PathNode> CameFrom;
         [ReadOnly] public int DimX;
+        [ReadOnly] public bool pathFound;
         public Entity entity;
         public int index;
 
@@ -368,7 +381,7 @@ public class Pathfinding : JobComponentSystem
 
             
 
-            CalculatePath(startPosition, endPosition, pathPositionBuffer);
+            CalculatePath(startPosition, endPosition, pathPositionBuffer, pathFound);
 
             pathFollowComponentDataFromEntity[entity] = new PathFollow { pathIndex = pathPositionBuffer.Length - 2, NewPath = true };
 
@@ -381,8 +394,13 @@ public class Pathfinding : JobComponentSystem
         }
        
 
-        private void CalculatePath(int2 startPosition, int2 endPosition, DynamicBuffer<PathPosition> pathPositionBuffer)
+        private void CalculatePath(int2 startPosition, int2 endPosition, DynamicBuffer<PathPosition> pathPositionBuffer, bool pathFound)
         {
+
+            if(pathFound == false)
+            {
+                return;
+            }
                   
             pathPositionBuffer.Add(new PathPosition { position = new int2(endPosition.x, endPosition.y) });
 
@@ -563,7 +581,9 @@ public class Pathfinding : JobComponentSystem
             {
                 CostSoFar = new NativeArray<float>(gridParams.x * gridParams.y, Allocator.Persistent),
                 CameFrom = new NativeArray<PathNode>(gridParams.x * gridParams.y, Allocator.Persistent),
-                OpenSet = new NativeMinHeap(gridParams.x * gridParams.y, Allocator.Persistent)
+                OpenSet = new NativeMinHeap(gridParams.x * gridParams.y, Allocator.Persistent),
+                foundPath = true
+                
             };
 
             jobCollections.Add(collection);
