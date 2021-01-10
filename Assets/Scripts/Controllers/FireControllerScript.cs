@@ -11,10 +11,7 @@ public class FireControllerScript : MonoBehaviour
 {
 
     [SerializeField]
-    int height, width, totalGrowth;
-
-    Texture2D texture;
-    SpriteRenderer spriteRenderer;
+    int totalGrowth;
 
     Dictionary<Vector2, Fire> firePositions;
 
@@ -40,17 +37,17 @@ public class FireControllerScript : MonoBehaviour
 
     HashSet<Vector2> castingList;
 
+    ElementController elementController;
+
+    [SerializeField]
+    Color fireColor;
+
 
     // Start is called before the first frame update
     void Start()
     {
 
         firePositions = new Dictionary<Vector2, Fire>();
-
-        spriteRenderer = GetComponent<SpriteRenderer>();
-
-        texture = TextureHelper.MakeTexture(1000, 1000, Color.clear);
-
 
         InvokeRepeating("updateFireObjects", 0f, 0.1f);
 
@@ -60,70 +57,61 @@ public class FireControllerScript : MonoBehaviour
 
         totalGrowth = 0;
 
+        elementController = GetComponent<ElementController>();
+
     }
 
     void updateFireObjects()
     {
 
-        if (!initialized)
+        float time = Time.time;
+        while (fireQueue.Count > 0)
         {
 
-            TextureHelper.initializeTexture(texture, spriteRenderer, new Vector2(0.5f, 0.5f));
-            initialized = true;
-
-        }
-        else
-        {
-
-            float time = Time.time;
-            while (fireQueue.Count > 0)
+            if (Random.Range(0f, 1f) > queueChance)
             {
 
-                if (Random.Range(0f, 1f) > queueChance)
+
+                if (fireQueue.Peek().getStartTime() + fireLifeTime < time)
                 {
+                    Fire fire = fireQueue.Dequeue();
 
-
-                    if (fireQueue.Peek().getStartTime() + fireLifeTime < time)
+                    if (fireGrown < maxFire || Random.Range(0f, 1f) <= 0.30f)
                     {
-                        Fire fire = fireQueue.Dequeue();
 
-                        if (fireGrown < maxFire || Random.Range(0f, 1f) <= 0.30f)
-                        {
-
-                            SpreadToNeighbours(fire.GetPosition());
-
-                        }
-
-                        //spreadToNeighboursTest(fire.GetPosition(), numberDirections, diagonals);
-                        firePositions.Remove(fire.GetPosition());
-
-                        DestroyFire(fire);
-
+                        SpreadToNeighbours(fire.GetPosition());
 
                     }
 
-                    else
-                    {
-                        break;
-                    }
+                    //spreadToNeighboursTest(fire.GetPosition(), numberDirections, diagonals);
+                    firePositions.Remove(fire.GetPosition());
+
+                    DestroyFire(fire);
+
+
                 }
+
                 else
                 {
-                    fireQueue.Enqueue(fireQueue.Dequeue());
+                    break;
                 }
-
-
-
             }
-
-            if (fireQueue.Count == 0)
+            else
             {
-                fireGrown = 0;
+                fireQueue.Enqueue(fireQueue.Dequeue());
             }
+
+
+
         }
 
-        texture.Apply();
-        WaterControllerScript.instance.applyTexture();
+        if (fireQueue.Count == 0)
+        {
+            fireGrown = 0;
+        }
+        
+
+       
     }
 
     private void Update()
@@ -159,39 +147,22 @@ public class FireControllerScript : MonoBehaviour
 
 
     public void AddFire(Vector2 position)
-    { 
+    {
   
-        if (CrawlController.instance.CrawlHere((int)position.x, (int)position.y) && !firePositions.ContainsKey(position))
+        if (!firePositions.ContainsKey(position) && elementController.AddElement(Element.FIRE, position, fireColor))
         {
-            if (WaterControllerScript.instance.waterHere(position))
+           
+            Fire newFire = new Fire(position);
+
+            firePositions[position] = newFire;
+            fireQueue.Enqueue(newFire);
+            
+            fireGrown++;
+            if (castingList != null && castingList.Contains(position))
             {
-
-                Debug.Log("water here");
-
-                WaterControllerScript.instance.subtractWater(position, waterSubAmount);
-
+                totalGrowth += 1;
             }
-            else
-            {
-
-                Fire newFire = new Fire(position);
-
-                //Tells the obstacle controller that fire isnt something people want ot walk through
-                //TODO: a resistance of 10 is arbatrary and should be changed, also what if the character has fire resistance/immunity/fearless/stupid?
-                ObstacleController.instance.SetObstacleMap(position, 10000);
-                firePositions[position] = newFire;
-                fireQueue.Enqueue(newFire);
-                CrawlController.instance.SetOnFire((int)position.x, (int)position.y);
-                texture.SetPixel((int)position.x, (int)position.y, Color.red);
-                CrawlController.instance.BurntSpaces.Add(position);
-                fireGrown++;
-                if (castingList != null && castingList.Contains(position))
-                {
-                    totalGrowth += 1;
-                }
-            }
-
-
+            
 
         }
     }
@@ -199,8 +170,8 @@ public class FireControllerScript : MonoBehaviour
     public void DestroyFire(Fire fire)
     {
 
-        texture.SetPixel((int)fire.GetPosition().x, (int)fire.GetPosition().y, Color.clear);
-        ObstacleController.instance.SetObstacleMap(fire.GetPosition(), 0);
+        //texture.SetPixel((int)fire.GetPosition().x, (int)fire.GetPosition().y, Color.clear);
+        //ObstacleController.instance.SetObstacleMap(fire.GetPosition(), 0);
         if (castingList != null && castingList.Contains(fire.GetPosition()))
         {
             totalGrowth -= 1;
@@ -228,10 +199,12 @@ public class FireControllerScript : MonoBehaviour
     {
         if (reset || castingList == null)
         {
-            (HashSet<Vector2>, int, List<Vector2>) values = HelperFunctions.MakeCircleHashSet(origin, width, height, r, texture, Color.red);
 
-            totalGrowth = values.Item2;
-            castingList = values.Item1;
+            //TODO: need to fix this, commented it out cause i need it to compile
+            //(HashSet<Vector2>, int, List<Vector2>) values = HelperFunctions.MakeCircleHashSet(origin, width, height, r, texture, Color.red);
+
+            //totalGrowth = values.Item2;
+            //castingList = values.Item1;
 
         }
 

@@ -190,10 +190,12 @@ public class WaterControllerScript : MonoBehaviour
         {
             origin.x = (int)origin.x;
             origin.y = (int)origin.y;
-            (HashSet<Vector2>, int, List<Vector2>) values = HelperFunctions.MakeCircleHashSet(origin, width, height, r, texture, Color.blue);
 
-            totalWater = values.Item2;
-            consumeOrder = values.Item3;
+            //TODO: commented this part out so it would compile
+            //(HashSet<Vector2>, int, List<Vector2>) values = HelperFunctions.MakeCircleHashSet(origin, width, height, r, texture, Color.blue);
+
+            //totalWater = values.Item2;
+            //consumeOrder = values.Item3;
             
 
 

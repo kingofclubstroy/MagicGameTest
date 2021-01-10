@@ -14,13 +14,11 @@ public class HelperFunctions
         BottomRight
     }
 
-    public static (HashSet<Vector2>, int, List<Vector2>) MakeCircleHashSet(Vector2 startOrigin, int width, int height, int r, Texture2D texture, Color c)
+    public static (HashSet<Vector2>, int, List<Vector2>) MakeCircleHashSet(Vector2 startOrigin, int r, CrawlController crawlController)
     {
         HashSet<Vector2> castingList = new HashSet<Vector2>();
 
-        Vector2 origin = new Vector2((int)startOrigin.x, (int)startOrigin.y);
-
-        origin += new Vector2(width / 2, height / 2);
+        Vector2 origin = startOrigin;
 
         origin.x = (int)origin.x;
         origin.y = (int)origin.y;
@@ -29,6 +27,7 @@ public class HelperFunctions
         List<Vector2> list = new List<Vector2>();
         float rSquared = r * r; // using sqared reduces execution time (no square root needed)
         for (int x = 1; x <= r; x++)
+        {
             for (int y = 0; y <= r; y++)
             {
                 Vector2 v = new Vector2(x, y);
@@ -37,6 +36,8 @@ public class HelperFunctions
                 else
                     break;
             }
+
+        }
 
         list.Add(origin);
         foreach (Vector2 v in tmpList)
@@ -56,8 +57,6 @@ public class HelperFunctions
             
         }
 
-
-
         int totalGrowth = 0;
 
         List<Vector2> consumeList = new List<Vector2>();
@@ -71,7 +70,7 @@ public class HelperFunctions
             {
                 consumeList.Add(location);
                 castingList.Add(location);
-                if (texture.GetPixel((int)location.x, (int)location.y) == c)
+                if (crawlController.CrawlHere(location))
                 {
                     totalGrowth += 1;
                 }

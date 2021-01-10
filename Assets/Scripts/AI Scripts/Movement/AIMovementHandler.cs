@@ -110,8 +110,8 @@ public class AIMovementHandler : MonoBehaviour
             }
             else
             {
-                transform.position += (Vector3)  (dir * frameSpeed);
-               
+
+                transform.position += (Vector3)(dir * frameSpeed);               
 
             }
 

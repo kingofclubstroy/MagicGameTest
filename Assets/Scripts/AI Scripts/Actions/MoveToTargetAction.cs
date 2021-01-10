@@ -12,7 +12,7 @@ public class MoveToTargetAction : Action
 
         Vector2 targetPos = controller.AIVariables.FocusedEnemy.transform.position;
 
-        Vector2 dir = (targetPos - (Vector2)controller.transform.position).normalized;
+        Vector2 dir = (targetPos - (Vector2)controller.transform.position);
 
         if (Vector2.Distance(targetPos, controller.AIVariables.transform.position) <= controller.AIVariables.AttackRange)
         {

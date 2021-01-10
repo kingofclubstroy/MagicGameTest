@@ -163,6 +163,15 @@ public class SpellCastCall : Event<SpellCastCall>
     }
 }
 
+public class RotationEvent : Event<RotationEvent>
+{
+    public float rotation;
+    public RotationEvent(float newRotation)
+    {
+        rotation = newRotation;
+    }
+}
+
 public class SpellCastEvent : Event<SpellCastEvent>
 {
 

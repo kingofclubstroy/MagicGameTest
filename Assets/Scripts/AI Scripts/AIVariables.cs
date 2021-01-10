@@ -62,12 +62,17 @@ public class AIVariables : MonoBehaviour
     [SerializeField]
     public int AttackDamage;
 
+    int chunkSize;
+
 
     #region MonoBehaviour Functions
 
     // Start is called before the first frame update
     void Start()
     {
+
+        chunkSize = ObstacleController.instance.ChunkSize;
+
         AIMovementHandler = GetComponent<AIMovementHandler>();
 
         entity = convertedEntityHolder.GetEntity();
@@ -204,7 +209,7 @@ public class AIVariables : MonoBehaviour
 
 
                 pos = pathPositionBuffer[pathFollow.pathIndex].position;
-                current = new Vector2((pos.x * 16) + 8, (pos.y * 16) + 8);
+                current = new Vector2((pos.x * chunkSize) + chunkSize/2, (pos.y * chunkSize) + chunkSize/2);
 
                 AIMovementHandler.SetDirection(current - (Vector2)transform.position);
 
@@ -228,7 +233,7 @@ public class AIVariables : MonoBehaviour
             }
 
             pos = pathPositionBuffer[pathFollow.pathIndex].position;
-            current = new Vector2((pos.x * 16) + 8, (pos.y * 16) + 8);
+            current = new Vector2((pos.x * chunkSize) + chunkSize/2, (pos.y * chunkSize) + chunkSize/2);
 
             AIMovementHandler.SetNewWaypoint(current - (Vector2)transform.position);
 
@@ -280,7 +285,30 @@ public class AIVariables : MonoBehaviour
         }
     }
 
-   
+    private void OnDrawGizmosSelected()
+    {
+        
+        if(pathPositionBuffer.Length > 0)
+        {
+            Debug.Log("drawing gizmos, pathBuffer length = " + pathPositionBuffer.Length);
 
-    
+            foreach (PathPosition pos in pathPositionBuffer)
+            {
+
+
+                Gizmos.color = new Color(1, 0, 0, 0.5f);
+                Vector2 p = new Vector2(pos.position.x  * chunkSize + chunkSize / 2, pos.position.y * chunkSize + chunkSize / 2);
+
+                Debug.Log(p);
+
+                Gizmos.DrawCube(p, new Vector3(chunkSize, chunkSize, 1));
+
+            }
+        }
+
+    }
+
+
+
+
 }

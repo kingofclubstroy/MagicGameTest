@@ -20,6 +20,9 @@ using Unity.Jobs;
 using Unity.Burst;
 
 
+//TODO: remove this!!
+
+[DisableAutoCreation]
 public class Pathfinding : JobComponentSystem
 {
 
@@ -239,23 +242,15 @@ public class Pathfinding : JobComponentSystem
                 int currentIndex = OpenSet.Pop();
                 PathNode current = OpenSet[currentIndex];
 
-                PathNode cameFromNode = CameFrom[currentIndex];
+                int ind = GetIndex(current.Position);
 
-                if(cameFromNode.Equals(null) && cameFromNode.NextToObstacle && current.NextToObstacle && IsDiagonal(current.Position, cameFromNode.Position))
-                {
-                    //In this case, the path came from point that was next to a obstacle, and is moving diagonally towards a point next to an obstacle. so we are assuming they are moving diagonally through the obstacle
-                    //TODO: this is not always the case, will need to resolve later
-                    continue;
+                PathNode cameFromNode = CameFrom[ind];
 
-                
-                }
 
-                
-
-                if(current.Position.Equals(endPosition))
+                if (current.Position.Equals(endPosition))
                 {
 
-                    
+
                     //Found our destination, we will let the cleanup job handle the path reconstruction for now
                     //ReconstructPath(startPosition, endPosition);
                     return;
@@ -263,7 +258,9 @@ public class Pathfinding : JobComponentSystem
 
                 float initialCost = CostSoFar[GetIndex(current.Position)];
 
-                for(int i = 0; i < Neighbours.Length; i++)
+                PathNode[] neighbourNodes = new PathNode[Neighbours.Length];
+
+                for (int i = 0; i < Neighbours.Length; i++)
                 {
                     int2 neighbour = Neighbours[i];
                     int2 position = current.Position + neighbour;
@@ -277,18 +274,49 @@ public class Pathfinding : JobComponentSystem
 
                     if (float.IsInfinity(cellCost))
                     {
-                       
+
                         current.NextToObstacle = true;
+
+
+
+                        continue;
+                    }
+
+                    neighbourNodes[i] = new PathNode(position, cellCost);
+
+                }
+
+                if (!cameFromNode.Equals(null) && cameFromNode.NextToObstacle && current.NextToObstacle && IsDiagonal(current.Position, cameFromNode.Position))
+                {
+                    //In this case, the path came from point that was next to a obstacle, and is moving diagonally towards a point next to an obstacle. so we are assuming they are moving diagonally through the obstacle
+                    //TODO: this is not always the case, will need to resolve later
+                    continue;
+
+
+                }
+
+                for(int i = 0; i < neighbourNodes.Length; i++) {
+
+                    int2 neighbour = Neighbours[i];
+
+                    PathNode neighbourNode = neighbourNodes[i];
+
+                    int index = GetIndex(neighbourNode.Position);
+
+                    if (neighbourNode.Equals(null))
+                    {
+                        Debug.Log("neighbour null");
                         continue;
                     }
 
                     float neighbourCost = 10;
+
                     if((math.abs(neighbour.x) + math.abs(neighbour.y)) == 2)
                     {
                         neighbourCost = 14;
                     }
 
-                    float newCost = initialCost + neighbourCost + cellCost;
+                    float newCost = initialCost + neighbourCost + neighbourNode.ExpectedCost;
                     float oldCost = CostSoFar[index];
 
                     if(!(oldCost <= 0) && !(newCost < oldCost))
@@ -299,8 +327,11 @@ public class Pathfinding : JobComponentSystem
                     CostSoFar[index] = newCost;
                     CameFrom[index] = current;
 
-                    float expectedCost = newCost + CalculateDistanceCost(position, endPosition);
-                    OpenSet.Push(new PathNode(position, expectedCost));
+
+                    neighbourNode.ExpectedCost = newCost + CalculateDistanceCost(neighbourNode.Position, endPosition);
+
+                        
+                    OpenSet.Push(neighbourNode);
 
                     
                 }
@@ -344,6 +375,9 @@ public class Pathfinding : JobComponentSystem
         {
             return position.x + (position.y * DimX);
         }
+
+
+        
 
        
 

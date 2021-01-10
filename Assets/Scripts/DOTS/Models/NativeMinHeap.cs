@@ -168,6 +168,6 @@ public struct PathNode
 
     public bool NextToObstacle { get; set; }
     public int2 Position { get; } // TODO to position
-    public float ExpectedCost { get; }
+    public float ExpectedCost { get; set; }
     public int Next { get; set; }
 }
