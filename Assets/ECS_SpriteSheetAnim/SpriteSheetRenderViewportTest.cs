@@ -22,8 +22,8 @@ using Unity.Transforms;
 using Unity.Mathematics;
 
 [UpdateAfter(typeof(SpriteSheetAnimationSystem))]
-[DisableAutoCreation]
-public class SpriteSheetRendererCodeMonkey : ComponentSystem {
+//DisableAutoCreation]
+public class SpriteSheetRendererViewportTest : ComponentSystem {
 
     private struct RenderData {
         public Entity entity;
@@ -35,7 +35,7 @@ public class SpriteSheetRendererCodeMonkey : ComponentSystem {
     
     private struct PositionComparer : IComparer<RenderData> {
         public int Compare(RenderData a, RenderData b) {
-            if (a.position.y < b.position.y)
+            if (a.viewportPosition.y < b.viewportPosition.y)
                 return 1;
             else
                 return -1;
@@ -93,15 +93,18 @@ public class SpriteSheetRendererCodeMonkey : ComponentSystem {
         public NativeQueue<RenderData>.ParallelWriter nativeQueue_20;
 
         public void Execute(Entity entity, int index, [ReadOnly] ref Translation translation, [ReadOnly] ref SpriteSheetComponentData spriteSheetAnimationData) {
-            float positionX = translation.Value.x;
-            float positionY = translation.Value.y;
+
+            float3 viewPortPosition = spriteSheetAnimationData.viewportPosition;
+            float positionX = viewPortPosition.x;
+            float positionY = viewPortPosition.y;
             if (positionX > xMin && positionX < xMax && positionY < yTop_1 && positionY > yBottom) {
                 // Valid position
                 RenderData entityPosition = new RenderData {
                     entity = entity,
                     position = translation.Value,
                     uv = spriteSheetAnimationData.uv,
-                    matrix = spriteSheetAnimationData.matrix
+                    matrix = spriteSheetAnimationData.matrix,
+                    viewportPosition = spriteSheetAnimationData.viewportPosition
                 };
 
                 //nativeQueue_1.Enqueue(entityPosition); return;
@@ -242,16 +245,12 @@ public class SpriteSheetRendererCodeMonkey : ComponentSystem {
         }
 
         JobHandle.CompleteAll(jobHandleArray);
-
-        Camera camera = Camera.main;
-        float cameraWidth = camera.aspect * camera.orthographicSize;
-        float3 cameraPosition = camera.transform.position;
-        float marginX = cameraWidth / 10f;
-        float xMin = cameraPosition.x - cameraWidth - marginX;
-        float xMax = cameraPosition.x + cameraWidth + marginX;
-        float cameraSliceSize = camera.orthographicSize * 2f / POSITION_SLICES;
-        float yBottom = cameraPosition.y - camera.orthographicSize; // Bottom cull position
-        float yTop_1 = cameraPosition.y + camera.orthographicSize; // Top most cull position
+        
+        float xMin = 0;
+        float xMax = 1f;
+        float cameraSliceSize = 1f / POSITION_SLICES;
+        float yBottom = 0; // Bottom cull position
+        float yTop_1 = 1f; // Top most cull position
 
         float yTop_2 = yTop_1 - cameraSliceSize * 1f;
         float yTop_3 = yTop_1 - cameraSliceSize * 2f;
@@ -273,7 +272,7 @@ public class SpriteSheetRendererCodeMonkey : ComponentSystem {
         float yTop_19 = yTop_1 - cameraSliceSize * 18f;
         float yTop_20 = yTop_1 - cameraSliceSize * 19f;
 
-        float marginY = camera.orthographicSize / 10f;
+        float marginY = 1f / 10f;
         yTop_1 += marginY;
         yBottom -= marginY;
 

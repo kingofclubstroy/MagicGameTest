@@ -35,11 +35,16 @@ public class GameEntity : MonoBehaviour
 
         entityManager.CreateEntity(entityArchetype, entityArray);
 
+       
+
         foreach (Entity entity in entityArray)
         {
             entityManager.SetComponentData(entity, new Translation
             {
                 Value = new float3(UnityEngine.Random.Range(-5f, 5f), UnityEngine.Random.Range(-5f, 5f), 0)
+                //Value = new float3(UnityEngine.Random.Range(-0.5f, 0.5f), UnityEngine.Random.Range(-0.5f, 0.5f), 0)
+                //Value = new float3(0, i, 0)
+
             });
 
             entityManager.SetComponentData(entity, new SpriteSheetComponentData
@@ -50,6 +55,8 @@ public class GameEntity : MonoBehaviour
                 frameTimerMax = 0.1f
 
             });
+
+           
 
         }
 

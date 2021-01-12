@@ -8,6 +8,8 @@ Shader "Custom/InstancedShader"
 
     SubShader
     {
+
+		//ZWrite On
         Tags { "Queue"="Transparent" "IgnoreProjector"="True" "RenderType"="Transparent" }
         LOD 100
         Blend SrcAlpha OneMinusSrcAlpha
