@@ -66,7 +66,7 @@ public class UPAAnimator
 
     }
 
-    static Sprite SaveSpriteToEditorPath(Sprite sp, string path)
+    static UnityEngine.Sprite SaveSpriteToEditorPath(UnityEngine.Sprite sp, string path)
     {
 
         string dir = Path.GetDirectoryName(path);
@@ -85,7 +85,7 @@ public class UPAAnimator
         EditorUtility.SetDirty(ti);
         ti.SaveAndReimport();
 
-        return AssetDatabase.LoadAssetAtPath(path, typeof(Sprite)) as Sprite;
+        return AssetDatabase.LoadAssetAtPath(path, typeof(UnityEngine.Sprite)) as UnityEngine.Sprite;
     }
 
 

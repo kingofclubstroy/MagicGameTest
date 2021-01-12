@@ -9,12 +9,21 @@ public class ObjectPathHandling : MonoBehaviour
 
     Vector2[] points = new Vector2[4];
 
+    int chunkSize;
+
+
+
+    List<Vector2> obstaclePoints = new List<Vector2>();
+
     // Start is called before the first frame update
     void Start()
     {
+
+        chunkSize = ObstacleController.instance.ChunkSize;
+
         size = GetComponent<BoxCollider2D>().size;
 
-        if(transform.position.x % 16 != 0 || transform.position.y % 16 != 0)
+        if(transform.position.x % chunkSize != 0 || transform.position.y % chunkSize != 0)
         {
             Vector2 pos = transform.position;
 
@@ -24,7 +33,7 @@ public class ObjectPathHandling : MonoBehaviour
 
           
 
-            pos.x -= Mathf.FloorToInt(pos.x % 16);
+            pos.x -= Mathf.FloorToInt(pos.x % chunkSize);
 
          
 
@@ -34,7 +43,7 @@ public class ObjectPathHandling : MonoBehaviour
 
 
 
-            pos.y -= Mathf.FloorToInt(pos.y % 16);
+            pos.y -= Mathf.FloorToInt(pos.y % chunkSize);
 
        
 
@@ -50,13 +59,15 @@ public class ObjectPathHandling : MonoBehaviour
 
     }
 
-    void SetObstacle(int value)
+   
+
+    void SetObstacle(int value, int resistenceValue = 1)
     {
         //find the bottom left position, then we will itterate from there
         Vector2 pos = transform.position;
 
-        int x = Mathf.FloorToInt(size.x / 16);
-        int y = Mathf.FloorToInt(size.y / 16);
+        int x = Mathf.FloorToInt(size.x / chunkSize);
+        int y = Mathf.FloorToInt(size.y / chunkSize);
 
 
         for (int i = -1; i < x + 1; i++)
@@ -64,26 +75,43 @@ public class ObjectPathHandling : MonoBehaviour
             for(int j = -1; j < y + 1; j++)
             {
 
-                Vector2 p = new Vector2(pos.x + (i * 16), pos.y + (j * 16));
+                Vector2 p = new Vector2(pos.x + (i * chunkSize), pos.y + (j * chunkSize));
 
-                //Set the area around the object to have a resistance
-                //if (i == -1 || i == x || j == -1 || j == y)
-                //{
+                if (i == -1 || i == x || j == -1 || j == y)
+                {
                    
 
-                //    if (ObstacleController.instance.GetNativeResistence(p) != -1)
-                //    {
+                    //TODO: maybe setting the resistance to 1 here isnt the best idea, will need to adapts this to suit whats going on
+                    if (ObstacleController.instance.GetNativeResistence(p) != -1)
+                    {
+                        ObstacleController.instance.SetObstacle(p, resistenceValue);
+                    }
 
-                //        ObstacleController.instance.SetObstacle(p, 1);
-                //    }
-                //}
-                //else
-                //{
+
+                }
+                else
+                {
 
                     ObstacleController.instance.SetObstacle(p, value);
-                //}
+                }
+
+
+                obstaclePoints.Add(p);
+                
 
             }
+        }
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        foreach(Vector2 pos in obstaclePoints)
+        {
+            Gizmos.color = new Color(1, 0, 0, 0.5f);
+            Vector2 p = new Vector2(pos.x + chunkSize/2, pos.y + chunkSize/2);
+            
+            Gizmos.DrawCube(p, new Vector3(chunkSize, chunkSize, 1));
+            
         }
     }
 

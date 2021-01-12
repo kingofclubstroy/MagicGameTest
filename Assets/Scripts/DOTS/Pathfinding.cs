@@ -20,6 +20,9 @@ using Unity.Jobs;
 using Unity.Burst;
 
 
+//TODO: remove this!!
+
+[DisableAutoCreation]
 public class Pathfinding : JobComponentSystem
 {
 
@@ -66,6 +69,7 @@ public class Pathfinding : JobComponentSystem
         public NativeArray<float> CostSoFar;
         public NativeArray<PathNode> CameFrom;
         public NativeMinHeap OpenSet;
+        public bool foundPath;
     }
 
     protected override void OnCreate()
@@ -151,6 +155,7 @@ public class Pathfinding : JobComponentSystem
                 CameFrom = data.CameFrom,
                 DimX = gridParams.x,
                 entity = entityArray[r],
+                pathFound = data.foundPath,
                 pathfindingParamsComponentDataFromEntity = GetComponentDataFromEntity<PathfindingParams>(),
                 pathFollowComponentDataFromEntity = GetComponentDataFromEntity<PathFollow>(),
                 pathPositionBufferFromEntity = GetBufferFromEntity<PathPosition>(),
@@ -190,6 +195,8 @@ public class Pathfinding : JobComponentSystem
         public int2 endPosition;
         [ReadOnly] public NativeArray<int2> Neighbours;
 
+        public bool foundPath;
+
         //TODO: need to decouple the pathnode struct into multiple arrays to allow for easier parrelization
         [ReadOnly] public NativeArray<int> Grid;
 
@@ -202,6 +209,8 @@ public class Pathfinding : JobComponentSystem
 
         public NativeMinHeap OpenSet;
 
+        
+
         public void Execute()
         {
 
@@ -211,11 +220,17 @@ public class Pathfinding : JobComponentSystem
 
         private void FindPath(int2 startPosition, int2 endPosition)
         {
-            if(startPosition.Equals(endPosition))
+            Debug.Log("Pathfinding to: " + endPosition);
+            if(startPosition.Equals(endPosition) || Grid[GetIndex(endPosition)] == -1)
             {
+
+                Debug.LogError("asking to go into an obstacle, or is already there!");
+                foundPath = false;
                
                 return;
             }
+
+            
 
             PathNode head = new PathNode(startPosition, CalculateDistanceCost(startPosition, endPosition));
             OpenSet.Push(head);
@@ -227,23 +242,15 @@ public class Pathfinding : JobComponentSystem
                 int currentIndex = OpenSet.Pop();
                 PathNode current = OpenSet[currentIndex];
 
-                PathNode cameFromNode = CameFrom[currentIndex];
+                int ind = GetIndex(current.Position);
 
-                if(cameFromNode.Equals(null) && cameFromNode.NextToObstacle && current.NextToObstacle && IsDiagonal(current.Position, cameFromNode.Position))
-                {
-                    //In this case, the path came from point that was next to a obstacle, and is moving diagonally towards a point next to an obstacle. so we are assuming they are moving diagonally through the obstacle
-                    //TODO: this is not always the case, will need to resolve later
-                    continue;
+                PathNode cameFromNode = CameFrom[ind];
 
-                
-                }
 
-                
-
-                if(current.Position.Equals(endPosition))
+                if (current.Position.Equals(endPosition))
                 {
 
-                    
+
                     //Found our destination, we will let the cleanup job handle the path reconstruction for now
                     //ReconstructPath(startPosition, endPosition);
                     return;
@@ -251,7 +258,9 @@ public class Pathfinding : JobComponentSystem
 
                 float initialCost = CostSoFar[GetIndex(current.Position)];
 
-                for(int i = 0; i < Neighbours.Length; i++)
+                PathNode[] neighbourNodes = new PathNode[Neighbours.Length];
+
+                for (int i = 0; i < Neighbours.Length; i++)
                 {
                     int2 neighbour = Neighbours[i];
                     int2 position = current.Position + neighbour;
@@ -265,18 +274,49 @@ public class Pathfinding : JobComponentSystem
 
                     if (float.IsInfinity(cellCost))
                     {
-                       
+
                         current.NextToObstacle = true;
+
+
+
+                        continue;
+                    }
+
+                    neighbourNodes[i] = new PathNode(position, cellCost);
+
+                }
+
+                if (!cameFromNode.Equals(null) && cameFromNode.NextToObstacle && current.NextToObstacle && IsDiagonal(current.Position, cameFromNode.Position))
+                {
+                    //In this case, the path came from point that was next to a obstacle, and is moving diagonally towards a point next to an obstacle. so we are assuming they are moving diagonally through the obstacle
+                    //TODO: this is not always the case, will need to resolve later
+                    continue;
+
+
+                }
+
+                for(int i = 0; i < neighbourNodes.Length; i++) {
+
+                    int2 neighbour = Neighbours[i];
+
+                    PathNode neighbourNode = neighbourNodes[i];
+
+                    int index = GetIndex(neighbourNode.Position);
+
+                    if (neighbourNode.Equals(null))
+                    {
+                        Debug.Log("neighbour null");
                         continue;
                     }
 
                     float neighbourCost = 10;
+
                     if((math.abs(neighbour.x) + math.abs(neighbour.y)) == 2)
                     {
                         neighbourCost = 14;
                     }
 
-                    float newCost = initialCost + neighbourCost + cellCost;
+                    float newCost = initialCost + neighbourCost + neighbourNode.ExpectedCost;
                     float oldCost = CostSoFar[index];
 
                     if(!(oldCost <= 0) && !(newCost < oldCost))
@@ -287,8 +327,11 @@ public class Pathfinding : JobComponentSystem
                     CostSoFar[index] = newCost;
                     CameFrom[index] = current;
 
-                    float expectedCost = newCost + CalculateDistanceCost(position, endPosition);
-                    OpenSet.Push(new PathNode(position, expectedCost));
+
+                    neighbourNode.ExpectedCost = newCost + CalculateDistanceCost(neighbourNode.Position, endPosition);
+
+                        
+                    OpenSet.Push(neighbourNode);
 
                     
                 }
@@ -333,6 +376,9 @@ public class Pathfinding : JobComponentSystem
             return position.x + (position.y * DimX);
         }
 
+
+        
+
        
 
 
@@ -348,6 +394,7 @@ public class Pathfinding : JobComponentSystem
         [WriteOnly] public NativeMinHeap OpenSet;
         [ReadOnly] public NativeArray<PathNode> CameFrom;
         [ReadOnly] public int DimX;
+        [ReadOnly] public bool pathFound;
         public Entity entity;
         public int index;
 
@@ -368,7 +415,7 @@ public class Pathfinding : JobComponentSystem
 
             
 
-            CalculatePath(startPosition, endPosition, pathPositionBuffer);
+            CalculatePath(startPosition, endPosition, pathPositionBuffer, pathFound);
 
             pathFollowComponentDataFromEntity[entity] = new PathFollow { pathIndex = pathPositionBuffer.Length - 2, NewPath = true };
 
@@ -381,8 +428,13 @@ public class Pathfinding : JobComponentSystem
         }
        
 
-        private void CalculatePath(int2 startPosition, int2 endPosition, DynamicBuffer<PathPosition> pathPositionBuffer)
+        private void CalculatePath(int2 startPosition, int2 endPosition, DynamicBuffer<PathPosition> pathPositionBuffer, bool pathFound)
         {
+
+            if(pathFound == false)
+            {
+                return;
+            }
                   
             pathPositionBuffer.Add(new PathPosition { position = new int2(endPosition.x, endPosition.y) });
 
@@ -563,7 +615,9 @@ public class Pathfinding : JobComponentSystem
             {
                 CostSoFar = new NativeArray<float>(gridParams.x * gridParams.y, Allocator.Persistent),
                 CameFrom = new NativeArray<PathNode>(gridParams.x * gridParams.y, Allocator.Persistent),
-                OpenSet = new NativeMinHeap(gridParams.x * gridParams.y, Allocator.Persistent)
+                OpenSet = new NativeMinHeap(gridParams.x * gridParams.y, Allocator.Persistent),
+                foundPath = true
+                
             };
 
             jobCollections.Add(collection);

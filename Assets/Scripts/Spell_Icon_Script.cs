@@ -459,7 +459,7 @@ public class Spell_Icon_Script : MonoBehaviour
     {
         texture.Apply();
 
-        spriteRenderer.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), 1);
+        spriteRenderer.sprite = UnityEngine.Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), 1);
 
         spriteRenderer.material.mainTexture = texture as Texture;
         spriteRenderer.material.shader = Shader.Find("Sprites/Default");

@@ -30,7 +30,7 @@ public class TextureHelper
 
     public static void initializeTexture(Texture2D tex, SpriteRenderer spriteRenderer, Vector2 pivet)
     {
-        spriteRenderer.sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), pivet, 1);
+        spriteRenderer.sprite = UnityEngine.Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), pivet, 1);
 
         spriteRenderer.material.mainTexture = tex as Texture;
         spriteRenderer.material.shader = Shader.Find("Sprites/Default");
@@ -41,7 +41,7 @@ public class TextureHelper
       
         tex.Apply();
 
-        spriteRenderer.sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), pivet, 1);
+        spriteRenderer.sprite = UnityEngine.Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), pivet, 1);
 
         spriteRenderer.material.mainTexture = tex as Texture;
         spriteRenderer.material.shader = Shader.Find("Sprites/Default");

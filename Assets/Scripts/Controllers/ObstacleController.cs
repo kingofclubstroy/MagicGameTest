@@ -26,7 +26,7 @@ public class ObstacleController : MonoBehaviour
     public int2 gridParams;
 
     [SerializeField]
-    int ChunkSize = 16;
+    public int ChunkSize = 16;
 
     [SerializeField]
     public GameObject testPrefab;
@@ -308,6 +308,21 @@ public class ObstacleController : MonoBehaviour
         }
 
         return new int2(Mathf.FloorToInt(pos.x / ChunkSize), Mathf.FloorToInt(pos.y / ChunkSize));
+    }
+
+    public bool ObstacleHere(Vector2 pos)
+    {
+
+        //int x = Mathf.FloorToInt(pos.x / ChunkSize);
+        //int y = Mathf.FloorToInt(pos.y / ChunkSize);
+        int2 arrayPos = WorldToIndex(pos);
+
+        if (nativeObstacleMap[GetIndex(arrayPos)] == -1)
+        {
+            return true;
+        }
+
+        return false;
     }
 
 }
