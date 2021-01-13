@@ -31,12 +31,12 @@ public class GameEntity : MonoBehaviour
             
             );
 
-        NativeArray<Entity> entityArray = new NativeArray<Entity>(1000, Allocator.Temp);
+        NativeArray<Entity> entityArray = new NativeArray<Entity>(5000, Allocator.Temp);
 
         entityManager.CreateEntity(entityArchetype, entityArray);
 
-        int x = 0;
-        int y = 0;
+        float x = -5f;
+        float y = -5f;
 
        
 
@@ -70,8 +70,21 @@ public class GameEntity : MonoBehaviour
 
             });
 
-            x += 4;
-            y += 4;
+            if (x >= 3f)
+            {
+                x = 0;
+                y += 0.14f;
+            }
+            else
+            {
+                x += 0.14f;
+            }
+
+            //x += 0.14f;
+            //y += 0.14f;
+
+
+
 
 
 
