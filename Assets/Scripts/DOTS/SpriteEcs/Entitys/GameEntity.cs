@@ -31,12 +31,12 @@ public class GameEntity : MonoBehaviour
             
             );
 
-        NativeArray<Entity> entityArray = new NativeArray<Entity>(5000, Allocator.Temp);
+        NativeArray<Entity> entityArray = new NativeArray<Entity>(40, Allocator.Temp);
 
         entityManager.CreateEntity(entityArchetype, entityArray);
 
-        float x = -5f;
-        float y = -5f;
+        int x = 0;
+        int y = 0;
 
        
 
@@ -63,21 +63,21 @@ public class GameEntity : MonoBehaviour
 
             entityManager.SetComponentData(entity, new SpriteSheetComponentData
             {
-                currentFrame = UnityEngine.Random.Range(0, 4),
-                frameCount = 4,
+                currentFrame = UnityEngine.Random.Range(0, 3),
+                frameCount = 3,
                 frameTimer = UnityEngine.Random.Range(0f, 4f),
                 frameTimerMax = 0.1f
 
             });
 
-            if (x >= 3f)
+            if (x >= 40)
             {
                 x = 0;
-                y += 0.14f;
+                y += 4;
             }
             else
             {
-                x += 0.14f;
+                x += 4;
             }
 
             //x += 0.14f;

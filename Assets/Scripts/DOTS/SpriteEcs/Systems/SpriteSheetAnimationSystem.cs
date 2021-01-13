@@ -18,6 +18,7 @@ public class SpriteSheetAnimationSystem : JobComponentSystem
         public Quaternion cameraRotation;
         public float3 viewPortPosition;
         public Matrix4x4 MVP;
+        public float3 scaling;
         
         public void Execute(ref SpriteSheetComponentData spriteSheetComponentData, ref Translation translation)
         {
@@ -55,7 +56,7 @@ public class SpriteSheetAnimationSystem : JobComponentSystem
 
 
 
-            spriteSheetComponentData.matrix = Matrix4x4.TRS(position, cameraRotation, Vector3.one);
+            spriteSheetComponentData.matrix = Matrix4x4.TRS(position, cameraRotation, scaling);
             
         }
     }
@@ -71,13 +72,16 @@ public class SpriteSheetAnimationSystem : JobComponentSystem
         Matrix4x4 V = Camera.main.worldToCameraMatrix;
         Matrix4x4 P = Camera.main.projectionMatrix;
         Matrix4x4 MVP = P * V; // Skipping M, point in world coordinates
+
+        float3 scaling = new float3(28, 28, 1);
        
 
         Job job = new Job
         {
             deltaTime = Time.DeltaTime,
             cameraRotation = cameraRotation,
-            MVP = MVP
+            MVP = MVP,
+            scaling = scaling
             //zRotation = Mathf.Deg2Rad * cameraRotation.eulerAngles.z
     };
 
