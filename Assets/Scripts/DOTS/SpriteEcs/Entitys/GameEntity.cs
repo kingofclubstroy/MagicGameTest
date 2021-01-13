@@ -31,7 +31,7 @@ public class GameEntity : MonoBehaviour
             
             );
 
-        NativeArray<Entity> entityArray = new NativeArray<Entity>(5000, Allocator.Temp);
+        NativeArray<Entity> entityArray = new NativeArray<Entity>(1000, Allocator.Temp);
 
         entityManager.CreateEntity(entityArchetype, entityArray);
 
