@@ -165,7 +165,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   quadMesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
-  walkingSpriteSheetMaterial: {fileID: 2100000, guid: 907d49b4c245cb545ba8f1385fa5ff5b,
+  walkingSpriteSheetMaterial: {fileID: 2100000, guid: 1be8252f521f29041abad77d576beb21,
     type: 2}
 --- !u!1 &1211069906
 GameObject:

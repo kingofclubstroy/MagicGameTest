@@ -31,9 +31,12 @@ public class GameEntity : MonoBehaviour
             
             );
 
-        NativeArray<Entity> entityArray = new NativeArray<Entity>(10000, Allocator.Temp);
+        NativeArray<Entity> entityArray = new NativeArray<Entity>(1000, Allocator.Temp);
 
         entityManager.CreateEntity(entityArchetype, entityArray);
+
+        int x = 0;
+        int y = 0;
 
        
 
@@ -41,22 +44,36 @@ public class GameEntity : MonoBehaviour
         {
             entityManager.SetComponentData(entity, new Translation
             {
-                Value = new float3(UnityEngine.Random.Range(-5f, 5f), UnityEngine.Random.Range(-5f, 5f), 0)
+                //Value = new float3(UnityEngine.Random.Range(-5f, 5f), UnityEngine.Random.Range(-5f, 5f), 0)
                 //Value = new float3(UnityEngine.Random.Range(-0.5f, 0.5f), UnityEngine.Random.Range(-0.5f, 0.5f), 0)
                 //Value = new float3(0, i, 0)
 
+                Value = new float3(x, y, 0)
+
             });
+
+            //entityManager.SetComponentData(entity, new SpriteSheetComponentData
+            //{
+            //    currentFrame = UnityEngine.Random.Range(0, 4),
+            //    frameCount = 4,
+            //    frameTimer = UnityEngine.Random.Range(0f, 1f),
+            //    frameTimerMax = 0.1f
+
+            //});
 
             entityManager.SetComponentData(entity, new SpriteSheetComponentData
             {
-                currentFrame = UnityEngine.Random.Range(0, 4),
-                frameCount = 4,
+                currentFrame = 0,
+                frameCount = 1,
                 frameTimer = UnityEngine.Random.Range(0f, 1f),
                 frameTimerMax = 0.1f
 
             });
 
-           
+            x += 4;
+            y += 4;
+
+
 
         }
 
