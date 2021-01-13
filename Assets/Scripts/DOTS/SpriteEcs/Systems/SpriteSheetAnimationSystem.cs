@@ -21,12 +21,12 @@ public class SpriteSheetAnimationSystem : JobComponentSystem
         
         public void Execute(ref SpriteSheetComponentData spriteSheetComponentData, ref Translation translation)
         {
-            spriteSheetComponentData.frameTimer += deltaTime;
-            while (spriteSheetComponentData.frameTimer >= spriteSheetComponentData.frameTimerMax)
-            {
-                spriteSheetComponentData.frameTimer -= spriteSheetComponentData.frameTimerMax;
-                spriteSheetComponentData.currentFrame = (spriteSheetComponentData.currentFrame + 1) % spriteSheetComponentData.frameCount;
-            }
+            //spriteSheetComponentData.frameTimer += deltaTime;
+            //while (spriteSheetComponentData.frameTimer >= spriteSheetComponentData.frameTimerMax)
+            //{
+            //    spriteSheetComponentData.frameTimer -= spriteSheetComponentData.frameTimerMax;
+            //    spriteSheetComponentData.currentFrame = (spriteSheetComponentData.currentFrame + 1) % spriteSheetComponentData.frameCount;
+            //}
 
             float uvWidth = 1f / spriteSheetComponentData.frameCount;
             float uvHeight = 1f;

@@ -63,9 +63,9 @@ public class GameEntity : MonoBehaviour
 
             entityManager.SetComponentData(entity, new SpriteSheetComponentData
             {
-                currentFrame = 0,
-                frameCount = 1,
-                frameTimer = UnityEngine.Random.Range(0f, 1f),
+                currentFrame = UnityEngine.Random.Range(0, 4),
+                frameCount = 4,
+                frameTimer = UnityEngine.Random.Range(0f, 4f),
                 frameTimerMax = 0.1f
 
             });
